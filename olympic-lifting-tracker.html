@@ -9,85 +9,58 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0d0d0d;
-    --surface: #161616;
-    --surface2: #1e1e1e;
-    --surface3: #272727;
-    --border: #2a2a2a;
-    --accent: #c8f55a;
-    --accent-dim: #9ab83e;
-    --accent-bg: rgba(200,245,90,0.08);
-    --text: #f0f0f0;
-    --text2: #888;
-    --text3: #555;
-    --red: #ff5252;
-    --orange: #ff9a3c;
-    --blue: #5ab4ff;
-    --radius: 12px;
-    --radius-sm: 8px;
-    --tab-h: 64px;
-    --header-h: 56px;
+    --bg: #111111; --surface: #1a1a1a; --surface2: #222222; --surface3: #2a2a2a;
+    --border: #333333; --accent: #c8f55a; --accent-dim: #9ab83e; --accent-bg: rgba(200,245,90,0.08);
+    --text: #f0f0f0; --text2: #aaaaaa; --text3: #777777;
+    --red: #ff5252; --orange: #ff9a3c; --blue: #5ab4ff;
+    --radius: 12px; --radius-sm: 8px; --tab-h: 64px; --header-h: 56px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; }
-  
-  /* LAYOUT */
   #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
   #header { height: var(--header-h); background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; flex-shrink: 0; position: relative; }
   #header h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; color: var(--accent); }
   #header .sync-btn { position: absolute; right: 16px; background: none; border: 1px solid var(--border); color: var(--text2); font-size: 11px; font-family: 'DM Mono', monospace; padding: 4px 10px; border-radius: 20px; cursor: pointer; }
   #header .sync-btn.syncing { color: var(--accent); border-color: var(--accent); }
-  
   #content { flex: 1; overflow: hidden; position: relative; }
   .tab-pane { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--tab-h) + 16px); display: none; }
   .tab-pane.active { display: block; }
-  
   #tabs { height: var(--tab-h); background: var(--surface); border-top: 1px solid var(--border); display: flex; flex-shrink: 0; }
   .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: var(--text3); transition: color 0.15s; border: none; background: none; padding: 0; }
   .tab.active { color: var(--accent); }
   .tab svg { width: 22px; height: 22px; }
   .tab span { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; font-family: 'DM Mono', monospace; }
-
-  /* CARDS & SECTIONS */
   .section { padding: 16px; }
   .section + .section { padding-top: 0; }
   .section-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 10px; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
   .card + .card { margin-top: 8px; }
-
-  /* FORM ELEMENTS */
   .field { padding: 12px 14px; border-bottom: 1px solid var(--border); }
   .field:last-child { border-bottom: none; }
   .field label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 6px; }
-  .field select, .field input { width: 100%; background: transparent; border: none; color: var(--text); font-size: 15px; font-family: 'Syne', sans-serif; font-weight: 600; outline: none; appearance: none; -webkit-appearance: none; }
+  .field select, .field input[type="text"], .field input[type="number"], .field input[type="date"] { width: 100%; background: transparent; border: none; color: var(--text); font-size: 15px; font-family: 'Syne', sans-serif; font-weight: 600; outline: none; appearance: none; -webkit-appearance: none; }
   .field select option { background: var(--surface2); color: var(--text); }
   .field input[type="number"] { font-family: 'DM Mono', monospace; font-size: 18px; }
+  .field input[type="date"] { color-scheme: dark; }
   .field input::placeholder { color: var(--text3); }
   .field textarea { width: 100%; background: transparent; border: none; color: var(--text); font-size: 14px; font-family: 'Syne', sans-serif; outline: none; resize: none; min-height: 60px; }
-
-  /* MULTI-SELECT CHIPS */
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chip { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer; background: var(--surface2); transition: all 0.1s; font-family: 'DM Mono', monospace; }
   .chip.selected { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
-
-  /* QUALITY STARS */
   .quality-row { display: flex; gap: 8px; }
   .q-dot { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 13px; font-family: 'DM Mono', monospace; font-weight: 500; color: var(--text3); cursor: pointer; transition: all 0.1s; }
   .q-dot.selected { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 700; }
-
-  /* BUTTONS */
   .btn { width: 100%; padding: 16px; border-radius: var(--radius); border: none; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
   .btn-primary { background: var(--accent); color: #000; }
   .btn-primary:active { background: var(--accent-dim); }
   .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
   .btn-sm { padding: 10px 16px; font-size: 13px; width: auto; border-radius: var(--radius-sm); }
   .btn-danger { background: rgba(255,82,82,0.1); color: var(--red); border: 1px solid rgba(255,82,82,0.3); }
-
-  /* LOG ENTRIES */
+  .btn-ghost { background: none; border: 1px solid var(--border); color: var(--text2); }
   .log-entry { padding: 14px; }
   .log-entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
-  .log-entry-lift { font-size: 15px; font-weight: 700; color: var(--text); }
-  .log-entry-weight { font-size: 18px; font-weight: 700; color: var(--accent); font-family: 'DM Mono', monospace; }
+  .log-entry-lift { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; flex: 1; padding-right: 12px; }
+  .log-entry-weight { font-size: 18px; font-weight: 700; color: var(--accent); font-family: 'DM Mono', monospace; white-space: nowrap; }
   .log-entry-meta { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
   .log-entry-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
   .tag { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: var(--surface3); color: var(--text2); font-family: 'DM Mono', monospace; }
@@ -97,190 +70,245 @@
   .quality-bar { display: flex; gap: 3px; margin-top: 6px; }
   .qb { width: 16px; height: 3px; border-radius: 2px; background: var(--border); }
   .qb.filled { background: var(--accent); }
-
-  /* PB CARDS */
   .pb-card { padding: 16px; display: flex; justify-content: space-between; align-items: center; }
   .pb-lift { font-size: 14px; font-weight: 700; }
   .pb-weight { font-size: 28px; font-weight: 800; color: var(--accent); font-family: 'DM Mono', monospace; line-height: 1; }
   .pb-weight span { font-size: 12px; font-weight: 400; color: var(--text3); }
   .pb-date { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
-
-  /* SESSION PLANNER */
-  .warmup-row { padding: 12px 14px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+  .planner-lift-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin: 0 16px 12px; overflow: hidden; }
+  .planner-lift-header { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .planner-lift-title { font-size: 15px; font-weight: 700; line-height: 1.3; }
+  .planner-lift-subtitle { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
+  .planner-lift-body { border-top: 1px solid var(--border); }
+  .planner-lift-body.collapsed { display: none; }
+  .ref-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-bg); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text2); margin: 8px 14px; }
+  .ref-pill strong { color: var(--accent); }
+  .warmup-row { padding: 10px 14px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
   .warmup-row:last-child { border-bottom: none; }
-  .warmup-set { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; width: 48px; }
+  .warmup-set { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; width: 64px; }
   .warmup-weight { font-size: 20px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); flex: 1; }
   .warmup-pct { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; }
   .warmup-row.working { background: var(--accent-bg); }
   .warmup-row.working .warmup-weight { color: var(--accent); }
-  .warmup-row.working .warmup-set { color: var(--accent-dim); }
-
-  /* TIMER */
-  .timer-display { text-align: center; padding: 24px 16px; }
-  .timer-circle { width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--border); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; position: relative; }
+  .warmup-row.working .warmup-set { color: var(--accent-dim); font-weight: 700; }
+  .timer-display { text-align: center; padding: 20px 16px; }
+  .timer-circle { width: 130px; height: 130px; border-radius: 50%; border: 3px solid var(--border); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
   .timer-circle.running { border-color: var(--accent); }
   .timer-circle.done { border-color: var(--red); }
-  .timer-time { font-size: 36px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); }
-  .timer-label { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 1px; text-transform: uppercase; }
-  .timer-btns { display: flex; gap: 10px; justify-content: center; }
+  .timer-time { font-size: 34px; font-weight: 700; font-family: 'DM Mono', monospace; }
+  .timer-label { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 1px; text-transform: uppercase; }
+  .timer-btns { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
   .timer-btn { padding: 10px 24px; border-radius: 24px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; }
   .timer-btn.start { background: var(--accent); color: #000; border-color: var(--accent); }
-  .timer-presets { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
-  .timer-preset { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: none; color: var(--text2); font-size: 12px; font-family: 'DM Mono', monospace; cursor: pointer; }
+  .timer-presets { display: flex; gap: 8px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+  .timer-preset { padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: none; color: var(--text2); font-size: 11px; font-family: 'DM Mono', monospace; cursor: pointer; }
   .timer-preset.active { border-color: var(--accent); color: var(--accent); }
-
-  /* COMPETITION PREP */
-  .attempt-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--border); }
-  .attempt-cell { background: var(--surface); padding: 14px 10px; text-align: center; }
-  .attempt-cell.header { background: var(--surface2); }
-  .attempt-num { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 4px; }
-  .attempt-val { font-size: 18px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--accent); }
-  .attempt-pct { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; }
-  .attempt-input { width: 100%; background: transparent; border: none; color: var(--text); font-size: 18px; font-weight: 700; font-family: 'DM Mono', monospace; text-align: center; outline: none; }
-
-  /* SETTINGS */
+  .comp-lift-row { padding: 16px; border-bottom: 1px solid var(--border); }
+  .comp-lift-row:last-child { border-bottom: none; }
+  .comp-lift-name { font-size: 12px; font-weight: 700; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+  .comp-attempts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .comp-attempt { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; }
+  .comp-attempt-label { font-size: 9px; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .comp-attempt .comp-weight-input { width: 100%; background: transparent; border: none; color: var(--accent); font-size: 20px; font-weight: 800; font-family: 'DM Mono', monospace; text-align: center; outline: none; }
+  .comp-attempt-pct-wrap { display: flex; align-items: center; justify-content: center; gap: 2px; margin-top: 6px; border-top: 1px solid var(--border); padding-top: 6px; } .comp-attempt-pct-input { width: 44px; background: transparent; border: none; color: var(--text2); font-size: 14px; font-weight: 700; font-family: 'DM Mono', monospace; text-align: right; outline: none; } .comp-attempt-pct-sym { font-size: 13px; color: var(--text3); font-family: 'DM Mono', monospace; }
   .settings-row { padding: 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
   .settings-row:last-child { border-bottom: none; }
   .settings-label { font-size: 14px; font-weight: 600; }
   .settings-sub { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
-  .settings-input { background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 12px; font-family: 'DM Mono', monospace; padding: 6px 10px; border-radius: var(--radius-sm); width: 180px; outline: none; }
-
-  /* EMPTY STATE */
+  .coeff-row { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .coeff-row:last-child { border-bottom: none; }
+  .coeff-name { font-size: 13px; color: var(--text2); }
+  .coeff-input { width: 64px; background: var(--surface2); border: 1px solid var(--border); color: var(--accent); font-size: 13px; font-family: 'DM Mono', monospace; padding: 4px 8px; border-radius: 6px; text-align: right; outline: none; }
   .empty { text-align: center; padding: 48px 24px; color: var(--text3); }
   .empty-icon { font-size: 36px; margin-bottom: 12px; }
   .empty p { font-size: 14px; line-height: 1.6; }
-
-  /* DATE GROUP */
   .date-group-label { padding: 16px 16px 8px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3); font-family: 'DM Mono', monospace; }
-
-  /* TOAST */
   #toast { position: fixed; bottom: calc(var(--tab-h) + 16px); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface3); color: var(--text); padding: 10px 20px; border-radius: 24px; font-size: 13px; font-family: 'DM Mono', monospace; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 100; white-space: nowrap; border: 1px solid var(--border); }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   #toast.success { border-color: var(--accent); color: var(--accent); }
   #toast.error { border-color: var(--red); color: var(--red); }
-
-  /* MODAL */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; display: none; align-items: flex-end; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: none; align-items: flex-end; }
   .modal-overlay.open { display: flex; }
-  .modal { background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; width: 100%; max-height: 85vh; overflow-y: auto; padding: 20px 16px 32px; }
+  .modal { background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px 16px 40px; }
   .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
   .modal h2 { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
-
-  /* FILTER BAR */
-  .filter-bar { padding: 12px 16px; display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-bottom: 1px solid var(--border); }
+  .filter-bar { padding: 10px 16px; display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-bottom: 1px solid var(--border); }
   .filter-bar::-webkit-scrollbar { display: none; }
   .filter-chip { flex-shrink: 0; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer; background: none; font-family: 'DM Mono', monospace; white-space: nowrap; }
   .filter-chip.active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
-
-  /* SCROLL FIX */
+  .finish-lift-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; }
+  .finish-lift-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; line-height: 1.4; }
+  .finish-planned { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 12px; }
+  .finish-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .finish-field { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px; text-align: center; }
+  .finish-field label { display: block; font-size: 9px; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .finish-field input { width: 100%; background: transparent; border: none; color: var(--text); font-size: 16px; font-weight: 700; font-family: 'DM Mono', monospace; text-align: center; outline: none; }
+  .finish-quality { display: flex; gap: 6px; margin-bottom: 10px; }
+  .finish-q { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: 'DM Mono', monospace; color: var(--text3); cursor: pointer; }
+  .finish-q.selected { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 700; }
+  .field-hidden { display: none; }
   ::-webkit-scrollbar { width: 0; }
+
+  /* SUB-NAV (comp plan/history, pbs records/goals) */
+  .sub-nav { display:flex; gap:0; padding:12px 16px 0; }
+  .sub-nav-btn { flex:1; padding:8px 0; font-family:'DM Mono',monospace; font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; border:1px solid var(--border); background:none; color:var(--text3); cursor:pointer; }
+  .sub-nav-btn:first-child { border-radius:8px 0 0 8px; }
+  .sub-nav-btn:last-child { border-radius:0 8px 8px 0; }
+  .sub-nav-btn.active { background:var(--accent-bg); border-color:var(--accent); color:var(--accent); }
+  .sub-pane { display:none; }
+  .sub-pane.active { display:block; }
+
+  /* COMPETITION SESSION -- glowing gold border */
+  .log-entry.border-comp::before { background: linear-gradient(180deg, #ffd700, #ff9a3c); }
+  .log-entry.border-comp { box-shadow: inset 3px 0 0 0 #ffd700; }
+  .tag.session-comp { background: rgba(255,215,0,0.15); color: #ffd700; }
+
+  /* MEET CARDS */
+  .meet-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin:0 16px 12px; overflow:hidden; }
+  .meet-card-header { padding:14px 16px; background:linear-gradient(135deg,var(--surface2),var(--surface)); border-bottom:1px solid var(--border); }
+  .meet-card-name { font-size:16px; font-weight:800; color:var(--text); }
+  .meet-card-date { font-size:11px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:2px; }
+  .meet-card-bw { font-size:11px; color:var(--accent); font-family:'DM Mono',monospace; margin-top:2px; }
+  .meet-attempts { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); }
+  .meet-lift-section { background:var(--surface); padding:12px 14px; }
+  .meet-lift-label { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text3); font-family:'DM Mono',monospace; margin-bottom:8px; }
+  .meet-attempt-row { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+  .meet-attempt-row:last-child { margin-bottom:0; }
+  .meet-attempt-weight { font-size:15px; font-weight:700; font-family:'DM Mono',monospace; color:var(--text); flex:1; }
+  .meet-attempt-result { font-size:14px; }
+  .meet-totals { padding:12px 16px; display:flex; gap:0; border-top:1px solid var(--border); }
+  .meet-total-item { flex:1; text-align:center; }
+  .meet-total-item + .meet-total-item { border-left:1px solid var(--border); }
+  .meet-total-label { font-size:9px; color:var(--text3); font-family:'DM Mono',monospace; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:4px; }
+  .meet-total-value { font-size:22px; font-weight:800; color:var(--accent); font-family:'DM Mono',monospace; line-height:1; }
+  .meet-total-sub { font-size:9px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:2px; }
+
+  /* GOAL PROGRESS */
+  .goal-row { padding:12px 14px; border-bottom:1px solid var(--border); position:relative; }
+  .goal-row:last-child { border-bottom:none; }
+  .goal-row-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .goal-level { font-size:11px; font-weight:700; color:var(--text2); }
+  .goal-level.current { color:var(--accent); }
+  .goal-target { font-size:13px; font-weight:700; font-family:'DM Mono',monospace; color:var(--text); }
+  .goal-target.achieved { color:var(--accent); }
+  .goal-bar-bg { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+  .goal-bar-fill { height:4px; background:var(--accent); border-radius:2px; transition:width 0.5s ease; }
+  .goal-bar-fill.achieved { background:var(--accent); }
+  .goal-pct { font-size:9px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:3px; text-align:right; }
+  .goal-checkmark { color:var(--accent); font-size:14px; margin-left:6px; }
+  .goal-custom-input { width:60px; background:var(--surface2); border:1px solid var(--border); color:var(--accent); font-size:12px; font-family:'DM Mono',monospace; padding:3px 6px; border-radius:6px; text-align:right; outline:none; }
+
+  /* TEXTURE & DEPTH */
+  body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    opacity:1; }
+  .card { box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 2px 8px rgba(0,0,0,0.3); }
+  .tab-pane { position: relative; z-index: 1; }
+
+  /* SCOREBOARD PBs */
+  .pb-card { padding: 14px 16px; position: relative; overflow: hidden; }
+  .pb-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--border); }
+  .pb-card.pb-comp::before { background: var(--accent); }
+  .pb-card.pb-strength::before { background: var(--blue); }
+  .pb-lift { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); font-family: 'DM Mono', monospace; }
+  .pb-weight { font-size: 44px; font-weight: 800; color: var(--accent); font-family: 'DM Mono', monospace; line-height: 1; letter-spacing: -2px; }
+  .pb-weight span { font-size: 16px; font-weight: 400; color: var(--text3); letter-spacing: 0; margin-left: 2px; }
+  .pb-date { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 4px; }
+  .pb-lbs { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
+
+  /* SESSION BORDER COLOURS on log entries */
+  .log-entry { position: relative; padding: 14px 14px 14px 20px; }
+  .log-entry::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:0; }
+  .log-entry.border-coached::before { background: var(--blue); }
+  .log-entry.border-solo::before { background: var(--accent); }
+  .log-entry.border-one::before { background: var(--orange); }
+
+  /* HEADER CLOCK */
+  #header-clock { position:absolute; left:50%; transform:translateX(-50%); font-size:11px; font-family:'DM Mono',monospace; color:var(--text3); letter-spacing:1px; }
+
+  /* COMP CONTEXT */
+  .context-row { padding: 12px 14px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); }
+  .context-row:last-child { border-bottom:none; }
+  .context-label { font-size:11px; color:var(--text3); font-family:'DM Mono',monospace; }
+  .context-value { font-size:16px; font-weight:800; color:var(--text); font-family:'DM Mono',monospace; }
+  .context-value.accent { color:var(--accent); }
+  .context-sub { font-size:10px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:1px; text-align:right; }
+
+  /* BARBELL VISUALISER */
+  .barbell-viz { padding: 10px 14px 12px; border-top: 1px solid var(--border); background: var(--surface2); }
+  .barbell-viz-label { font-size: 9px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center; }
+  .barbell-svg-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .barbell-svg-wrap::-webkit-scrollbar { display: none; }
+  .warmup-row { cursor: pointer; transition: background 0.1s; }
+  .warmup-row:active { background: var(--surface3); }
+  .warmup-row.selected { background: rgba(200,245,90,0.12); }
+  .warmup-row.working.selected { background: rgba(200,245,90,0.2); }
+  .plate-label { font-size: 8px; font-family: 'DM Mono', monospace; font-weight: 700; fill: rgba(0,0,0,0.7); }
+
+  /* PULSE ANIMATION for new PB */
+  @keyframes pbPulse { 0%{box-shadow:0 0 0 0 rgba(200,245,90,0.4)} 70%{box-shadow:0 0 0 12px rgba(200,245,90,0)} 100%{box-shadow:0 0 0 0 rgba(200,245,90,0)} }
+  .pb-new { animation: pbPulse 0.8s ease-out; }
+
+  /* WARMUP PROGRESS LINE */
+  .warmup-row { position: relative; }
+  .warmup-progress { position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
+  .warmup-progress.done { background:var(--accent); }
 </style>
 </head>
 <body>
 <div id="app">
   <div id="header">
     <h1>BARBELL LOG</h1>
-    <button class="sync-btn" id="syncBtn" onclick="syncToSheets()">↑ SYNC</button>
+    <div id="header-clock"></div>
+    <button class="sync-btn" id="syncBtn" onclick="syncBoth()">⇅ SYNC</button>
   </div>
   <div id="content">
 
     <!-- LOG TAB -->
     <div class="tab-pane active" id="pane-log">
-      <div class="filter-bar" id="filterBar">
-        <button class="filter-chip active" data-filter="all" onclick="setFilter('all',this)">All</button>
-        <button class="filter-chip" data-filter="Snatch" onclick="setFilter('Snatch',this)">Snatch</button>
-        <button class="filter-chip" data-filter="Clean" onclick="setFilter('Clean',this)">Clean</button>
-        <button class="filter-chip" data-filter="Jerk" onclick="setFilter('Jerk',this)">Jerk</button>
-        <button class="filter-chip" data-filter="Clean and Jerk" onclick="setFilter('Clean and Jerk',this)">C&J</button>
-        <button class="filter-chip" data-filter="Squat" onclick="setFilter('Squat',this)">Squat</button>
-        <button class="filter-chip" data-filter="Pull" onclick="setFilter('Pull',this)">Pull</button>
-      </div>
-      <div id="logList"></div>
-      <div style="padding:16px;">
+      <div style="padding:12px 16px 8px;">
         <button class="btn btn-primary" onclick="openLogModal()">+ Log a Set</button>
       </div>
+      <div class="filter-bar">
+        <button class="filter-chip active" onclick="setFilter('all',this)">All</button>
+        <button class="filter-chip" onclick="setFilter('Snatch',this)">Snatch</button>
+        <button class="filter-chip" onclick="setFilter('Clean and Jerk',this)">C&J</button>
+        <button class="filter-chip" onclick="setFilter('Clean',this)">Clean</button>
+        <button class="filter-chip" onclick="setFilter('Jerk',this)">Jerk</button>
+        <button class="filter-chip" onclick="setFilter('Squat',this)">Squat</button>
+        <button class="filter-chip" onclick="setFilter('Pull',this)">Pull</button>
+        <button class="filter-chip" onclick="setFilter('Deadlift',this)">Deadlift</button>
+        <button class="filter-chip" onclick="setFilter('Row',this)">Row</button>
+      </div>
+      <div id="logList"></div>
     </div>
 
     <!-- PLANNER TAB -->
     <div class="tab-pane" id="pane-planner">
-      <div class="section">
-        <div class="section-label">Session Planner</div>
-        <div class="card">
-          <div class="field">
-            <label>Base Lift</label>
-            <select id="p-base" onchange="plannerUpdate()">
-              <option value="">Select lift...</option>
-              <option>Snatch</option>
-              <option>Clean</option>
-              <option>Jerk</option>
-              <option>Clean and Jerk</option>
-              <option>Squat</option>
-              <option>Pull</option>
-              <option>Deadlift</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Position</label>
-            <div class="chips" id="p-position">
-              <div class="chip" data-val="Floor" onclick="plannerChip(this,'position')">Floor</div>
-              <div class="chip" data-val="Hang Above Knee" onclick="plannerChip(this,'position')">Hang Above Knee</div>
-              <div class="chip" data-val="Hang Below Knee" onclick="plannerChip(this,'position')">Hang Below Knee</div>
-              <div class="chip" data-val="Hang Mid-Thigh" onclick="plannerChip(this,'position')">Hang Mid-Thigh</div>
-              <div class="chip" data-val="Blocks" onclick="plannerChip(this,'position')">Blocks</div>
-              <div class="chip" data-val="Deficit" onclick="plannerChip(this,'position')">Deficit</div>
-            </div>
-          </div>
-          <div class="field">
-            <label>Receiving</label>
-            <div class="chips" id="p-receiving">
-              <div class="chip" data-val="Squat (Full)" onclick="plannerChip(this,'receiving')">Squat (Full)</div>
-              <div class="chip" data-val="Power" onclick="plannerChip(this,'receiving')">Power</div>
-              <div class="chip" data-val="Muscle" onclick="plannerChip(this,'receiving')">Muscle</div>
-              <div class="chip" data-val="Split" onclick="plannerChip(this,'receiving')">Split</div>
-            </div>
-          </div>
-          <div class="field">
-            <label>Technique</label>
-            <div class="chips" id="p-technique">
-              <div class="chip" data-val="Pause" onclick="plannerChip(this,'technique')">Pause</div>
-              <div class="chip" data-val="Tempo" onclick="plannerChip(this,'technique')">Tempo</div>
-              <div class="chip" data-val="Floating" onclick="plannerChip(this,'technique')">Floating</div>
-              <div class="chip" data-val="Balance" onclick="plannerChip(this,'technique')">Balance</div>
-              <div class="chip" data-val="2-Position" onclick="plannerChip(this,'technique')">2-Position</div>
-            </div>
-          </div>
-          <div class="field">
-            <label>Target % of Reference</label>
-            <input type="number" id="p-pct" placeholder="e.g. 70" min="1" max="120" oninput="plannerUpdate()">
-          </div>
-        </div>
+      <div style="padding:16px 16px 8px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="section-label" style="margin:0;">Session Planner</div>
+        <button class="btn btn-sm" id="finishBtn" onclick="finishSession()"
+          style="display:none;background:var(--accent);color:#000;border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;padding:8px 14px;border-radius:20px;cursor:pointer;">
+          Finish Session
+        </button>
       </div>
-
-      <div class="section" id="plannerResult" style="display:none;">
-        <div class="section-label">Reference Weight</div>
-        <div class="card" id="plannerRef" style="padding:14px; font-family:'DM Mono',monospace;"></div>
+      <div id="plannerBlocks"></div>
+      <div style="padding:0 16px 16px;">
+        <button class="btn btn-secondary" onclick="addPlannerLift()">+ Add Lift</button>
       </div>
-
-      <div class="section" id="warmupSection" style="display:none;">
-        <div class="section-label">Warmup Ladder</div>
-        <div class="card" id="warmupLadder"></div>
-      </div>
-
-      <div class="section" id="timerSection" style="display:none;">
+      <div style="padding:0 16px 8px;">
         <div class="section-label">Rest Timer</div>
         <div class="card">
           <div class="timer-display">
-            <div class="timer-circle" id="timerCircle">
-              <div class="timer-time" id="timerTime">2:00</div>
-            </div>
+            <div class="timer-circle" id="timerCircle"><div class="timer-time" id="timerTime">2:00</div></div>
             <div class="timer-label" id="timerLabel">Ready</div>
-            <div class="timer-btns" style="margin-top:16px;">
+            <div class="timer-btns">
               <button class="timer-btn" onclick="resetTimer()">Reset</button>
               <button class="timer-btn start" id="timerStartBtn" onclick="toggleTimer()">Start</button>
             </div>
             <div class="timer-presets">
-              <button class="timer-preset active" onclick="setTimerPreset(90,this)">1:30</button>
-              <button class="timer-preset" onclick="setTimerPreset(120,this)">2:00</button>
+              <button class="timer-preset" onclick="setTimerPreset(90,this)">1:30</button>
+              <button class="timer-preset active" onclick="setTimerPreset(120,this)">2:00</button>
               <button class="timer-preset" onclick="setTimerPreset(180,this)">3:00</button>
               <button class="timer-preset" onclick="setTimerPreset(240,this)">4:00</button>
               <button class="timer-preset" onclick="setTimerPreset(300,this)">5:00</button>
@@ -291,99 +319,156 @@
     </div>
 
     <!-- PBs TAB -->
-    <div class="tab-pane" id="pane-pbs">
-      <div class="section">
-        <div class="section-label">Competition Lifts</div>
-        <div class="card" id="pbCompList"></div>
-      </div>
-      <div class="section">
-        <div class="section-label">Strength Lifts</div>
-        <div class="card" id="pbStrengthList"></div>
-      </div>
-      <div class="section">
-        <div class="section-label">All Time Records</div>
-        <div class="card" id="pbAllList"></div>
+    <div class="tab-pane" id="pane-pbs" style="position:relative;">
+      <div id="pbs-photo-bg" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.07;background-image:url('https://magician9835.github.io/Barbell-Log/photo.jpg');background-size:cover;background-position:center top;"></div>
+      <div style="position:relative;z-index:1;">
+        <div class="sub-nav">
+          <button class="sub-nav-btn active" id="pbs-sub-records" onclick="switchPBsSub('records')">Records</button>
+          <button class="sub-nav-btn" id="pbs-sub-goals" onclick="switchPBsSub('goals')">Goals</button>
+        </div>
+        <!-- RECORDS -->
+        <div class="sub-pane active" id="pbs-pane-records">
+          <div class="section">
+            <div class="section-label">Competition Lifts</div>
+            <div class="card" id="pbTotalCard" style="margin-bottom:8px;"></div>
+            <div class="card" id="pbCompList"></div>
+          </div>
+          <div class="section">
+            <div class="section-label">All Records</div>
+            <div class="card" id="pbAllList"></div>
+          </div>
+          <div class="section">
+            <div class="section-label">Sinclair</div>
+            <div class="card" id="pbSinclair"></div>
+          </div>
+        </div>
+        <!-- GOALS -->
+        <div class="sub-pane" id="pbs-pane-goals">
+          <div id="goalsContent"></div>
+        </div>
       </div>
     </div>
 
     <!-- COMP TAB -->
     <div class="tab-pane" id="pane-comp">
-      <div class="section">
-        <div class="section-label">Competition</div>
-        <div class="card">
-          <div class="field">
-            <label>Competition Name</label>
-            <input type="text" id="comp-name" placeholder="e.g. Liftoff Nov 2026" oninput="compUpdate()">
-          </div>
-          <div class="field">
-            <label>Competition Date</label>
-            <input type="date" id="comp-date" oninput="compUpdate()">
+      <div class="sub-nav">
+        <button class="sub-nav-btn active" id="comp-sub-plan" onclick="switchCompSub('plan')">Plan</button>
+        <button class="sub-nav-btn" id="comp-sub-history" onclick="switchCompSub('history')">History</button>
+      </div>
+
+      <!-- PLAN SUB-PANE -->
+      <div class="sub-pane active" id="comp-pane-plan">
+        <div class="section">
+          <div class="section-label">Next Competition</div>
+          <div class="card">
+            <div class="field"><label>Name</label><input type="text" id="comp-name" placeholder="e.g. Liftoff Nov 2026" oninput="saveCompMeta()"></div>
+            <div class="field"><label>Date</label><input type="date" id="comp-date" oninput="saveCompMeta()"></div>
           </div>
         </div>
-      </div>
-      <div class="section">
-        <div class="section-label">Snatch Attempts</div>
-        <div class="card" id="snatchAttempts"></div>
-      </div>
-      <div class="section">
-        <div class="section-label">Clean &amp; Jerk Attempts</div>
-        <div class="card" id="cjAttempts"></div>
-      </div>
-      <div class="section">
-        <div class="section-label">Total</div>
-        <div class="card" style="padding:16px; text-align:center;">
-          <div style="font-size:11px; color:var(--text3); font-family:'DM Mono',monospace; margin-bottom:4px;">Projected Total</div>
-          <div style="font-size:42px; font-weight:800; color:var(--accent); font-family:'DM Mono',monospace;" id="compTotal">--</div>
-          <div style="font-size:11px; color:var(--text3); font-family:'DM Mono',monospace;">kg</div>
+        <div class="section">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div class="section-label" style="margin:0;">Attempt Planner</div>
+            <button onclick="resetComp()" style="background:none;border:1px solid var(--border);color:var(--text3);font-size:11px;font-family:'DM Mono',monospace;padding:4px 12px;border-radius:20px;cursor:pointer;">Reset</button>
+          </div>
+          <div class="card" id="compAttempts"></div>
         </div>
+        <div class="section">
+          <div class="section-label">Projected Total</div>
+          <div class="card" style="padding:20px; text-align:center;">
+            <div id="compTotal" style="font-size:56px;font-weight:800;color:var(--accent);font-family:'DM Mono',monospace;line-height:1;">--</div>
+            <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:8px;">kg · 3rd Snatch + 3rd C&J</div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-label">Context</div>
+          <div class="card" id="compContext"></div>
+        </div>
+      </div>
+
+      <!-- HISTORY SUB-PANE -->
+      <div class="sub-pane" id="comp-pane-history">
+        <div style="padding:12px 16px 0;display:flex;justify-content:flex-end;">
+          <button class="btn btn-primary btn-sm" onclick="openMeetModal()">+ Log a Meet</button>
+        </div>
+        <div id="meetList" style="padding:8px 0;"></div>
       </div>
     </div>
 
     <!-- SETTINGS TAB -->
     <div class="tab-pane" id="pane-settings">
       <div class="section">
+        <div class="section-label">Display</div>
+        <div class="card">
+          <div class="settings-row">
+            <div><div class="settings-label">Units</div><div class="settings-sub">Stored in kg, converted for display</div></div>
+            <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+              <button id="unit-kg" onclick="setUnit('kg')" style="padding:6px 16px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;border:none;cursor:pointer;background:var(--accent);color:#000;">kg</button>
+              <button id="unit-lbs" onclick="setUnit('lbs')" style="padding:6px 16px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;border:none;cursor:pointer;background:var(--surface2);color:var(--text2);">lbs</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">Athlete</div>
+        <div class="card">
+          <div class="field">
+            <label>Bodyweight (kg)</label>
+            <input type="number" id="setting-bw" placeholder="e.g. 79.8" step="0.1" min="30" max="200"
+              oninput="saveAthleteSettings()"
+              style="font-family:'DM Mono',monospace;font-size:18px;">
+          </div>
+          <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
+            <div><div class="settings-label">Weight Class</div><div class="settings-sub" id="weight-class-display">Enter bodyweight above</div></div>
+          </div>
+          <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;border-bottom:none;">
+            <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;line-height:1.6;" id="weight-class-detail"></div>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">Bodyweight Log</div>
+        <div class="card" id="bwLogList" style="max-height:180px;overflow-y:auto;"></div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+          <input type="number" id="bw-entry" placeholder="kg" step="0.1" min="30" max="200"
+            style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:'DM Mono',monospace;padding:8px 12px;border-radius:8px;outline:none;width:90px;">
+          <input type="date" id="bw-date" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:13px;font-family:'DM Mono',monospace;padding:8px 10px;border-radius:8px;outline:none;color-scheme:dark;flex:1;">
+          <button class="btn btn-secondary btn-sm" onclick="logBodyweight()">Log</button>
+        </div>
+      </div>
+      <div class="section">
         <div class="section-label">Google Sheets Sync</div>
         <div class="card">
-          <div class="settings-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-            <div>
-              <div class="settings-label">Apps Script URL</div>
-              <div class="settings-sub">Paste your deployment URL here</div>
-            </div>
-            <input type="text" class="settings-input" id="sheetsUrl" placeholder="https://script.google.com/..." style="width:100%;" oninput="saveSheetsUrl()" value="">
+          <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
+            <div><div class="settings-label">Apps Script URL</div><div class="settings-sub">Paste your deployment URL here</div></div>
+            <input type="text" id="sheetsUrl" placeholder="https://script.google.com/macros/s/..."
+              style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:12px;font-family:'DM Mono',monospace;padding:8px 10px;border-radius:8px;outline:none;"
+              oninput="saveSheetsUrl()">
           </div>
           <div class="settings-row">
-            <div>
-              <div class="settings-label">Auto-sync on save</div>
-              <div class="settings-sub">Send each entry to Sheets immediately</div>
-            </div>
+            <div><div class="settings-label">Auto-sync on save</div><div class="settings-sub">Push each entry immediately</div></div>
             <input type="checkbox" id="autoSync" onchange="saveSettings()" style="width:20px;height:20px;accent-color:var(--accent);">
           </div>
-          <div class="settings-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-            <button class="btn btn-secondary btn-sm" onclick="syncToSheets()">Sync All Now</button>
-            <button class="btn btn-secondary btn-sm" onclick="exportCSV()">Export as CSV</button>
+          <div class="settings-row" style="gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="syncBoth()">⇅ Sync Now</button>
+            <button class="btn btn-secondary btn-sm" onclick="exportCSV()">Export CSV</button>
           </div>
         </div>
       </div>
       <div class="section">
         <div class="section-label">Coefficients</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:10px;">
+          These multipliers estimate your implied 1RM on the competition lift when you log a variation. Each modifier makes the lift harder or easier relative to the floor squat standard. Position coefficients reflect bar height and pull length. Receiving coefficients reflect catch depth and demand. Technique coefficients reflect constraints like pauses. They stack multiplicatively. Defaults are population averages from Oly coaching literature -- your own logged data overrides them automatically once you have direct variation matches.
+        </div>
         <div class="card" id="coeffList"></div>
-      </div>
-      <div class="section">
-        <div class="section-label">Data</div>
-        <div class="card">
-          <div class="settings-row">
-            <div>
-              <div class="settings-label">Clear All Data</div>
-              <div class="settings-sub">Irreversible. Export first.</div>
-            </div>
-            <button class="btn btn-danger btn-sm" onclick="clearAllData()">Clear</button>
-          </div>
+        <div style="margin-top:8px;display:flex;gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="saveCoefficients()">Save</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetCoefficients()">Reset to Defaults</button>
         </div>
       </div>
-      <div style="padding:16px; text-align:center; color:var(--text3); font-size:10px; font-family:'DM Mono',monospace;">BARBELL LOG v1.0 · Built for Brian</div>
+      <div style="padding:16px;text-align:center;color:var(--text3);font-size:10px;font-family:'DM Mono',monospace;">BARBELL LOG v1.3 · Built for Brian</div>
     </div>
-
   </div>
+
   <div id="tabs">
     <button class="tab active" onclick="switchTab('log',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
@@ -414,23 +499,21 @@
     <div class="modal-handle"></div>
     <h2>Log a Set</h2>
     <div class="card" style="margin-bottom:8px;">
-      <div class="field">
-        <label>Date</label>
-        <input type="date" id="m-date">
-      </div>
+      <div class="field"><label>Date</label><input type="date" id="m-date"></div>
       <div class="field">
         <label>Session Type</label>
         <select id="m-session">
           <option value="Coached Class">Coached Class</option>
           <option value="1:1 Session">1:1 Session</option>
           <option value="Solo">Solo</option>
+          <option value="Competition">Competition</option>
         </select>
       </div>
     </div>
-    <div class="card" style="margin-bottom:8px;">
+    <div class="card" style="margin-bottom:8px;" id="m-lift-card">
       <div class="field">
         <label>Base Lift</label>
-        <select id="m-base">
+        <select id="m-base" onchange="updateModalFields()">
           <option value="">Select...</option>
           <option>Snatch</option>
           <option>Clean</option>
@@ -439,801 +522,1613 @@
           <option>Squat</option>
           <option>Pull</option>
           <option>Deadlift</option>
+          <option>Pendlay Row</option>
+          <option>Barbell Row</option>
           <option>Other</option>
         </select>
       </div>
-      <div class="field">
+      <div class="field" id="mf-position">
         <label>Position</label>
-        <div class="chips" id="m-position">
-          <div class="chip" data-val="Floor" onclick="toggleChip(this)">Floor</div>
-          <div class="chip" data-val="Hang Above Knee" onclick="toggleChip(this)">Hang Above Knee</div>
-          <div class="chip" data-val="Hang Below Knee" onclick="toggleChip(this)">Hang Below Knee</div>
-          <div class="chip" data-val="Hang Mid-Thigh" onclick="toggleChip(this)">Hang Mid-Thigh</div>
-          <div class="chip" data-val="Blocks" onclick="toggleChip(this)">Blocks</div>
-          <div class="chip" data-val="Deficit" onclick="toggleChip(this)">Deficit</div>
-        </div>
+        <div class="chips" id="m-position"></div>
       </div>
-      <div class="field">
+      <div class="field" id="mf-receiving">
         <label>Receiving</label>
-        <div class="chips" id="m-receiving">
-          <div class="chip" data-val="Squat (Full)" onclick="toggleChip(this)">Squat (Full)</div>
-          <div class="chip" data-val="Power" onclick="toggleChip(this)">Power</div>
-          <div class="chip" data-val="Muscle" onclick="toggleChip(this)">Muscle</div>
-          <div class="chip" data-val="Split" onclick="toggleChip(this)">Split</div>
-        </div>
+        <div class="chips" id="m-receiving"></div>
       </div>
-      <div class="field">
-        <label>Technique (select all that apply)</label>
-        <div class="chips" id="m-technique">
-          <div class="chip" data-val="Pause" onclick="toggleChip(this)">Pause</div>
-          <div class="chip" data-val="Tempo" onclick="toggleChip(this)">Tempo</div>
-          <div class="chip" data-val="Floating" onclick="toggleChip(this)">Floating</div>
-          <div class="chip" data-val="Balance" onclick="toggleChip(this)">Balance</div>
-          <div class="chip" data-val="2-Position" onclick="toggleChip(this)">2-Position</div>
-          <div class="chip" data-val="Complex" onclick="toggleChip(this)">Complex</div>
-        </div>
+      <div class="field" id="mf-grip">
+        <label>Grip</label>
+        <div class="chips" id="m-grip"></div>
+      </div>
+      <div class="field" id="mf-technique">
+        <label>Technique</label>
+        <div class="chips" id="m-technique"></div>
       </div>
     </div>
     <div class="card" style="margin-bottom:8px;">
-      <div class="field">
-        <label>Weight (kg)</label>
-        <input type="number" id="m-weight" placeholder="0.0" step="0.5" min="0">
-      </div>
-      <div class="field">
-        <label>Sets</label>
-        <input type="number" id="m-sets" placeholder="--" min="1">
-      </div>
-      <div class="field">
-        <label>Reps</label>
-        <input type="number" id="m-reps" placeholder="--" min="1">
-      </div>
+      <div class="field"><label id="m-weight-label">Weight (kg)</label><input type="number" id="m-weight" placeholder="0.0" step="0.25" min="0" onfocus="document.getElementById('m-weight-label').textContent='Weight ('+unitLabel()+')';"></div>
+      <div class="field"><label>Sets</label><input type="number" id="m-sets" placeholder="--" min="1"></div>
+      <div class="field"><label>Reps</label><input type="number" id="m-reps" placeholder="--" min="1"></div>
       <div class="field">
         <label>Quality (1-5)</label>
         <div class="quality-row" id="m-quality">
-          <div class="q-dot" data-val="1" onclick="setQuality(1)">1</div>
-          <div class="q-dot" data-val="2" onclick="setQuality(2)">2</div>
-          <div class="q-dot" data-val="3" onclick="setQuality(3)">3</div>
-          <div class="q-dot" data-val="4" onclick="setQuality(4)">4</div>
-          <div class="q-dot" data-val="5" onclick="setQuality(5)">5</div>
+          <div class="q-dot" onclick="setQuality(1)">1</div>
+          <div class="q-dot" onclick="setQuality(2)">2</div>
+          <div class="q-dot" onclick="setQuality(3)">3</div>
+          <div class="q-dot" onclick="setQuality(4)">4</div>
+          <div class="q-dot" onclick="setQuality(5)">5</div>
         </div>
       </div>
-      <div class="field">
-        <label>Notes</label>
-        <textarea id="m-notes" placeholder="Coach cues, feel, anything notable..."></textarea>
-      </div>
+      <div class="field"><label>Notes</label><textarea id="m-notes" placeholder="Coach cues, feel, anything notable..."></textarea></div>
     </div>
     <button class="btn btn-primary" onclick="saveEntry()" style="margin-bottom:8px;">Save Entry</button>
     <button class="btn btn-secondary" onclick="closeLogModal()">Cancel</button>
   </div>
 </div>
 
+<!-- FINISH SESSION MODAL -->
+<div class="modal-overlay" id="finishModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>Finish Session</h2>
+    <div style="font-size:13px;color:var(--text3);margin-bottom:16px;">Review each lift. Edit anything that changed from the plan.</div>
+    <div id="finishCards"></div>
+    <button class="btn btn-primary" onclick="confirmFinishSession()" style="margin-bottom:8px;">Save All to Log</button>
+    <button class="btn btn-secondary" onclick="closeFinishModal()">Back</button>
+  </div>
+</div>
+
 <div id="toast"></div>
+
+<!-- MEET MODAL -->
+<div class="modal-overlay" id="meetModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2 id="meetModalTitle">Log a Meet</h2>
+    <div class="card" style="margin-bottom:8px;">
+      <div class="field"><label>Competition Name</label><input type="text" id="mm-name" placeholder="e.g. Lift Off 2025"></div>
+      <div class="field"><label>Date</label><input type="date" id="mm-date"></div>
+      <div class="field"><label>Bodyweight (kg)</label><input type="number" id="mm-bw" placeholder="e.g. 80.5" step="0.1" style="font-family:'DM Mono',monospace;font-size:18px;"></div>
+    </div>
+    <div class="card" style="margin-bottom:8px;">
+      <div style="padding:10px 14px 6px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;">Snatch</div>
+      ${[1,2,3].map(i=>`<div class="field" style="display:flex;align-items:center;gap:10px;">
+        <label style="width:48px;margin:0;">Attempt ${i}</label>
+        <input type="number" id="mm-sn-w${i}" placeholder="kg" step="0.5" style="flex:1;font-family:'DM Mono',monospace;font-size:16px;background:transparent;border:none;color:var(--text);outline:none;">
+        <div style="display:flex;gap:6px;">
+          <button onclick="setMeetResult('sn',${i},true)" id="mm-sn-r${i}-good" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:none;font-size:14px;cursor:pointer;">✅</button>
+          <button onclick="setMeetResult('sn',${i},false)" id="mm-sn-r${i}-miss" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:none;font-size:14px;cursor:pointer;">❌</button>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="card" style="margin-bottom:8px;" id="mm-cj-card">
+      <div style="padding:10px 14px 6px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;">Clean and Jerk</div>
+      ${[1,2,3].map(i=>`<div class="field" style="display:flex;align-items:center;gap:10px;">
+        <label style="width:48px;margin:0;">Attempt ${i}</label>
+        <input type="number" id="mm-cj-w${i}" placeholder="kg" step="0.5" style="flex:1;font-family:'DM Mono',monospace;font-size:16px;background:transparent;border:none;color:var(--text);outline:none;">
+        <div style="display:flex;gap:6px;">
+          <button onclick="setMeetResult('cj',${i},true)" id="mm-cj-r${i}-good" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:none;font-size:14px;cursor:pointer;">✅</button>
+          <button onclick="setMeetResult('cj',${i},false)" id="mm-cj-r${i}-miss" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:none;font-size:14px;cursor:pointer;">❌</button>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="card" style="margin-bottom:8px;">
+      <div class="field"><label>Notes</label><textarea id="mm-notes" placeholder="Anything notable about the meet..."></textarea></div>
+    </div>
+    <button class="btn btn-primary" onclick="saveMeet()" style="margin-bottom:8px;">Save Meet</button>
+    <button class="btn btn-secondary" onclick="closeMeetModal()">Cancel</button>
+  </div>
+</div>
 
 <script>
 // ============================================================
-// DATA STORE
+// LIFT CONFIGURATION
 // ============================================================
-const DB_KEY = 'barbell_log_v1';
-const SETTINGS_KEY = 'barbell_settings_v1';
-
-function loadDB() {
-  try { return JSON.parse(localStorage.getItem(DB_KEY)) || { entries: [] }; }
-  catch { return { entries: [] }; }
-}
-
-function saveDB(db) {
-  localStorage.setItem(DB_KEY, JSON.stringify(db));
-}
-
-function loadSettings() {
-  try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; }
-  catch { return {}; }
-}
-
-function saveSettingsData(s) {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
-}
-
-// ============================================================
-// COEFFICIENTS
-// ============================================================
-const COEFFICIENTS = {
-  position: {
-    'Floor': 1.0,
-    'Hang Above Knee': 0.95,
-    'Hang Below Knee': 0.90,
-    'Hang Mid-Thigh': 0.92,
-    'Blocks': 0.97,
-    'Deficit': 1.03,
+const LIFT_CONFIG = {
+  'Snatch': {
+    positions: ['Floor','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
+    receiving: ['Squat (Full)','Power','Muscle'],
+    grip: [],
+    technique: ['Pause','Balance','Complex'],
   },
-  receiving: {
-    'Squat (Full)': 1.0,
-    'Power': 0.85,
-    'Muscle': 0.70,
-    'Split': 0.90,
+  'Clean': {
+    positions: ['Floor','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
+    receiving: ['Squat (Full)','Power','Muscle'],
+    grip: [],
+    technique: ['Pause','Complex'],
   },
-  technique: {
-    'Pause': 0.95,
-    'Tempo': 0.93,
-    'Floating': 0.97,
-    'Balance': 0.98,
-    '2-Position': 0.97,
-    'Complex': 0.95,
-  }
+  'Jerk': {
+    positions: ['Rack','Blocks'],
+    receiving: ['Split','Squat (Full)'],
+    grip: [],
+    technique: ['Pause','Balance','Complex'],
+  },
+  'Clean and Jerk': {
+    positions: ['Rack','Blocks'],
+    receiving: ['Split','Squat (Full)','Power'],
+    grip: [],
+    technique: ['Pause','Complex'],
+  },
+  'Squat': {
+    positions: [],
+    receiving: [],
+    grip: [],
+    technique: ['Pause','Tempo','Box','Pin','Banded'],
+    squat_types: ['Back','Front','Overhead','Zercher'],
+  },
+  'Pull': {
+    positions: ['Floor','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
+    receiving: [],
+    grip: ['Snatch Grip','Clean Grip','Overhand','Underhand'],
+    technique: ['High Pull','Pause','Complex'],
+  },
+  'Deadlift': {
+    positions: ['Floor','Deficit','Blocks'],
+    receiving: [],
+    grip: ['Overhand','Underhand','Mixed'],
+    technique: ['Pause','Tempo','Sumo','Romanian','Stiff-Leg'],
+  },
+  'Pendlay Row': {
+    positions: [],
+    receiving: [],
+    grip: ['Overhand','Underhand'],
+    technique: ['Pause','Tempo'],
+  },
+  'Barbell Row': {
+    positions: ['Hang Below Knee','Hang Above Knee','Hang Mid-Thigh'],
+    receiving: [],
+    grip: ['Overhand','Underhand'],
+    technique: ['Pause','Tempo'],
+  },
+  'Other': {
+    positions: [],
+    receiving: [],
+    grip: [],
+    technique: [],
+  },
 };
 
-function getCoefficient(position, receiving, techniques) {
-  let c = 1.0;
-  if (position && COEFFICIENTS.position[position]) c *= COEFFICIENTS.position[position];
-  if (receiving && COEFFICIENTS.receiving[receiving]) c *= COEFFICIENTS.receiving[receiving];
-  if (techniques) techniques.forEach(t => { if (COEFFICIENTS.technique[t]) c *= COEFFICIENTS.technique[t]; });
-  return c;
+const SEP = ' · ';
+
+// ============================================================
+// DATA
+// ============================================================
+const DB_KEY='barbell_log_v1', SETTINGS_KEY='barbell_settings_v1';
+function loadDB(){try{return JSON.parse(localStorage.getItem(DB_KEY))||{entries:[]};}catch{return{entries:[]};}}
+function saveDB(db){localStorage.setItem(DB_KEY,JSON.stringify(db));}
+function loadSettings(){try{return JSON.parse(localStorage.getItem(SETTINGS_KEY))||{};}catch{return{};}}
+function saveSettingsData(s){localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
+
+const DEFAULT_COEFFICIENTS={
+  position:{'Floor':1.0,'Hang Below Knee':0.90,'Hang Above Knee':0.95,'Hang Mid-Thigh':0.92,'Blocks':0.97,'Deficit':1.03,'Rack':1.0},
+  receiving:{'Squat (Full)':1.0,'Power':0.85,'Muscle':0.70,'Split':1.0},
+  technique:{'Pause':0.95,'Tempo':0.93,'Balance':0.98,'2-Position':0.97,'Complex':0.95,'High Pull':1.0}
+};
+function getCoefficients(){const s=loadSettings();return s.coefficients||JSON.parse(JSON.stringify(DEFAULT_COEFFICIENTS));}
+function getCoefficient(position,receiving,techniques){
+  const C=getCoefficients();let c=1.0;
+  if(position&&C.position[position])c*=C.position[position];
+  if(receiving&&C.receiving[receiving])c*=C.receiving[receiving];
+  if(techniques)techniques.forEach(t=>{if(C.technique[t])c*=C.technique[t];});
+  return Math.round(c*1000)/1000;
 }
 
-// Core PB lifts for reference
-const COMP_LIFTS = ['Snatch', 'Clean and Jerk'];
-const STRENGTH_LIFTS = ['Clean', 'Jerk'];
-const SQUAT_LIFTS = ['Squat'];
-
 // ============================================================
-// SEED DATA (from your existing spreadsheet)
+// SEED DATA
 // ============================================================
-const SEED_DATA = [
-  { id: uid(), date: '2024-11-10', session: 'Coached Class', base: 'Snatch', position: [], receiving: 'Squat (Full)', technique: [], weight: 30, sets: null, reps: null, quality: 3, notes: '' },
-  { id: uid(), date: '2024-11-10', session: 'Coached Class', base: 'Clean and Jerk', position: [], receiving: 'Squat (Full)', technique: ['Pause'], weight: 60, sets: null, reps: null, quality: 3, notes: '' },
-  { id: uid(), date: '2024-11-10', session: 'Coached Class', base: 'Squat', position: [], receiving: 'Squat (Full)', technique: [], weight: 80, sets: null, reps: 3, quality: 5, notes: 'Back squat' },
-  { id: uid(), date: '2024-11-12', session: 'Coached Class', base: 'Snatch', position: ['Hang Below Knee'], receiving: 'Squat (Full)', technique: ['Pause'], weight: 37.5, sets: null, reps: null, quality: 5, notes: '' },
-  { id: uid(), date: '2024-11-12', session: 'Coached Class', base: 'Clean and Jerk', position: [], receiving: 'Squat (Full)', technique: ['Pause'], weight: 55, sets: null, reps: 2, quality: 5, notes: '' },
-  { id: uid(), date: '2024-11-12', session: 'Coached Class', base: 'Squat', position: [], receiving: 'Squat (Full)', technique: [], weight: 80, sets: null, reps: 2, quality: 5, notes: 'Back squat' },
-  { id: uid(), date: '2024-11-17', session: 'Coached Class', base: 'Snatch', position: [], receiving: 'Squat (Full)', technique: [], weight: 30, sets: null, reps: null, quality: 5, notes: '' },
-  { id: uid(), date: '2024-11-17', session: 'Coached Class', base: 'Clean and Jerk', position: [], receiving: 'Squat (Full)', technique: [], weight: 55, sets: null, reps: null, quality: 5, notes: '' },
-  { id: uid(), date: '2025-01-02', session: 'Coached Class', base: 'Snatch', position: [], receiving: 'Power', technique: [], weight: 40, sets: null, reps: null, quality: 3, notes: '' },
-  { id: uid(), date: '2025-01-12', session: 'Coached Class', base: 'Snatch', position: [], receiving: 'Squat (Full)', technique: ['Balance'], weight: 37.5, sets: null, reps: null, quality: 4, notes: '2+2 OHS' },
-  { id: uid(), date: '2025-01-12', session: 'Coached Class', base: 'Snatch', position: ['Hang Above Knee', 'Hang Below Knee'], receiving: 'Squat (Full)', technique: ['2-Position'], weight: 47.5, sets: 5, reps: 1, quality: 4, notes: 'above and below knee' },
-  { id: uid(), date: '2025-01-12', session: 'Coached Class', base: 'Clean and Jerk', position: ['Hang Above Knee', 'Hang Below Knee'], receiving: 'Squat (Full)', technique: ['2-Position'], weight: 60, sets: null, reps: 2, quality: 4, notes: 'above and below knee' },
-  { id: uid(), date: '2025-01-12', session: 'Coached Class', base: 'Squat', position: [], receiving: 'Squat (Full)', technique: [], weight: 90, sets: 4, reps: 3, quality: 5, notes: 'Back squat' },
-  { id: uid(), date: '2025-01-14', session: '1:1 Session', base: 'Snatch', position: ['Hang Above Knee', 'Hang Below Knee'], receiving: 'Squat (Full)', technique: ['2-Position', 'Pause'], weight: 40, sets: null, reps: null, quality: 5, notes: 'with pause' },
-  { id: uid(), date: '2025-01-14', session: '1:1 Session', base: 'Jerk', position: [], receiving: 'Squat (Full)', technique: [], weight: 65, sets: null, reps: 2, quality: 5, notes: 'Rack jerk' },
-  { id: uid(), date: '2025-01-28', session: 'Coached Class', base: 'Snatch', position: [], receiving: 'Squat (Full)', technique: ['Balance'], weight: 40, sets: 2, reps: 2, quality: 5, notes: '' },
-  { id: uid(), date: '2025-01-28', session: 'Coached Class', base: 'Snatch', position: ['Hang Below Knee'], receiving: 'Squat (Full)', technique: ['Complex'], weight: 50, sets: null, reps: null, quality: 4, notes: 'Pull + hang squat snatch' },
-  { id: uid(), date: '2025-02-02', session: 'Coached Class', base: 'Snatch', position: [], receiving: 'Squat (Full)', technique: [], weight: 50, sets: null, reps: 1, quality: 3, notes: 'Built to max, at max managed only muscle variation' },
-  { id: uid(), date: '2025-02-02', session: 'Coached Class', base: 'Clean', position: ['Hang Below Knee'], receiving: 'Squat (Full)', technique: ['Complex'], weight: 70, sets: 2, reps: 5, quality: 4, notes: 'Pull + hang clean, 80-85% max' },
+const SEED_DATA=[
+  {id:uid(),date:'2024-11-10',session:'Coached Class',base:'Snatch',position:[],receiving:'Squat (Full)',grip:[],technique:[],weight:30,sets:null,reps:null,quality:3,notes:''},
+  {id:uid(),date:'2024-11-10',session:'Coached Class',base:'Clean and Jerk',position:[],receiving:'Split',grip:[],technique:['Pause'],weight:60,sets:null,reps:null,quality:3,notes:''},
+  {id:uid(),date:'2024-11-10',session:'Coached Class',base:'Squat',position:[],receiving:'',grip:[],technique:[],weight:80,sets:null,reps:3,quality:5,notes:'Back squat'},
+  {id:uid(),date:'2024-11-12',session:'Coached Class',base:'Snatch',position:['Hang Below Knee'],receiving:'Squat (Full)',grip:[],technique:['Pause'],weight:37.5,sets:null,reps:null,quality:5,notes:''},
+  {id:uid(),date:'2024-11-12',session:'Coached Class',base:'Clean and Jerk',position:[],receiving:'Split',grip:[],technique:['Pause'],weight:55,sets:null,reps:2,quality:5,notes:''},
+  {id:uid(),date:'2024-11-12',session:'Coached Class',base:'Squat',position:[],receiving:'',grip:[],technique:[],weight:80,sets:null,reps:2,quality:5,notes:'Back squat'},
+  {id:uid(),date:'2024-11-17',session:'Coached Class',base:'Snatch',position:[],receiving:'Squat (Full)',grip:[],technique:[],weight:30,sets:null,reps:null,quality:5,notes:''},
+  {id:uid(),date:'2024-11-17',session:'Coached Class',base:'Clean and Jerk',position:[],receiving:'Split',grip:[],technique:[],weight:55,sets:null,reps:null,quality:5,notes:''},
+  {id:uid(),date:'2025-01-02',session:'Coached Class',base:'Snatch',position:[],receiving:'Power',grip:[],technique:[],weight:40,sets:null,reps:null,quality:3,notes:''},
+  {id:uid(),date:'2025-01-12',session:'Coached Class',base:'Snatch',position:[],receiving:'Squat (Full)',grip:[],technique:['Balance'],weight:37.5,sets:null,reps:null,quality:4,notes:'2+2 OHS'},
+  {id:uid(),date:'2025-01-12',session:'Coached Class',base:'Snatch',position:['Hang Above Knee','Hang Below Knee'],receiving:'Squat (Full)',grip:[],technique:['Complex'],weight:47.5,sets:5,reps:1,quality:4,notes:'above and below knee'},
+  {id:uid(),date:'2025-01-12',session:'Coached Class',base:'Clean and Jerk',position:['Hang Above Knee','Hang Below Knee'],receiving:'Split',grip:[],technique:['Complex'],weight:60,sets:null,reps:2,quality:4,notes:'above and below knee'},
+  {id:uid(),date:'2025-01-12',session:'Coached Class',base:'Squat',position:[],receiving:'',grip:[],technique:[],weight:90,sets:4,reps:3,quality:5,notes:'Back squat'},
+  {id:uid(),date:'2025-01-14',session:'1:1 Session',base:'Snatch',position:['Hang Above Knee','Hang Below Knee'],receiving:'Squat (Full)',grip:[],technique:['Complex','Pause'],weight:40,sets:null,reps:null,quality:5,notes:'with pause'},
+  {id:uid(),date:'2025-01-14',session:'1:1 Session',base:'Jerk',position:['Rack'],receiving:'Split',grip:[],technique:[],weight:65,sets:null,reps:2,quality:5,notes:'Rack jerk'},
+  {id:uid(),date:'2025-01-28',session:'Coached Class',base:'Snatch',position:[],receiving:'Squat (Full)',grip:[],technique:['Balance'],weight:40,sets:2,reps:2,quality:5,notes:''},
+  {id:uid(),date:'2025-01-28',session:'Coached Class',base:'Snatch',position:['Hang Below Knee'],receiving:'Squat (Full)',grip:[],technique:['Complex'],weight:50,sets:null,reps:null,quality:4,notes:'Pull + hang squat snatch'},
+  {id:uid(),date:'2025-02-02',session:'Coached Class',base:'Snatch',position:[],receiving:'Squat (Full)',grip:[],technique:[],weight:50,sets:null,reps:1,quality:3,notes:'Built to max, at max managed only muscle variation'},
+  {id:uid(),date:'2025-02-02',session:'Coached Class',base:'Clean',position:['Hang Below Knee'],receiving:'Squat (Full)',grip:[],technique:['Complex'],weight:70,sets:2,reps:5,quality:4,notes:'Pull + hang clean, 80-85% max'},
 ];
 
-const SEED_PBS = [
-  { date: '2025-07-08', lift: 'Snatch', weight: 55 },
-  { date: '2025-07-08', lift: 'Clean and Jerk', weight: 77.5 },
-  { date: '2025-10-23', lift: 'Clean', weight: 91 },
-  { date: '2025-01-14', lift: 'Jerk', weight: 65 },
+const SEED_PBS=[
+  {date:'2026-12-23',lift:'Snatch',weight:56},
+  {date:'2026-12-23',lift:'Clean and Jerk',weight:82},
+  {date:'2026-12-18',lift:'Clean',weight:100},
+  {date:'2025-01-14',lift:'Jerk',weight:65},
 ];
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2);
-}
-
-// Init DB with seed data if empty
-function initDB() {
-  const db = loadDB();
-  if (db.entries.length === 0) {
-    db.entries = SEED_DATA;
-    saveDB(db);
+function initDB(){
+  const db=loadDB();
+  if(db.entries.length===0){db.entries=SEED_DATA;saveDB(db);}
+  const settings=loadSettings();
+  const existingPBs=settings.pbs||[];
+  SEED_PBS.forEach(seed=>{
+    const idx=existingPBs.findIndex(p=>p.lift===seed.lift);
+    if(idx<0)existingPBs.push(seed);
+    else if(seed.weight>existingPBs[idx].weight)existingPBs[idx]=seed;
+  });
+  settings.pbs=existingPBs;
+  // Seed competition bodyweight if not set
+  if(!settings.athleteBW&&!settings.bwLog){
+    settings.athleteBW=79.8;
+    settings.bwLog=[{date:'2025-11-01',weight:79.8,note:'Competition weigh-in'}];
   }
-  const settings = loadSettings();
-  if (!settings.pbs) {
-    settings.pbs = SEED_PBS;
-    saveSettingsData(settings);
+  saveSettingsData(settings);
+  if(settings.sheetsUrl)document.getElementById('sheetsUrl').value=settings.sheetsUrl;
+  if(settings.autoSync)document.getElementById('autoSync').checked=true;
+  if(settings.comp){
+    if(settings.comp.name)document.getElementById('comp-name').value=settings.comp.name;
+    if(settings.comp.date)document.getElementById('comp-date').value=settings.comp.date;
   }
-  // Load settings UI
-  if (settings.sheetsUrl) document.getElementById('sheetsUrl').value = settings.sheetsUrl;
-  if (settings.autoSync) document.getElementById('autoSync').checked = true;
+  // Units
+  const u=settings.unit||'kg';
+  const kgBtn=document.getElementById('unit-kg');
+  const lbsBtn=document.getElementById('unit-lbs');
+  if(kgBtn&&lbsBtn){
+    kgBtn.style.background=u==='kg'?'var(--accent)':'var(--surface2)';
+    kgBtn.style.color=u==='kg'?'#000':'var(--text2)';
+    lbsBtn.style.background=u==='lbs'?'var(--accent)':'var(--surface2)';
+    lbsBtn.style.color=u==='lbs'?'#000':'var(--text2)';
+  }
+  // Athlete
+  const bw=settings.athleteBW||(settings.bwLog&&settings.bwLog[0]&&settings.bwLog[0].weight)||null;
+  const bwEl=document.getElementById('setting-bw');
+  if(bwEl&&bw)bwEl.value=bw;
+  renderWeightClass(bw);
+  renderBWLog();
+  // BW date default
+  const bwDateEl=document.getElementById('bw-date');
+  if(bwDateEl)bwDateEl.value=new Date().toISOString().split('T')[0];
 }
 
 // ============================================================
-// TAB NAVIGATION
+// LIFT NAME BUILDER
 // ============================================================
-function switchTab(name, el) {
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('pane-' + name).classList.add('active');
+function buildLiftName(e){
+  const parts=[];
+  if(e.position&&e.position.length)parts.push(...e.position);
+  if(e.grip&&e.grip.length)parts.push(...e.grip);
+  if(e.receiving&&e.receiving!=='Squat (Full)'&&e.receiving!=='Split'&&e.receiving!=='')parts.push(e.receiving);
+  if(e.technique&&e.technique.length)parts.push(...e.technique);
+  parts.push(e.base);
+  return parts.join(SEP);
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(name,el){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pane-'+name).classList.add('active');
   el.classList.add('active');
-  if (name === 'log') renderLog();
-  if (name === 'pbs') renderPBs();
-  if (name === 'comp') renderComp();
-  if (name === 'settings') renderCoeffSettings();
+  if(name==='log')renderLog();
+  if(name==='pbs'){renderPBs();renderGoals();}
+  if(name==='comp'){renderComp();renderMeetList();}
+  if(name==='settings'){renderCoeffSettings();renderBWLog();const s=loadSettings();renderWeightClass(s.athleteBW||(s.bwLog&&s.bwLog[0]&&s.bwLog[0].weight)||null);}
 }
 
 // ============================================================
 // LOG TAB
 // ============================================================
-let activeFilter = 'all';
-
-function setFilter(f, el) {
-  activeFilter = f;
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+let activeFilter='all';
+function setFilter(f,el){
+  activeFilter=f;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   renderLog();
 }
 
-function renderLog() {
-  const db = loadDB();
-  const container = document.getElementById('logList');
-  let entries = [...db.entries].sort((a,b) => b.date.localeCompare(a.date));
-  if (activeFilter !== 'all') entries = entries.filter(e => e.base === activeFilter);
-
-  if (entries.length === 0) {
-    container.innerHTML = '<div class="empty"><div class="empty-icon">🏋️</div><p>No entries yet.<br>Tap + Log a Set to start.</p></div>';
+function renderLog(){
+  const db=loadDB();
+  const container=document.getElementById('logList');
+  let entries=[...db.entries].sort((a,b)=>b.date.localeCompare(a.date));
+  if(activeFilter!=='all'){
+    entries=entries.filter(e=>{
+      if(activeFilter==='Row')return e.base==='Pendlay Row'||e.base==='Barbell Row';
+      return e.base===activeFilter;
+    });
+  }
+  if(entries.length===0){
+    container.innerHTML='<div class="empty"><div class="empty-icon">🏋️</div><p>No entries yet.<br>Tap + Log a Set to start.</p></div>';
     return;
   }
-
-  // Group by date
-  const groups = {};
-  entries.forEach(e => {
-    if (!groups[e.date]) groups[e.date] = [];
-    groups[e.date].push(e);
-  });
-
-  let html = '';
-  Object.keys(groups).sort((a,b) => b.localeCompare(a)).forEach(date => {
-    html += `<div class="date-group-label">${formatDate(date)}</div><div class="card" style="margin:0 16px;">`;
-    groups[date].forEach((e, i) => {
-      const tags = buildTags(e);
-      const sessionClass = e.session === 'Coached Class' ? 'session-coached' : e.session === 'Solo' ? 'session-solo' : 'session-one';
-      const sessionShort = e.session === 'Coached Class' ? 'Class' : e.session === '1:1 Session' ? '1:1' : 'Solo';
-      const liftName = buildLiftName(e);
-      const qualityBars = e.quality ? `<div class="quality-bar">${[1,2,3,4,5].map(n => `<div class="qb${n <= e.quality ? ' filled' : ''}"></div>`).join('')}</div>` : '';
-      const border = i > 0 ? 'border-top:1px solid var(--border);' : '';
-      const setsReps = [e.sets ? `${e.sets}×` : '', e.reps ? `${e.reps}` : ''].filter(Boolean).join('');
-      html += `<div class="log-entry" style="${border}">
+  const groups={};
+  entries.forEach(e=>{if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e);});
+  let html='';
+  Object.keys(groups).sort((a,b)=>b.localeCompare(a)).forEach(date=>{
+    html+=`<div class="date-group-label">${formatDate(date)}</div><div class="card" style="margin:0 16px;">`;
+    groups[date].forEach((e,i)=>{
+      const sc=e.session==='Coached Class'?'session-coached':e.session==='Solo'?'session-solo':e.session==='Competition'?'session-comp':'session-one';
+      const ss=e.session==='Coached Class'?'Class':e.session==='1:1 Session'?'1:1':e.session==='Competition'?'Comp':'Solo';
+      const ln=buildLiftName(e);
+      const sr=[e.sets?`${e.sets}×`:'',e.reps?`${e.reps} reps`:''].filter(Boolean).join(' ');
+      const qb=e.quality?`<div class="quality-bar">${[1,2,3,4,5].map(n=>`<div class="qb${n<=e.quality?' filled':''}"></div>`).join('')}</div>`:'';
+      const borderClass=e.session==='Coached Class'?'border-coached':e.session==='Solo'?'border-solo':e.session==='Competition'?'border-comp':'border-one';
+      html+=`<div class="log-entry ${borderClass}"${i>0?' style="border-top:1px solid var(--border)"':''}>
         <div class="log-entry-header">
-          <div class="log-entry-lift">${liftName}</div>
-          <div class="log-entry-weight">${e.weight ? e.weight + '<span style="font-size:12px;color:var(--text3)">kg</span>' : '--'}</div>
+          <div class="log-entry-lift">${ln}</div>
+          <div class="log-entry-weight">${e.weight?dispW(e.weight)+'<span style="font-size:12px;color:var(--text3)">'+unitLabel()+'</span>':'--'}</div>
         </div>
-        <div class="log-entry-meta">${setsReps ? setsReps + ' reps · ' : ''}${e.notes ? e.notes : ''}</div>
-        <div class="log-entry-tags">
-          <span class="tag ${sessionClass}">${sessionShort}</span>
-          ${tags}
-        </div>
-        ${qualityBars}
+        <div class="log-entry-meta">${[sr,e.notes].filter(Boolean).join(' · ')}</div>
+        <div class="log-entry-tags"><span class="tag ${sc}">${ss}</span></div>
+        ${qb}
       </div>`;
     });
-    html += '</div><div style="height:8px;"></div>';
+    html+='</div><div style="height:8px;"></div>';
   });
-  container.innerHTML = html;
+  container.innerHTML=html;
 }
 
-function buildLiftName(e) {
-  let parts = [];
-  if (e.position && e.position.length) parts.push(...e.position);
-  if (e.receiving && e.receiving !== 'Squat (Full)') parts.push(e.receiving);
-  if (e.technique && e.technique.length) parts.push(...e.technique);
-  parts.push(e.base);
-  return parts.join(' ');
-}
-
-function buildTags(e) {
-  let tags = '';
-  if (e.position) e.position.forEach(p => { tags += `<span class="tag">${p}</span>`; });
-  if (e.receiving && e.receiving !== 'Squat (Full)') tags += `<span class="tag">${e.receiving}</span>`;
-  if (e.technique) e.technique.forEach(t => { tags += `<span class="tag">${t}</span>`; });
-  return tags;
-}
-
-function formatDate(d) {
-  const date = new Date(d + 'T00:00:00');
-  return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+function formatDate(d){
+  const date=new Date(d+'T00:00:00');
+  return date.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
 }
 
 // ============================================================
-// LOG MODAL
+// LOG MODAL -- DYNAMIC FIELDS
 // ============================================================
-let selectedQuality = null;
+let selectedQuality=null;
+let modalChips={position:[],receiving:[],grip:[],technique:[]};
 
-function openLogModal() {
-  document.getElementById('m-date').value = new Date().toISOString().split('T')[0];
-  selectedQuality = null;
-  document.querySelectorAll('.q-dot').forEach(d => d.classList.remove('selected'));
-  document.querySelectorAll('#logModal .chip').forEach(c => c.classList.remove('selected'));
-  document.getElementById('m-base').value = '';
-  document.getElementById('m-weight').value = '';
-  document.getElementById('m-sets').value = '';
-  document.getElementById('m-reps').value = '';
-  document.getElementById('m-notes').value = '';
-  document.getElementById('m-session').value = 'Coached Class';
+function openLogModal(){
+  document.getElementById('m-date').value=new Date().toISOString().split('T')[0];
+  selectedQuality=null;
+  modalChips={position:[],receiving:[],grip:[],technique:[]};
+  document.querySelectorAll('.q-dot').forEach(d=>d.classList.remove('selected'));
+  document.getElementById('m-base').value='';
+  ['m-weight','m-sets','m-reps','m-notes'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('m-session').value='Coached Class';
+  updateModalFields();
   document.getElementById('logModal').classList.add('open');
 }
+function closeLogModal(){document.getElementById('logModal').classList.remove('open');}
 
-function closeLogModal() {
-  document.getElementById('logModal').classList.remove('open');
+function updateModalFields(){
+  const base=document.getElementById('m-base').value;
+  modalChips={position:[],receiving:[],grip:[],technique:[]};
+  const cfg=LIFT_CONFIG[base]||{positions:[],receiving:[],grip:[],technique:[]};
+
+  // Position
+  const posEl=document.getElementById('mf-position');
+  if(cfg.positions&&cfg.positions.length){
+    posEl.style.display='';
+    document.getElementById('m-position').innerHTML=cfg.positions.map(v=>
+      `<div class="chip" data-val="${v}" onclick="toggleModalChip(this,'position')">${v}</div>`
+    ).join('');
+  } else { posEl.style.display='none'; }
+
+  // Receiving
+  const recEl=document.getElementById('mf-receiving');
+  if(cfg.receiving&&cfg.receiving.length){
+    recEl.style.display='';
+    document.getElementById('m-receiving').innerHTML=cfg.receiving.map(v=>
+      `<div class="chip" data-val="${v}" onclick="toggleModalChip(this,'receiving')">${v}</div>`
+    ).join('');
+  } else { recEl.style.display='none'; }
+
+  // Grip
+  const gripEl=document.getElementById('mf-grip');
+  if(cfg.grip&&cfg.grip.length){
+    gripEl.style.display='';
+    document.getElementById('m-grip').innerHTML=cfg.grip.map(v=>
+      `<div class="chip" data-val="${v}" onclick="toggleModalChip(this,'grip')">${v}</div>`
+    ).join('');
+  } else { gripEl.style.display='none'; }
+
+  // Technique
+  const techEl=document.getElementById('mf-technique');
+  const techOptions=cfg.technique||[];
+  if(cfg.squat_types){
+    // Squats: show squat type as single-select first, then technique
+    techEl.style.display='';
+    document.getElementById('m-technique').innerHTML=
+      `<div style="width:100%;margin-bottom:6px;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.5px;text-transform:uppercase;">Type</div>`+
+      cfg.squat_types.map(v=>`<div class="chip" data-val="${v}" data-group="squat_type" onclick="toggleModalChip(this,'technique',true)">${v}</div>`).join('')+
+      (techOptions.length?`<div style="width:100%;margin:8px 0 6px;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.5px;text-transform:uppercase;">Modifiers</div>`+
+      techOptions.map(v=>`<div class="chip" data-val="${v}" onclick="toggleModalChip(this,'technique')">${v}</div>`).join(''):'');
+  } else if(techOptions.length){
+    techEl.style.display='';
+    document.getElementById('m-technique').innerHTML=techOptions.map(v=>
+      `<div class="chip" data-val="${v}" onclick="toggleModalChip(this,'technique')">${v}</div>`
+    ).join('');
+  } else { techEl.style.display='none'; }
 }
 
-function toggleChip(el) {
-  el.classList.toggle('selected');
+function toggleModalChip(el,group,singleSelect){
+  if(singleSelect){
+    // deselect siblings in same group
+    el.parentElement.querySelectorAll(`[data-group="${el.dataset.group}"]`).forEach(c=>c.classList.remove('selected'));
+    el.classList.toggle('selected');
+  } else {
+    el.classList.toggle('selected');
+  }
+  modalChips[group]=Array.from(document.querySelectorAll(`#m-${group} .chip.selected`)).map(c=>c.dataset.val);
 }
 
-function setQuality(val) {
-  selectedQuality = val;
-  document.querySelectorAll('.q-dot').forEach(d => {
-    d.classList.toggle('selected', parseInt(d.dataset.val) === val);
-  });
+function setQuality(val){
+  selectedQuality=val;
+  document.querySelectorAll('.q-dot').forEach(d=>d.classList.toggle('selected',parseInt(d.textContent)===val));
 }
 
-function getSelectedChips(containerId) {
-  return Array.from(document.querySelectorAll(`#${containerId} .chip.selected`)).map(c => c.dataset.val);
-}
-
-function saveEntry() {
-  const base = document.getElementById('m-base').value;
-  const weight = parseFloat(document.getElementById('m-weight').value);
-  if (!base) { showToast('Select a base lift', 'error'); return; }
-  if (!weight) { showToast('Enter a weight', 'error'); return; }
-
-  const entry = {
-    id: uid(),
-    date: document.getElementById('m-date').value,
-    session: document.getElementById('m-session').value,
-    base,
-    position: getSelectedChips('m-position'),
-    receiving: getSelectedChips('m-receiving')[0] || 'Squat (Full)',
-    technique: getSelectedChips('m-technique'),
-    weight,
-    sets: parseInt(document.getElementById('m-sets').value) || null,
-    reps: parseInt(document.getElementById('m-reps').value) || null,
-    quality: selectedQuality,
-    notes: document.getElementById('m-notes').value.trim(),
+function saveEntry(ov){
+  const entry=ov||{
+    id:uid(),
+    date:document.getElementById('m-date').value,
+    session:document.getElementById('m-session').value,
+    base:document.getElementById('m-base').value,
+    position:modalChips.position||[],
+    receiving:modalChips.receiving?.[0]||'',
+    grip:modalChips.grip||[],
+    technique:modalChips.technique||[],
+    weight:toKg(parseFloat(document.getElementById('m-weight').value)||0)||null,
+    sets:parseInt(document.getElementById('m-sets').value)||null,
+    reps:parseInt(document.getElementById('m-reps').value)||null,
+    quality:selectedQuality,
+    notes:document.getElementById('m-notes').value.trim(),
   };
-
-  const db = loadDB();
-  db.entries.push(entry);
-  saveDB(db);
+  if(!entry.base){showToast('Select a base lift','error');return false;}
+  if(!entry.weight){showToast('Enter a weight','error');return false;}
+  const db=loadDB();db.entries.push(entry);saveDB(db);
   updatePBs(entry);
-  closeLogModal();
+  if(!ov)closeLogModal();
   renderLog();
-  showToast('Entry saved', 'success');
-
-  const settings = loadSettings();
-  if (settings.autoSync && settings.sheetsUrl) syncEntry(entry, settings.sheetsUrl);
+  showToast('Entry saved','success');
+  const s=loadSettings();
+  if(s.autoSync&&s.sheetsUrl)syncEntryToSheets(entry,s.sheetsUrl);
+  return true;
 }
 
-function updatePBs(entry) {
-  // Only update PB for floor, full squat, no technique modifier (competition style)
-  // Or just track raw heaviest per base lift
-  const settings = loadSettings();
-  if (!settings.pbs) settings.pbs = [];
-  const existing = settings.pbs.find(p => p.lift === entry.base);
-  if (!existing || entry.weight > existing.weight) {
-    const idx = settings.pbs.findIndex(p => p.lift === entry.base);
-    const pb = { date: entry.date, lift: entry.base, weight: entry.weight };
-    if (idx >= 0) settings.pbs[idx] = pb;
-    else settings.pbs.push(pb);
-    saveSettingsData(settings);
+function updatePBs(entry){
+  const s=loadSettings();if(!s.pbs)s.pbs=[];
+  const ex=s.pbs.find(p=>p.lift===entry.base);
+  if(!ex||entry.weight>ex.weight){
+    const idx=s.pbs.findIndex(p=>p.lift===entry.base);
+    const pb={date:entry.date,lift:entry.base,weight:entry.weight};
+    if(idx>=0)s.pbs[idx]=pb;else s.pbs.push(pb);
+    saveSettingsData(s);
   }
 }
 
 // ============================================================
 // PBs TAB
 // ============================================================
-const PB_GROUPS = {
-  comp: ['Snatch', 'Clean and Jerk'],
-  strength: ['Clean', 'Jerk'],
-  squat: ['Squat', 'Front Squat', 'Deadlift', 'Pull']
-};
+// ── UNIT HELPERS ────────────────────────────────────────────────────────────
+function getUnit(){ return (loadSettings().unit)||'kg'; }
+function dispW(kg){ if(!kg&&kg!==0)return'--'; return getUnit()==='lbs'?Math.round(kg*2.20462*10)/10:kg; }
+function unitLabel(){ return getUnit(); }
+function toKg(val){ return getUnit()==='lbs'?Math.round(val/2.20462*100)/100:val; }
 
-function renderPBs() {
-  const settings = loadSettings();
-  const pbs = settings.pbs || [];
-  const db = loadDB();
+function setUnit(u){
+  const s=loadSettings(); s.unit=u; saveSettingsData(s);
+  document.getElementById('unit-kg').style.background=u==='kg'?'var(--accent)':'var(--surface2)';
+  document.getElementById('unit-kg').style.color=u==='kg'?'#000':'var(--text2)';
+  document.getElementById('unit-lbs').style.background=u==='lbs'?'var(--accent)':'var(--surface2)';
+  document.getElementById('unit-lbs').style.color=u==='lbs'?'#000':'var(--text2)';
+  renderLog(); renderPBs();
+  if(document.getElementById('pane-comp').classList.contains('active'))renderComp();
+}
 
-  // Also compute from log for any lift
-  const allLifts = [...new Set(db.entries.map(e => e.base))];
-  const logPBs = {};
-  allLifts.forEach(lift => {
-    const entries = db.entries.filter(e => e.base === lift);
-    const max = Math.max(...entries.map(e => e.weight || 0));
-    const best = entries.find(e => e.weight === max);
-    if (best) logPBs[lift] = { weight: max, date: best.date };
-  });
+// ── WEIGHT CLASSES ───────────────────────────────────────────────────────────
+const IWF_CLASSES_M = [55,61,67,73,81,89,96,102,109,Infinity];
+const IWF_CLASSES_F = [45,49,55,59,64,71,76,81,87,Infinity];
+const BWF_CLASSES_M = [56,62,69,77,85,94,105,Infinity]; // British Weightlifting
+const BWF_CLASSES_F = [48,53,58,63,69,75,90,Infinity];
 
-  function getPB(lift) {
-    const manual = pbs.find(p => p.lift === lift);
-    const fromLog = logPBs[lift];
-    if (manual && fromLog) return manual.weight >= fromLog.weight ? manual : { weight: fromLog.weight, date: fromLog.date, lift };
-    return manual || (fromLog ? { weight: fromLog.weight, date: fromLog.date, lift } : null);
+function getWeightClass(bw){
+  if(!bw)return null;
+  const iwf=IWF_CLASSES_M.find(c=>bw<=c);
+  const bwf=BWF_CLASSES_M.find(c=>bw<=c);
+  const iwfLabel = iwf===Infinity?'+109kg':iwf+'kg';
+  const bwfLabel = bwf===Infinity?'+105kg':bwf+'kg';
+  return{iwf:iwfLabel,bwf:bwfLabel,same:iwfLabel===bwfLabel};
+}
+
+function saveAthleteSettings(){
+  const bw=parseFloat(document.getElementById('setting-bw').value)||null;
+  const s=loadSettings(); s.athleteBW=bw; saveSettingsData(s);
+  renderWeightClass(bw);
+}
+
+function renderWeightClass(bw){
+  const el=document.getElementById('weight-class-display');
+  const det=document.getElementById('weight-class-detail');
+  if(!el)return;
+  if(!bw){el.textContent='Enter bodyweight above';det.innerHTML='';return;}
+  const wc=getWeightClass(bw);
+  el.innerHTML=`<span style="color:var(--accent);font-weight:700;">IWF: ${wc.iwf}</span>`;
+  if(wc.iwf!==wc.bwf){
+    det.innerHTML=`British Weightlifting: <span style="color:var(--accent);font-weight:700;">${wc.bwf}</span><br><span style="color:var(--text3);">IWF and BWF use different class structures. IWF classes apply at international competitions; BWF classes at domestic GB competitions.</span>`;
+  } else {
+    det.innerHTML=`British Weightlifting: <span style="color:var(--accent);font-weight:700;">${wc.bwf}</span><br><span style="color:var(--text3);">IWF and BWF classes match at this bodyweight.</span>`;
   }
+}
 
-  function renderList(containerId, lifts) {
-    const el = document.getElementById(containerId);
-    let html = '';
-    lifts.forEach((lift, i) => {
-      const pb = getPB(lift);
-      const border = i > 0 ? 'border-top:1px solid var(--border);' : '';
-      html += `<div class="pb-card" style="${border}">
+// ── BODYWEIGHT LOG ───────────────────────────────────────────────────────────
+function logBodyweight(){
+  const val=parseFloat(document.getElementById('bw-entry').value);
+  const date=document.getElementById('bw-date').value||new Date().toISOString().split('T')[0];
+  if(!val){showToast('Enter a weight','error');return;}
+  const s=loadSettings();
+  if(!s.bwLog)s.bwLog=[];
+  s.bwLog.push({date,weight:val});
+  s.bwLog.sort((a,b)=>b.date.localeCompare(a.date));
+  // Update athleteBW to most recent
+  s.athleteBW=s.bwLog[0].weight;
+  saveSettingsData(s);
+  document.getElementById('bw-entry').value='';
+  renderBWLog();
+  renderWeightClass(s.athleteBW);
+  document.getElementById('setting-bw').value=s.athleteBW;
+  showToast('Bodyweight logged','success');
+}
+
+function renderBWLog(){
+  const s=loadSettings();
+  const log=s.bwLog||[];
+  const el=document.getElementById('bwLogList');
+  if(!el)return;
+  if(!log.length){el.innerHTML='<div style="padding:12px 14px;font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;">No weigh-ins logged yet</div>';return;}
+  el.innerHTML=log.slice(0,10).map((e,i)=>`
+    <div style="padding:10px 14px;display:flex;justify-content:space-between;${i>0?'border-top:1px solid var(--border)':''}">
+      <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;">${formatDate(e.date)}</div>
+      <div style="font-size:14px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text);">${e.weight}<span style="font-size:10px;color:var(--text3)">kg</span></div>
+    </div>`).join('');
+}
+
+// ── SINCLAIR ─────────────────────────────────────────────────────────────────
+// 2025-2028 IWF Sinclair coefficients (men)
+const SINCLAIR_A = 0.722762521;
+const SINCLAIR_b = 175.508;
+
+function sinclair(total, bw){
+  if(!total||!bw||bw<=0)return null;
+  if(bw>=SINCLAIR_b)return total; // at or above world record bw, coefficient is 1
+  const exp = SINCLAIR_A * Math.pow(Math.log10(bw/SINCLAIR_b), 2);
+  return Math.round(total * Math.pow(10, exp) * 10) / 10;
+}
+
+// ── PBs ──────────────────────────────────────────────────────────────────────
+const PB_GROUPS={comp:['Snatch','Clean and Jerk'],strength:['Clean','Jerk']};
+
+function getAllPBs(){
+  const s=loadSettings();const pbs=s.pbs||[];const db=loadDB();
+  const allLifts=[...new Set(db.entries.map(e=>e.base))];
+  const logPBs={};
+  allLifts.forEach(lift=>{
+    const en=db.entries.filter(e=>e.base===lift&&e.weight);
+    if(!en.length)return;
+    const max=Math.max(...en.map(e=>e.weight));
+    const best=en.find(e=>e.weight===max);
+    if(best)logPBs[lift]={weight:max,date:best.date};
+  });
+  function getPB(lift){
+    const m=pbs.find(p=>p.lift===lift),fl=logPBs[lift];
+    if(m&&fl)return m.weight>=fl.weight?m:{weight:fl.weight,date:fl.date};
+    return m||(fl?{weight:fl.weight,date:fl.date}:null);
+  }
+  return {getPB, allLifts, pbs, logPBs};
+}
+
+function renderPBs(){
+  const s=loadSettings();
+  const {getPB, allLifts} = getAllPBs();
+  const u=unitLabel();
+
+  // Competition lifts total card
+  const snatchPB=getPB('Snatch');
+  const cjPB=getPB('Clean and Jerk');
+  const totalEl=document.getElementById('pbTotalCard');
+  if(totalEl){
+    if(snatchPB&&cjPB){
+      const tot=snatchPB.weight+cjPB.weight;
+      totalEl.innerHTML=`<div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <div class="pb-lift">${lift}</div>
-          <div class="pb-date">${pb ? formatDate(pb.date) : 'No data'}</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;">Best Total</div>
+          <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px;">Snatch + C&J</div>
         </div>
         <div style="text-align:right;">
-          <div class="pb-weight">${pb ? pb.weight : '--'}<span>kg</span></div>
-          ${pb ? `<div class="pb-date">${(pb.weight * 2.20462).toFixed(1)} lbs</div>` : ''}
+          <div style="font-size:44px;font-weight:800;color:var(--accent);font-family:'DM Mono',monospace;line-height:1;letter-spacing:-2px;">${dispW(tot)}<span style="font-size:16px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:2px;">${u}</span></div>
+          <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px;">${dispW(snatchPB.weight)} + ${dispW(cjPB.weight)} ${u}</div>
         </div>
       </div>`;
-    });
-    if (!html) html = '<div style="padding:16px;color:var(--text3);font-size:13px;">No data yet</div>';
-    el.innerHTML = html;
+    } else {
+      totalEl.innerHTML='<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;">Log Snatch and C&J to see total</div>';
+    }
   }
 
-  renderList('pbCompList', PB_GROUPS.comp);
-  renderList('pbStrengthList', PB_GROUPS.strength);
-  renderList('pbAllList', allLifts.filter(l => !PB_GROUPS.comp.includes(l) && !PB_GROUPS.strength.includes(l)));
+  // Comp lifts list
+  const compEl=document.getElementById('pbCompList');
+  if(compEl){
+    compEl.innerHTML=['Snatch','Clean and Jerk'].map((lift,i)=>{
+      const pb=getPB(lift);
+      return `<div class="pb-card pb-comp"${i>0?' style="border-top:1px solid var(--border)"':''}>
+        <div style="flex:1;">
+          <div class="pb-lift">${lift}</div>
+          <div class="pb-date">${pb?formatDate(pb.date):'No data'}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="pb-weight">${pb?dispW(pb.weight):'--'}<span>${u}</span></div>
+          ${pb&&u==='kg'?`<div class="pb-lbs">${(pb.weight*2.20462).toFixed(1)} lbs</div>`:''}
+          ${pb&&u==='lbs'?`<div class="pb-lbs">${pb.weight} kg</div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // All records -- Jerk shows max of Jerk or C&J
+  const allEl=document.getElementById('pbAllList');
+  if(allEl){
+    // Build list: exclude Snatch and C&J (shown above), show Jerk as max(Jerk, C&J)
+    const shown=new Set(['Snatch','Clean and Jerk']);
+    const others=allLifts.filter(l=>!shown.has(l));
+    // Ensure Jerk is included even if not in log
+    const listLifts=[...new Set(['Jerk',...others])];
+    allEl.innerHTML=listLifts.map((lift,i)=>{
+      let pb=getPB(lift);
+      // For Jerk, take max of Jerk PB and C&J PB
+      if(lift==='Jerk'){
+        const cj=getPB('Clean and Jerk');
+        if(cj&&(!pb||cj.weight>pb.weight)) pb={...cj,lift:'Clean and Jerk (used)'};
+      }
+      return `<div class="pb-card pb-strength"${i>0?' style="border-top:1px solid var(--border)"':''}>
+        <div style="flex:1;">
+          <div class="pb-lift">${lift}${lift==='Jerk'&&pb&&pb.lift==='Clean and Jerk (used)'?' <span style="font-size:9px;color:var(--text3);">(from C&J)</span>':''}</div>
+          <div class="pb-date">${pb?formatDate(pb.date):'No data'}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="pb-weight">${pb?dispW(pb.weight):'--'}<span>${u}</span></div>
+          ${pb&&u==='kg'?`<div class="pb-lbs">${(pb.weight*2.20462).toFixed(1)} lbs</div>`:''}
+        </div>
+      </div>`;
+    }).join('') || '<div style="padding:16px;color:var(--text3);font-size:13px;">No data yet</div>';
+  }
+
+  // Sinclair
+  const sinclairEl=document.getElementById('pbSinclair');
+  if(sinclairEl){
+    const bw=s.athleteBW||(s.bwLog&&s.bwLog[0]&&s.bwLog[0].weight)||null;
+    const total=snatchPB&&cjPB?snatchPB.weight+cjPB.weight:null;
+    const sc=sinclair(total,bw);
+    const wc=bw?getWeightClass(bw):null;
+    sinclairEl.innerHTML=`<div style="padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;">Sinclair Score</div>
+          <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px;">2025-2028 IWF coefficients</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:36px;font-weight:800;color:var(--accent);font-family:'DM Mono',monospace;line-height:1;">${sc?sc:'--'}</div>
+          ${bw?`<div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px;">at ${bw}kg BW</div>`:''}
+        </div>
+      </div>
+      ${wc?`<div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;padding-top:10px;border-top:1px solid var(--border);">
+        Weight class: <span style="color:var(--text2);">IWF ${wc.iwf}</span>${wc.iwf!==wc.bwf?` · <span style="color:var(--text2);">BWF ${wc.bwf}</span>`:''}
+      </div>`:''}
+      ${!bw?`<div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;padding-top:10px;border-top:1px solid var(--border);">Add your bodyweight in Settings to calculate Sinclair</div>`:''}
+    </div>`;
+  }
 }
 
 // ============================================================
 // SESSION PLANNER
 // ============================================================
-let plannerState = { position: [], receiving: null, technique: [] };
-let timerInterval = null;
-let timerRemaining = 120;
-let timerTotal = 120;
-let timerRunning = false;
+let plannerLifts=[];
 
-function plannerChip(el, group) {
-  if (group === 'receiving') {
-    document.querySelectorAll('#p-receiving .chip').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    plannerState.receiving = el.dataset.val;
-  } else if (group === 'position') {
-    el.classList.toggle('selected');
-    const vals = Array.from(document.querySelectorAll('#p-position .chip.selected')).map(c => c.dataset.val);
-    plannerState.position = vals;
-  } else if (group === 'technique') {
-    el.classList.toggle('selected');
-    const vals = Array.from(document.querySelectorAll('#p-technique .chip.selected')).map(c => c.dataset.val);
-    plannerState.technique = vals;
-  }
-  plannerUpdate();
+function addPlannerLift(){
+  plannerLifts.push({id:uid(),base:'',position:[],receiving:'',grip:[],technique:[],pct:'',collapsed:false});
+  renderPlannerBlocks();
+  document.getElementById('finishBtn').style.display='inline-block';
+}
+function removePlannerLift(id){
+  plannerLifts=plannerLifts.filter(l=>l.id!==id);
+  renderPlannerBlocks();
+  if(plannerLifts.length===0)document.getElementById('finishBtn').style.display='none';
+}
+function togglePlannerCollapse(id){
+  const l=plannerLifts.find(x=>x.id===id);if(l)l.collapsed=!l.collapsed;
+  renderPlannerBlocks();
+}
+function plannerSetBase(id,val){
+  const l=plannerLifts.find(x=>x.id===id);
+  if(l){l.base=val;l.position=[];l.receiving='';l.grip=[];l.technique=[];renderPlannerBlocks();}
+}
+function plannerSetReceiving(id,val){const l=plannerLifts.find(x=>x.id===id);if(l){l.receiving=val;renderPlannerBlocks();}}
+function plannerSetPct(id,val){const l=plannerLifts.find(x=>x.id===id);if(l){l.pct=val;renderPlannerBlocks();}}
+function plannerToggleChip(id,group,val,single){
+  const l=plannerLifts.find(x=>x.id===id);if(!l)return;
+  if(single){l[group]=[val];}
+  else{const i=l[group].indexOf(val);i>=0?l[group].splice(i,1):l[group].push(val);}
+  renderPlannerBlocks();
 }
 
-function plannerUpdate() {
-  const base = document.getElementById('p-base').value;
-  const pct = parseFloat(document.getElementById('p-pct').value);
-  if (!base || !pct) { 
-    document.getElementById('plannerResult').style.display = 'none';
-    document.getElementById('warmupSection').style.display = 'none';
-    document.getElementById('timerSection').style.display = 'none';
-    return; 
-  }
-
-  // Find reference weight
-  const { refWeight, refSource } = getRefWeight(base, plannerState.position, plannerState.receiving, plannerState.technique);
-  
-  if (!refWeight) {
-    document.getElementById('plannerRef').innerHTML = `<span style="color:var(--red)">No reference data found for this lift. Log some sets first or add a PB manually.</span>`;
-    document.getElementById('plannerResult').style.display = 'block';
-    document.getElementById('warmupSection').style.display = 'none';
+function renderPlannerBlocks(){
+  const container=document.getElementById('plannerBlocks');
+  if(plannerLifts.length===0){
+    container.innerHTML='<div class="empty" style="padding:32px 24px;"><div class="empty-icon">📋</div><p>Tap + Add Lift to start planning your session.</p></div>';
     return;
   }
+  container.innerHTML=plannerLifts.map((lift,idx)=>{
+    const cfg=LIFT_CONFIG[lift.base]||{positions:[],receiving:[],grip:[],technique:[]};
+    const ln=lift.base?buildLiftName({base:lift.base,position:lift.position,receiving:lift.receiving,grip:lift.grip,technique:lift.technique}):`Lift ${idx+1}`;
+    const ref=lift.base&&lift.pct?getPlannerRef(lift):{};
+    const warmup=ref.targetWeight?generateWarmup(ref.targetWeight):[];
 
-  const targetWeight = roundWeight(refWeight * (pct / 100));
-  document.getElementById('plannerRef').innerHTML = `
-    <div style="margin-bottom:6px;"><span style="color:var(--text3)">Reference: </span><span style="color:var(--accent);font-weight:700;">${refWeight}kg</span></div>
-    <div style="margin-bottom:6px;"><span style="color:var(--text3)">Source: </span>${refSource}</div>
-    <div><span style="color:var(--text3)">Target (${pct}%): </span><span style="color:var(--accent);font-weight:800;font-size:20px;">${targetWeight}kg</span></div>`;
-  document.getElementById('plannerResult').style.display = 'block';
+    const posChips=(cfg.positions||[]).map(v=>
+      `<div class="chip${lift.position.includes(v)?' selected':''}" onclick="plannerToggleChip('${lift.id}','position','${v}',false)">${v}</div>`).join('');
+    const recChips=(cfg.receiving||[]).map(v=>
+      `<div class="chip${lift.receiving===v?' selected':''}" onclick="plannerToggleChip('${lift.id}','receiving','${v}',true)">${v}</div>`).join('');
+    const gripChips=(cfg.grip||[]).map(v=>
+      `<div class="chip${lift.grip.includes(v)?' selected':''}" onclick="plannerToggleChip('${lift.id}','grip','${v}',false)">${v}</div>`).join('');
+    const techChips=(cfg.technique||[]).map(v=>
+      `<div class="chip${lift.technique.includes(v)?' selected':''}" onclick="plannerToggleChip('${lift.id}','technique','${v}',false)">${v}</div>`).join('');
 
-  // Generate warmup ladder
-  const ladder = generateWarmup(targetWeight);
-  let html = '';
-  ladder.forEach((step, i) => {
-    const isWorking = step.isWorking;
-    html += `<div class="warmup-row${isWorking ? ' working' : ''}">
-      <div class="warmup-set">${isWorking ? 'WORK' : `Set ${i+1}`}</div>
-      <div class="warmup-weight">${step.weight}<span style="font-size:12px;color:var(--text3);font-weight:400">kg</span></div>
-      <div class="warmup-pct">${step.pct}%</div>
+    const liftId=lift.id;
+    const warmupHTML=warmup.length?`
+      <div style="border-top:1px solid var(--border);">
+        <div style="padding:8px 14px 4px;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;">Warmup Ladder</div>
+        ${warmup.map((s,i)=>`<div class="warmup-row${s.isWorking?' working':''}" onclick="selectWarmupRow('${liftId}',${i},${s.weight})" id="wrow-${liftId}-${i}">
+          <div class="warmup-set">${s.isWorking?'Working':`Set ${i+1}`}</div>
+          <div class="warmup-weight">${dispW(s.weight)}<span style="font-size:12px;color:var(--text3);font-weight:400">${unitLabel()}</span></div>
+          <div class="warmup-pct">${s.pct}%</div>
+        </div>`).join('')}
+        <div class="barbell-viz" id="barbell-${liftId}">
+          <div class="barbell-viz-label">
+            <span id="barbell-label-${liftId}">Tap a set to see bar loading</span>
+          </div>
+          <div class="barbell-svg-wrap" id="barbell-svg-wrap-${liftId}"></div>
+        </div>
+      </div>`:'';
+    const refHTML=ref.refWeight?`<div class="ref-pill">Ref <strong>${dispW(ref.refWeight)}${unitLabel()}</strong>&nbsp;·&nbsp;Target <strong>${dispW(ref.targetWeight)}${unitLabel()}</strong></div>`:'';
+
+    return `<div class="planner-lift-block">
+      <div class="planner-lift-header">
+        <div style="cursor:pointer;flex:1;" onclick="togglePlannerCollapse('${lift.id}')">
+          <div class="planner-lift-title">${ln}</div>
+          <div class="planner-lift-subtitle">${lift.pct?lift.pct+'%'+(ref.targetWeight?' · '+ref.targetWeight+'kg target':''):'Set lift and % below'}</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button onclick="togglePlannerCollapse('${lift.id}')" style="background:none;border:1px solid var(--border);color:var(--text2);font-size:16px;width:32px;height:32px;border-radius:8px;cursor:pointer;">${lift.collapsed?'↓':'↑'}</button>
+          <button onclick="removePlannerLift('${lift.id}')" style="background:rgba(255,82,82,0.1);border:1px solid rgba(255,82,82,0.3);color:var(--red);font-size:14px;width:32px;height:32px;border-radius:8px;cursor:pointer;">✕</button>
+        </div>
+      </div>
+      <div class="planner-lift-body${lift.collapsed?' collapsed':''}">
+        <div class="field">
+          <label>Base Lift</label>
+          <select onchange="plannerSetBase('${lift.id}',this.value)">
+            <option value="">Select...</option>
+            ${Object.keys(LIFT_CONFIG).map(v=>`<option${lift.base===v?' selected':''}>${v}</option>`).join('')}
+          </select>
+        </div>
+        ${cfg.positions&&cfg.positions.length?`<div class="field"><label>Position</label><div class="chips">${posChips}</div></div>`:''}
+        ${cfg.receiving&&cfg.receiving.length?`<div class="field"><label>Receiving</label><div class="chips">${recChips}</div></div>`:''}
+        ${cfg.grip&&cfg.grip.length?`<div class="field"><label>Grip</label><div class="chips">${gripChips}</div></div>`:''}
+        ${cfg.technique&&cfg.technique.length?`<div class="field"><label>Technique</label><div class="chips">${techChips}</div></div>`:''}
+        ${cfg.squat_types?`<div class="field"><label>Type</label><div class="chips">${cfg.squat_types.map(v=>`<div class="chip${lift.technique.includes(v)?' selected':''}" onclick="plannerToggleChip('${lift.id}','technique','${v}',true)">${v}</div>`).join('')}</div></div>`:''}
+        <div class="field">
+          <label>Target %</label>
+          <input type="number" value="${lift.pct}" placeholder="e.g. 70" min="1" max="120"
+            oninput="plannerSetPct('${lift.id}',this.value)"
+            style="font-family:'DM Mono',monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;width:100%;">
+        </div>
+        ${refHTML}
+        ${warmupHTML}
+      </div>
     </div>`;
-  });
-  document.getElementById('warmupLadder').innerHTML = html;
-  document.getElementById('warmupSection').style.display = 'block';
-  document.getElementById('timerSection').style.display = 'block';
+  }).join('');
 }
 
-function getRefWeight(base, positions, receiving, techniques) {
+function getPlannerRef(lift){
+  const db=loadDB();const s=loadSettings();const pct=parseFloat(lift.pct)/100;if(!pct)return{};
+  const direct=db.entries.filter(e=>{
+    if(e.base!==lift.base||!e.weight)return false;
+    return JSON.stringify((lift.position||[]).slice().sort())===JSON.stringify((e.position||[]).slice().sort())&&
+      (lift.receiving||'')===(e.receiving||'')&&
+      JSON.stringify((lift.technique||[]).slice().sort())===JSON.stringify((e.technique||[]).slice().sort());
+  });
+  if(direct.length){const r=Math.max(...direct.map(e=>e.weight));return{refWeight:r,targetWeight:roundWeight(r*pct)};}
+  const corePB=(s.pbs||[]).find(p=>p.lift===lift.base);
+  if(corePB){const c=getCoefficient(lift.position?.[0],lift.receiving,lift.technique);const r=roundWeight(corePB.weight*c);return{refWeight:r,targetWeight:roundWeight(r*pct)};}
+  const anyBase=db.entries.filter(e=>e.base===lift.base&&e.weight);
+  if(anyBase.length){const max=Math.max(...anyBase.map(e=>e.weight));const c=getCoefficient(lift.position?.[0],lift.receiving,lift.technique);const r=roundWeight(max*c);return{refWeight:r,targetWeight:roundWeight(r*pct)};}
+  return{};
+}
+
+function roundWeight(w){return Math.round(w*4)/4;}
+
+// ── PLATE CALCULATOR ─────────────────────────────────────────────────────────
+const PLATES = [
+  {weight:25, color:'#e8000d', label:'25', textColor:'#fff', width:14, height:52},
+  {weight:20, color:'#0057a8', label:'20', textColor:'#fff', width:13, height:46},
+  {weight:15, color:'#f5c800', label:'15', textColor:'#000', width:11, height:42},
+  {weight:10, color:'#2db34a', label:'10', textColor:'#fff', width:10, height:36},
+  {weight:5,  color:'#f0f0f0', label:'5',  textColor:'#333', width:9,  height:28},
+  {weight:2.5,color:'#333333', label:'2.5',textColor:'#fff', width:7,  height:24},
+  {weight:2,  color:'#0057a8', label:'2',  textColor:'#fff', width:6,  height:20},
+  {weight:1.5,color:'#f5c800', label:'1.5',textColor:'#000', width:5,  height:18},
+  {weight:1,  color:'#2db34a', label:'1',  textColor:'#fff', width:5,  height:16},
+  {weight:0.5,color:'#f0f0f0', label:'.5', textColor:'#333', width:4,  height:14},
+  {weight:0.25,color:'#cccccc',label:'.25',textColor:'#333', width:3,  height:12},
+];
+
+function calcPlates(totalKg) {
+  const BAR = 20;
+  let perSide = Math.round((totalKg - BAR) * 100) / 200; // per side, rounded to 0.01
+  if(perSide < 0) perSide = 0;
+  const used = [];
+  let remaining = perSide;
+  for(const plate of PLATES) {
+    while(remaining >= plate.weight - 0.001) {
+      used.push(plate);
+      remaining = Math.round((remaining - plate.weight) * 1000) / 1000;
+    }
+  }
+  return used;
+}
+
+function renderBarbellSVG(totalKg, liftId) {
+  const wrap = document.getElementById('barbell-svg-wrap-' + liftId);
+  const labelEl = document.getElementById('barbell-label-' + liftId);
+  if(!wrap) return;
+
+  const plates = calcPlates(totalKg);
+  const BAR_H = 14; // bar height (half-bar shown)
+  const BAR_COLLAR_W = 8;
+  const BAR_STUB_W = 24; // visible bar stub left of plates
+  const SLEEVE_H = 10; // sleeve (thinner)
+  const GAP = 1; // gap between plates
+  const SVG_H = 72;
+  const CENTER_Y = SVG_H / 2;
+
+  // Calculate total width needed
+  let platesW = plates.reduce((sum, p) => sum + p.width + GAP, 0);
+  const totalW = BAR_STUB_W + BAR_COLLAR_W + platesW + 20;
+
+  let svgParts = [];
+
+  // Bar stub (left)
+  svgParts.push(`<rect x="0" y="${CENTER_Y - BAR_H/2}" width="${BAR_STUB_W}" height="${BAR_H}" fill="#b0b0b0" rx="2"/>`);
+
+  // No collar -- plastic collars not counted in weight
+
+  // Sleeve (continues right)
+  let sleeveStart = BAR_STUB_W;
+  let sleeveEnd = totalW - 4;
+  svgParts.push(`<rect x="${sleeveStart}" y="${CENTER_Y - SLEEVE_H/2}" width="${sleeveEnd - sleeveStart}" height="${SLEEVE_H}" fill="#999" rx="2"/>`);
+
+  // Plates
+  let x = sleeveStart;
+  plates.forEach((plate) => {
+    const py = CENTER_Y - plate.height/2;
+    // Plate body
+    svgParts.push(`<rect x="${x}" y="${py}" width="${plate.width}" height="${plate.height}" fill="${plate.color}" rx="1.5" stroke="rgba(0,0,0,0.15)" stroke-width="0.5"/>`);
+    // Label (rotated)
+    const labelX = x + plate.width/2;
+    const labelY = CENTER_Y;
+    svgParts.push(`<text x="${labelX}" y="${labelY}" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90,${labelX},${labelY})" class="plate-label" fill="${plate.textColor}">${plate.label}</text>`);
+    x += plate.width + GAP;
+  });
+
+  const svg = `<svg viewBox="0 0 ${totalW} ${SVG_H}" width="${Math.max(totalW, 120)}" height="${SVG_H}" xmlns="http://www.w3.org/2000/svg" style="display:block;">${svgParts.join('')}</svg>`;
+
+  // Plate summary text
+  const summary = plateSummary(plates);
+  if(labelEl) labelEl.innerHTML = `<span style="color:var(--text2)">${totalKg}kg</span>&nbsp;<span style="color:var(--text3);font-size:9px;">${summary}</span>`;
+  wrap.innerHTML = svg;
+}
+
+function plateSummary(plates) {
+  const counts = {};
+  plates.forEach(p => { counts[p.label] = (counts[p.label]||0) + 1; });
+  return Object.entries(counts).map(([l,n]) => n>1?`${n}×${l}`:l).join(' · ') + ' each side';
+}
+
+let activeWarmupRow = {}; // liftId -> rowIndex
+
+function selectWarmupRow(liftId, rowIdx, weightKg) {
+  // Deselect previous
+  if(activeWarmupRow[liftId] !== undefined) {
+    const prev = document.getElementById('wrow-' + liftId + '-' + activeWarmupRow[liftId]);
+    if(prev) prev.classList.remove('selected');
+  }
+  // Select new
+  const row = document.getElementById('wrow-' + liftId + '-' + rowIdx);
+  if(row) row.classList.add('selected');
+  activeWarmupRow[liftId] = rowIdx;
+  // Render barbell -- always use kg for plate calculation
+  const kg = getUnit() === 'lbs' ? Math.round(weightKg / 2.20462 * 100) / 100 : weightKg;
+  renderBarbellSVG(kg, liftId);
+}
+
+function generateWarmup(w){
+  if(w<=25)return[{weight:w,pct:100,isWorking:true}];
+  const steps=[],bar=20;
+  steps.push({weight:bar,pct:Math.round(bar/w*100),isWorking:false});
+  const pcts=w>=100?[0.5,0.6,0.7,0.8,0.9]:w>=70?[0.5,0.6,0.75,0.85]:w>=50?[0.55,0.7,0.8]:[0.6,0.75];
+  pcts.forEach(p=>{const ww=roundWeight(w*p);if(ww>bar&&ww<w)steps.push({weight:ww,pct:Math.round(p*100),isWorking:false});});
+  steps.push({weight:w,pct:100,isWorking:true});
+  return steps.filter((s,i,arr)=>arr.findIndex(x=>x.weight===s.weight)===i);
+}
+
+function finishSession(){
+  if(plannerLifts.length===0)return;
+  document.getElementById('finishCards').innerHTML=plannerLifts.map((lift,i)=>{
+    const ln=buildLiftName({base:lift.base||'Lift',position:lift.position,receiving:lift.receiving,grip:lift.grip,technique:lift.technique});
+    const ref=lift.base&&lift.pct?getPlannerRef(lift):{};
+    return `<div class="finish-lift-card">
+      <div class="finish-lift-name">${ln}</div>
+      <div class="finish-planned">Planned: ${ref.targetWeight?dispW(ref.targetWeight)+unitLabel():'--'}</div>
+      <div class="finish-fields">
+        <div class="finish-field"><label>Weight kg</label><input type="number" id="fw-${i}" value="${ref.targetWeight||''}" step="0.25"></div>
+        <div class="finish-field"><label>Sets</label><input type="number" id="fs-${i}" placeholder="--"></div>
+        <div class="finish-field"><label>Reps</label><input type="number" id="fr-${i}" placeholder="--"></div>
+      </div>
+      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;">Quality</div>
+      <div class="finish-quality" id="fq-${i}">
+        ${[1,2,3,4,5].map(n=>`<div class="finish-q" onclick="setFinishQ(${i},${n})">${n}</div>`).join('')}
+      </div>
+      <input type="hidden" id="fqv-${i}" value="">
+      <div style="margin-top:8px;">
+        <textarea id="fn-${i}" placeholder="Notes..." style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);font-size:13px;resize:none;outline:none;font-family:'Syne',sans-serif;min-height:48px;"></textarea>
+      </div>
+      <input type="hidden" id="fb-${i}" value="${lift.base}">
+      <input type="hidden" id="fp-${i}" value='${JSON.stringify(lift.position)}'>
+      <input type="hidden" id="frc-${i}" value="${lift.receiving}">
+      <input type="hidden" id="fg-${i}" value='${JSON.stringify(lift.grip||[])}'>
+      <input type="hidden" id="ft-${i}" value='${JSON.stringify(lift.technique)}'>
+    </div>`;
+  }).join('');
+  document.getElementById('finishModal').classList.add('open');
+}
+
+function setFinishQ(idx,val){
+  document.getElementById(`fqv-${idx}`).value=val;
+  document.querySelectorAll(`#fq-${idx} .finish-q`).forEach(d=>d.classList.toggle('selected',parseInt(d.textContent)===val));
+}
+function closeFinishModal(){document.getElementById('finishModal').classList.remove('open');}
+
+function confirmFinishSession(){
+  const today=new Date().toISOString().split('T')[0];
+  let saved=0;
+  plannerLifts.forEach((lift,i)=>{
+    const weight=parseFloat(document.getElementById(`fw-${i}`).value);
+    if(!weight)return;
+    const entry={
+      id:uid(),date:today,session:'Solo',
+      base:document.getElementById(`fb-${i}`).value,
+      position:JSON.parse(document.getElementById(`fp-${i}`).value||'[]'),
+      receiving:document.getElementById(`frc-${i}`).value||'',
+      grip:JSON.parse(document.getElementById(`fg-${i}`).value||'[]'),
+      technique:JSON.parse(document.getElementById(`ft-${i}`).value||'[]'),
+      weight,
+      sets:parseInt(document.getElementById(`fs-${i}`).value)||null,
+      reps:parseInt(document.getElementById(`fr-${i}`).value)||null,
+      quality:parseInt(document.getElementById(`fqv-${i}`).value)||null,
+      notes:document.getElementById(`fn-${i}`).value.trim(),
+    };
+    const db=loadDB();db.entries.push(entry);saveDB(db);updatePBs(entry);saved++;
+    const s=loadSettings();if(s.autoSync&&s.sheetsUrl)syncEntryToSheets(entry,s.sheetsUrl);
+  });
+  closeFinishModal();
+  plannerLifts=[];renderPlannerBlocks();
+  document.getElementById('finishBtn').style.display='none';
+  showToast(`${saved} lift${saved!==1?'s':''} saved`,'success');
+  renderLog();
+}
+
+// ============================================================
+// TIMER
+// ============================================================
+let timerInterval=null,timerRemaining=120,timerTotal=120,timerRunning=false;
+function setTimerPreset(s,el){document.querySelectorAll('.timer-preset').forEach(b=>b.classList.remove('active'));el.classList.add('active');resetTimer(s);}
+function resetTimer(s){clearInterval(timerInterval);timerRunning=false;timerTotal=s||timerTotal;timerRemaining=timerTotal;document.getElementById('timerStartBtn').textContent='Start';document.getElementById('timerCircle').className='timer-circle';document.getElementById('timerLabel').textContent='Ready';updateTimerDisplay();}
+function toggleTimer(){
+  if(timerRunning){clearInterval(timerInterval);timerRunning=false;document.getElementById('timerStartBtn').textContent='Resume';document.getElementById('timerLabel').textContent='Paused';document.getElementById('timerCircle').className='timer-circle';}
+  else{if(timerRemaining<=0)resetTimer();timerRunning=true;document.getElementById('timerStartBtn').textContent='Pause';document.getElementById('timerCircle').className='timer-circle running';document.getElementById('timerLabel').textContent='Resting...';
+    timerInterval=setInterval(()=>{timerRemaining--;updateTimerDisplay();if(timerRemaining<=0){clearInterval(timerInterval);timerRunning=false;document.getElementById('timerCircle').className='timer-circle done';document.getElementById('timerLabel').textContent='Go!';document.getElementById('timerStartBtn').textContent='Start';if(navigator.vibrate)navigator.vibrate([200,100,200]);}},1000);}
+}
+function updateTimerDisplay(){const m=Math.floor(timerRemaining/60),s=timerRemaining%60;document.getElementById('timerTime').textContent=`${m}:${s.toString().padStart(2,'0')}`;}
+
+// ============================================================
+// COMP TAB
+// ============================================================
+
+// Default attempt percentages
+const DEFAULT_COMP_PCTS = [93, 98, 102];
+
+function getCompPcts() {
+  const s = loadSettings();
+  return (s.comp && s.comp.pcts) ? s.comp.pcts : {snatch: [...DEFAULT_COMP_PCTS], cj: [...DEFAULT_COMP_PCTS]};
+}
+
+function renderComp() {
+  const s = loadSettings();
+  const pbs = s.pbs || [];
+  const comp = s.comp || {};
+  if (comp.name) document.getElementById('comp-name').value = comp.name;
+  if (comp.date) document.getElementById('comp-date').value = comp.date;
+  const pcts = getCompPcts();
+  const lifts = [
+    {key:'snatch', label:'Snatch', pb: pbs.find(p=>p.lift==='Snatch')},
+    {key:'cj', label:'Clean and Jerk', pb: pbs.find(p=>p.lift==='Clean and Jerk')}
+  ];
+  document.getElementById('compAttempts').innerHTML = lifts.map((lift, li) => {
+    const pb = lift.pb ? lift.pb.weight : null;
+    const liftPcts = pcts[lift.key] || [...DEFAULT_COMP_PCTS];
+    const saved = comp[lift.key] || [null, null, null];
+    // Calculate weight from pct if not manually overridden
+    const attempts = saved.map((v, i) => v !== null ? v : (pb ? roundWeight(pb * liftPcts[i] / 100) : null));
+    return `<div class="comp-lift-row"${li > 0 ? ' style="border-top:1px solid var(--border)"' : ''}>
+      <div class="comp-lift-name" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>${lift.label} · PB: ${pb ? pb + 'kg' : 'Not set'}</span>
+      </div>
+      <div class="comp-attempts" style="margin-top:10px;">
+        ${[0,1,2].map(i => {
+          const w = attempts[i] || '';
+          const p = liftPcts[i];
+          return `<div class="comp-attempt">
+            <div class="comp-attempt-label">${['Opener','2nd','3rd'][i]}</div>
+            <input class="comp-weight-input" type="number" id="cw-${lift.key}-${i}" value="${w}" step="0.5" placeholder="--"
+              oninput="onCompWeightInput('${lift.key}',${i},this.value)">
+            <div class="comp-attempt-pct-wrap">
+              <input class="comp-attempt-pct-input" type="number" id="cp-${lift.key}-${i}" value="${p}" min="50" max="150" step="0.5"
+                oninput="onCompPctInput('${lift.key}',${i},this.value,'${lift.key}')">
+              <span class="comp-attempt-pct-sym">%</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  updateCompTotal();
+}
+
+function onCompWeightInput(key, idx, val) {
+  // User typed a weight -- save it and recalculate pct
+  const s = loadSettings();
+  if (!s.comp) s.comp = {};
+  if (!s.comp[key]) s.comp[key] = [null, null, null];
+  const weight = parseFloat(val) || null;
+  s.comp[key][idx] = weight;
+  // Update pct display
+  const pb = (s.pbs || []).find(p => p.lift === (key === 'snatch' ? 'Snatch' : 'Clean and Jerk'));
+  if (pb && weight) {
+    const pctEl = document.getElementById(`cp-${key}-${idx}`);
+    if (pctEl) pctEl.value = Math.round(weight / pb.weight * 100 * 10) / 10;
+  }
+  saveSettingsData(s);
+  updateCompTotal();
+}
+
+function onCompPctInput(key, idx, val) {
+  // User typed a pct -- recalculate weight from PB
+  const s = loadSettings();
+  if (!s.comp) s.comp = {};
+  if (!s.comp.pcts) s.comp.pcts = {snatch: [...DEFAULT_COMP_PCTS], cj: [...DEFAULT_COMP_PCTS]};
+  const pct = parseFloat(val);
+  if (!isNaN(pct)) {
+    s.comp.pcts[key][idx] = pct;
+    const pb = (s.pbs || []).find(p => p.lift === (key === 'snatch' ? 'Snatch' : 'Clean and Jerk'));
+    if (pb) {
+      const newWeight = roundWeight(pb.weight * pct / 100);
+      s.comp[key] = s.comp[key] || [null, null, null];
+      s.comp[key][idx] = newWeight;
+      const wEl = document.getElementById(`cw-${key}-${idx}`);
+      if (wEl) wEl.value = newWeight;
+    }
+  }
+  saveSettingsData(s);
+  updateCompTotal();
+}
+
+function saveCompMeta() {
+  const s = loadSettings();
+  if (!s.comp) s.comp = {};
+  s.comp.name = document.getElementById('comp-name').value;
+  s.comp.date = document.getElementById('comp-date').value;
+  saveSettingsData(s);
+}
+
+function resetComp() {
+  if (!confirm('Reset all attempts to defaults based on your PBs?')) return;
+  const s = loadSettings();
+  if (!s.comp) s.comp = {};
+  s.comp.snatch = [null, null, null];
+  s.comp.cj = [null, null, null];
+  s.comp.pcts = {snatch: [...DEFAULT_COMP_PCTS], cj: [...DEFAULT_COMP_PCTS]};
+  saveSettingsData(s);
+  renderComp();
+  showToast('Attempts reset', 'success');
+}
+
+function updateCompTotal() {
+  const s3El = document.getElementById('cw-snatch-2');
+  const c3El = document.getElementById('cw-cj-2');
+  const s3 = s3El ? parseFloat(s3El.value) : null;
+  const c3 = c3El ? parseFloat(c3El.value) : null;
+  const total = s3 && c3 ? s3 + c3 : null;
+  document.getElementById('compTotal').textContent = total ? total : '--';
+  renderCompContext(total);
+}
+
+function renderCompContext(projectedTotal) {
+  const el = document.getElementById('compContext');
+  if (!el) return;
   const db = loadDB();
-  const settings = loadSettings();
+  const s = loadSettings();
+  const pbs = s.pbs || [];
 
-  // 1. Look for direct match in log
-  const direct = db.entries.filter(e => {
-    if (e.base !== base) return false;
-    const posMatch = JSON.stringify((positions||[]).sort()) === JSON.stringify((e.position||[]).sort());
-    const recMatch = (receiving || 'Squat (Full)') === (e.receiving || 'Squat (Full)');
-    const techMatch = JSON.stringify((techniques||[]).sort()) === JSON.stringify((e.technique||[]).sort());
-    return posMatch && recMatch && techMatch;
+  // Competition entries only
+  const compEntries = db.entries.filter(e => e.session === 'Coached Class' || e.session === '1:1 Session' || e.session === 'Solo');
+  // We treat comp PBs from the seeded PBs sheet as competition lifts
+  // For now, classify "competition" as entries that have no modifiers (floor, squat full, no technique) -- closest to competition lift
+  const isCompLift = e => (!e.position||e.position.length===0) && (!e.technique||e.technique.length===0) && (!e.receiving||e.receiving==='Squat (Full)'||e.receiving==='Split'||e.receiving==='');
+
+  function getBestBySession(lift, sessionFilter) {
+    const entries = db.entries.filter(e => e.base === lift && e.weight && (sessionFilter ? sessionFilter(e) : true));
+    if (!entries.length) return null;
+    const max = Math.max(...entries.map(e => e.weight));
+    const best = entries.find(e => e.weight === max);
+    return { weight: max, date: best.date, session: best.session };
+  }
+
+  // PB competition (seeded from PBs sheet -- these are actual competition results)
+  const snatchCompPB = pbs.find(p => p.lift === 'Snatch');
+  const cjCompPB = pbs.find(p => p.lift === 'Clean and Jerk');
+
+  // PB non-competition (best from log, any session)
+  const snatchLogBest = getBestBySession('Snatch', null);
+  const cjLogBest = getBestBySession('Clean and Jerk', null);
+
+  // Best competition total (from PBs sheet -- use best snatch comp PB + best CJ comp PB on same comp date or just best individual)
+  // Find matching dates in PBs
+  const allPBs = pbs;
+  let bestCompTotal = null, bestCompDate = null;
+  // Group by date and find pairs
+  const pbsByDate = {};
+  allPBs.forEach(p => {
+    if (!pbsByDate[p.date]) pbsByDate[p.date] = {};
+    pbsByDate[p.date][p.lift] = p.weight;
   });
-
-  if (direct.length > 0) {
-    const max = Math.max(...direct.map(e => e.weight));
-    return { refWeight: max, refSource: 'Your best logged weight for this variation' };
-  }
-
-  // 2. Fall back to core lift PB with coefficient
-  const corePB = (settings.pbs || []).find(p => p.lift === base);
-  if (corePB) {
-    const coeff = getCoefficient(positions?.[0], receiving, techniques);
-    const implied = roundWeight(corePB.weight * coeff);
-    return { refWeight: implied, refSource: `Calculated from ${base} PB (${corePB.weight}kg) × coefficient (${coeff.toFixed(2)})` };
-  }
-
-  // 3. Look for any log entry for this base lift
-  const anyBase = db.entries.filter(e => e.base === base);
-  if (anyBase.length > 0) {
-    const max = Math.max(...anyBase.map(e => e.weight));
-    const coeff = getCoefficient(positions?.[0], receiving, techniques);
-    const implied = roundWeight(max * coeff);
-    return { refWeight: implied, refSource: `Estimated from best ${base} log (${max}kg) × coefficient` };
-  }
-
-  return { refWeight: null, refSource: null };
-}
-
-function generateWarmup(workingWeight) {
-  // Best practice Oly warmup: empty bar, then progressive steps
-  const steps = [];
-  const emptyBar = 20;
-  
-  if (workingWeight <= 25) {
-    return [{ weight: workingWeight, pct: 100, isWorking: true }];
-  }
-
-  steps.push({ weight: emptyBar, pct: Math.round(emptyBar/workingWeight*100), isWorking: false });
-  
-  const pcts = workingWeight >= 100 ? [0.5, 0.6, 0.7, 0.8, 0.9] :
-               workingWeight >= 70  ? [0.5, 0.6, 0.7, 0.8] :
-               workingWeight >= 50  ? [0.55, 0.65, 0.75] :
-                                      [0.6, 0.75];
-  
-  pcts.forEach(p => {
-    const w = roundWeight(workingWeight * p);
-    if (w > emptyBar && w < workingWeight) {
-      steps.push({ weight: w, pct: Math.round(p*100), isWorking: false });
+  Object.entries(pbsByDate).forEach(([date, lifts]) => {
+    if (lifts['Snatch'] && (lifts['Clean and Jerk'] || lifts['Clean and jerk'])) {
+      const cj = lifts['Clean and Jerk'] || lifts['Clean and jerk'];
+      const total = lifts['Snatch'] + cj;
+      if (!bestCompTotal || total > bestCompTotal) { bestCompTotal = total; bestCompDate = date; }
     }
   });
 
-  steps.push({ weight: workingWeight, pct: 100, isWorking: true });
-  
-  // Dedupe
-  return steps.filter((s, i, arr) => arr.findIndex(x => x.weight === s.weight) === i);
-}
+  // Best theoretical total (best ever snatch + best ever CJ regardless of date/session)
+  const bestSnatchEver = snatchLogBest ? snatchLogBest.weight : (snatchCompPB ? snatchCompPB.weight : null);
+  const bestCJEver = cjLogBest ? cjLogBest.weight : (cjCompPB ? cjCompPB.weight : null);
+  const bestTheoTotal = bestSnatchEver && bestCJEver ? bestSnatchEver + bestCJEver : null;
 
-function roundWeight(w) {
-  // Round to nearest 0.5kg (we have fractional plates)
-  return Math.round(w * 2) / 2;
-}
+  // % diff to projected total
+  const compDiff = projectedTotal && bestCompTotal ? (((projectedTotal - bestCompTotal) / bestCompTotal) * 100).toFixed(1) : null;
+  const theoDiff = projectedTotal && bestTheoTotal ? (((projectedTotal - bestTheoTotal) / bestTheoTotal) * 100).toFixed(1) : null;
 
-// TIMER
-function setTimerPreset(seconds, el) {
-  document.querySelectorAll('.timer-preset').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  resetTimer(seconds);
-}
-
-function resetTimer(seconds) {
-  clearInterval(timerInterval);
-  timerRunning = false;
-  timerTotal = seconds || timerTotal;
-  timerRemaining = timerTotal;
-  document.getElementById('timerStartBtn').textContent = 'Start';
-  document.getElementById('timerCircle').className = 'timer-circle';
-  document.getElementById('timerLabel').textContent = 'Ready';
-  updateTimerDisplay();
-}
-
-function toggleTimer() {
-  if (timerRunning) {
-    clearInterval(timerInterval);
-    timerRunning = false;
-    document.getElementById('timerStartBtn').textContent = 'Resume';
-    document.getElementById('timerLabel').textContent = 'Paused';
-    document.getElementById('timerCircle').className = 'timer-circle';
-  } else {
-    if (timerRemaining <= 0) resetTimer();
-    timerRunning = true;
-    document.getElementById('timerStartBtn').textContent = 'Pause';
-    document.getElementById('timerCircle').className = 'timer-circle running';
-    document.getElementById('timerLabel').textContent = 'Resting...';
-    timerInterval = setInterval(() => {
-      timerRemaining--;
-      updateTimerDisplay();
-      if (timerRemaining <= 0) {
-        clearInterval(timerInterval);
-        timerRunning = false;
-        document.getElementById('timerCircle').className = 'timer-circle done';
-        document.getElementById('timerLabel').textContent = 'Go!';
-        document.getElementById('timerStartBtn').textContent = 'Start';
-        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([200, 100, 200]);
-      }
-    }, 1000);
-  }
-}
-
-function updateTimerDisplay() {
-  const m = Math.floor(timerRemaining / 60);
-  const s = timerRemaining % 60;
-  document.getElementById('timerTime').textContent = `${m}:${s.toString().padStart(2,'0')}`;
-}
-
-// ============================================================
-// COMPETITION PREP
-// ============================================================
-function renderComp() {
-  const settings = loadSettings();
-  const pbs = settings.pbs || [];
-  const snatchPB = pbs.find(p => p.lift === 'Snatch');
-  const cjPB = pbs.find(p => p.lift === 'Clean and Jerk');
-
-  function attemptBlock(containerId, pb, liftKey) {
-    const el = document.getElementById(containerId);
-    const comp = settings.comp || {};
-    const attempts = (comp[liftKey] || [null, null, null]);
-    
-    let html = `<div style="padding:12px 14px;border-bottom:1px solid var(--border);">
-      <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;">PB: <span style="color:var(--accent);">${pb ? pb.weight + 'kg' : 'Not set'}</span></div>
+  function row(label, val, sub, accent) {
+    return `<div class="context-row">
+      <div class="context-label">${label}</div>
+      <div style="text-align:right;">
+        <div class="context-value${accent?' accent':''}">${val}</div>
+        ${sub ? `<div class="context-sub">${sub}</div>` : ''}
+      </div>
     </div>`;
-    
-    html += '<div class="attempt-grid">';
-    ['1st', '2nd', '3rd'].forEach((label, i) => {
-      const val = attempts[i] || '';
-      const pctStr = pb && val ? ' (' + Math.round(val/pb.weight*100) + '%)' : '';
-      html += `<div class="attempt-cell">
-        <div class="attempt-num">${label} Attempt</div>
-        <input class="attempt-input" type="number" value="${val}" placeholder="--" step="0.5"
-          onchange="saveAttempt('${liftKey}',${i},this.value)" oninput="updateTotal()">
-        <div class="attempt-pct">${pctStr}</div>
+  }
+
+  let html = '';
+  // Snatch PBs
+  html += `<div style="padding:10px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;border-bottom:1px solid var(--border);">Snatch</div>`;
+  html += row('Competition PB', snatchCompPB ? snatchCompPB.weight+'kg' : '--', snatchCompPB ? formatDate(snatchCompPB.date) : null, true);
+  html += row('Training best', snatchLogBest ? snatchLogBest.weight+'kg' : '--', snatchLogBest ? snatchLogBest.session : null, false);
+
+  // C&J PBs
+  html += `<div style="padding:10px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;border-bottom:1px solid var(--border);border-top:1px solid var(--border);">Clean and Jerk</div>`;
+  html += row('Competition PB', cjCompPB ? cjCompPB.weight+'kg' : '--', cjCompPB ? formatDate(cjCompPB.date) : null, true);
+  html += row('Training best', cjLogBest ? cjLogBest.weight+'kg' : '--', cjLogBest ? cjLogBest.session : null, false);
+
+  // Totals
+  html += `<div style="padding:10px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;border-bottom:1px solid var(--border);border-top:1px solid var(--border);">Totals</div>`;
+  html += row('Best competition total', bestCompTotal ? bestCompTotal+'kg' : '--', bestCompDate ? formatDate(bestCompDate) + (compDiff ? ' · projected '+( compDiff > 0 ? '+' : '')+compDiff+'%' : '') : null, true);
+  html += row('Best theoretical total', bestTheoTotal ? bestTheoTotal+'kg' : '--', theoDiff ? 'projected '+( theoDiff > 0 ? '+' : '')+theoDiff+'%' : 'any lift, any session', false);
+
+  el.innerHTML = html;
+}
+
+// ============================================================
+// COMP SUB-NAV
+// ============================================================
+function switchCompSub(name){
+  document.getElementById('comp-pane-plan').className='sub-pane'+(name==='plan'?' active':'');
+  document.getElementById('comp-pane-history').className='sub-pane'+(name==='history'?' active':'');
+  document.getElementById('comp-sub-plan').className='sub-nav-btn'+(name==='plan'?' active':'');
+  document.getElementById('comp-sub-history').className='sub-nav-btn'+(name==='history'?' active':'');
+  if(name==='history')renderMeetList();
+}
+
+// ============================================================
+// PBs SUB-NAV
+// ============================================================
+function switchPBsSub(name){
+  document.getElementById('pbs-pane-records').className='sub-pane'+(name==='records'?' active':'');
+  document.getElementById('pbs-pane-goals').className='sub-pane'+(name==='goals'?' active':'');
+  document.getElementById('pbs-sub-records').className='sub-nav-btn'+(name==='records'?' active':'');
+  document.getElementById('pbs-sub-goals').className='sub-nav-btn'+(name==='goals'?' active':'');
+  if(name==='goals')renderGoals();
+}
+
+// ============================================================
+// MEET LOG
+// ============================================================
+const SEED_MEETS = [{
+  id:'liftoff2025',
+  name:'Lift Off',
+  date:'2025-11-29',
+  bw:80.5,
+  snatch:[
+    {weight:50,made:true},
+    {weight:53,made:false},
+    {weight:53,made:false}
+  ],
+  cj:[
+    {weight:70,made:true},
+    {weight:75,made:false},
+    {weight:75,made:true}
+  ],
+  notes:'First competition'
+}];
+
+function getMeets(){
+  const s=loadSettings();
+  if(!s.meets){
+    s.meets=SEED_MEETS;
+    saveSettingsData(s);
+  }
+  return s.meets;
+}
+
+let meetResults={sn:{},cj:{}};
+
+function openMeetModal(){
+  meetResults={sn:{1:null,2:null,3:null},cj:{1:null,2:null,3:null}};
+  document.getElementById('mm-name').value='';
+  document.getElementById('mm-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('mm-bw').value='';
+  document.getElementById('mm-notes').value='';
+  [1,2,3].forEach(i=>{
+    const snW=document.getElementById('mm-sn-w'+i);
+    const cjW=document.getElementById('mm-cj-w'+i);
+    if(snW)snW.value='';
+    if(cjW)cjW.value='';
+    resetMeetResultBtns('sn',i);
+    resetMeetResultBtns('cj',i);
+  });
+  document.getElementById('meetModal').classList.add('open');
+}
+
+function resetMeetResultBtns(lift,idx){
+  const good=document.getElementById('mm-'+lift+'-r'+idx+'-good');
+  const miss=document.getElementById('mm-'+lift+'-r'+idx+'-miss');
+  if(good){good.style.background='none';good.style.borderColor='var(--border)';}
+  if(miss){miss.style.background='none';miss.style.borderColor='var(--border)';}
+}
+
+function setMeetResult(lift,idx,made){
+  if(!meetResults[lift])meetResults[lift]={};
+  meetResults[lift][idx]=made;
+  const good=document.getElementById('mm-'+lift+'-r'+idx+'-good');
+  const miss=document.getElementById('mm-'+lift+'-r'+idx+'-miss');
+  if(good){good.style.background=made?'rgba(200,245,90,0.2)':'none';good.style.borderColor=made?'var(--accent)':'var(--border)';}
+  if(miss){miss.style.background=!made?'rgba(255,82,82,0.2)':'none';miss.style.borderColor=!made?'var(--red)':'var(--border)';}
+}
+
+function closeMeetModal(){document.getElementById('meetModal').classList.remove('open');}
+
+function saveMeet(){
+  const name=document.getElementById('mm-name').value.trim();
+  const date=document.getElementById('mm-date').value;
+  const bw=parseFloat(document.getElementById('mm-bw').value)||null;
+  if(!name||!date){showToast('Name and date required','error');return;}
+  const snatch=[1,2,3].map(i=>({
+    weight:parseFloat(document.getElementById('mm-sn-w'+i).value)||null,
+    made:meetResults.sn[i]||false
+  }));
+  const cj=[1,2,3].map(i=>({
+    weight:parseFloat(document.getElementById('mm-cj-w'+i).value)||null,
+    made:meetResults.cj[i]||false
+  }));
+  const meet={id:uid(),name,date,bw,snatch,cj,notes:document.getElementById('mm-notes').value.trim()};
+  const s=loadSettings();
+  if(!s.meets)s.meets=[];
+  s.meets.push(meet);
+  s.meets.sort((a,b)=>b.date.localeCompare(a.date));
+  saveSettingsData(s);
+  closeMeetModal();
+  renderMeetList();
+  renderPBs(); // update PBs with competition data
+  showToast('Meet saved','success');
+}
+
+function getMeetPBs(){
+  // Extract competition PBs from meet log
+  const meets=getMeets();
+  let bestSnatch=null,bestCJ=null;
+  meets.forEach(m=>{
+    m.snatch.forEach(a=>{if(a.made&&a.weight&&(!bestSnatch||a.weight>bestSnatch.weight))bestSnatch={weight:a.weight,date:m.date,meet:m.name};});
+    m.cj.forEach(a=>{if(a.made&&a.weight&&(!bestCJ||a.weight>bestCJ.weight))bestCJ={weight:a.weight,date:m.date,meet:m.name};});
+  });
+  return{snatch:bestSnatch,cj:bestCJ};
+}
+
+function renderMeetList(){
+  const el=document.getElementById('meetList');if(!el)return;
+  const meets=getMeets();
+  if(!meets.length){
+    el.innerHTML='<div class="empty" style="padding:32px;"><div class="empty-icon">🏅</div><p>No meets logged yet.</p></div>';
+    return;
+  }
+  el.innerHTML=meets.map(m=>{
+    const bestSn=m.snatch.filter(a=>a.made&&a.weight).reduce((mx,a)=>a.weight>mx?a.weight:mx,0)||null;
+    const bestCJ=m.cj.filter(a=>a.made&&a.weight).reduce((mx,a)=>a.weight>mx?a.weight:mx,0)||null;
+    const total=bestSn&&bestCJ?bestSn+bestCJ:null;
+    const sc=sinclair(total,m.bw);
+    const snAttempts=m.snatch.map((a,i)=>a.weight?`<div class="meet-attempt-row">
+      <div class="meet-attempt-weight">${a.weight}<span style="font-size:10px;color:var(--text3)">kg</span></div>
+      <div class="meet-attempt-result">${a.made?'✅':'❌'}</div>
+    </div>`:'').join('');
+    const cjAttempts=m.cj.map((a,i)=>a.weight?`<div class="meet-attempt-row">
+      <div class="meet-attempt-weight">${a.weight}<span style="font-size:10px;color:var(--text3)">kg</span></div>
+      <div class="meet-attempt-result">${a.made?'✅':'❌'}</div>
+    </div>`:'').join('');
+    return `<div class="meet-card">
+      <div class="meet-card-header">
+        <div class="meet-card-name">${m.name}</div>
+        <div class="meet-card-date">${formatDate(m.date)}</div>
+        ${m.bw?`<div class="meet-card-bw">${m.bw}kg bodyweight</div>`:''}
+      </div>
+      <div class="meet-attempts">
+        <div class="meet-lift-section">
+          <div class="meet-lift-label">Snatch</div>
+          ${snAttempts||'<div style="color:var(--text3);font-size:12px;">No data</div>'}
+          ${bestSn?`<div style="font-size:11px;color:var(--accent);font-family:'DM Mono',monospace;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">Best: ${bestSn}kg</div>`:''}
+        </div>
+        <div class="meet-lift-section">
+          <div class="meet-lift-label">Clean &amp; Jerk</div>
+          ${cjAttempts||'<div style="color:var(--text3);font-size:12px;">No data</div>'}
+          ${bestCJ?`<div style="font-size:11px;color:var(--accent);font-family:'DM Mono',monospace;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">Best: ${bestCJ}kg</div>`:''}
+        </div>
+      </div>
+      <div class="meet-totals">
+        <div class="meet-total-item">
+          <div class="meet-total-label">Total</div>
+          <div class="meet-total-value">${total||'--'}</div>
+          <div class="meet-total-sub">kg</div>
+        </div>
+        <div class="meet-total-item">
+          <div class="meet-total-label">Sinclair</div>
+          <div class="meet-total-value">${sc||'--'}</div>
+          <div class="meet-total-sub">${m.bw?'at '+m.bw+'kg':''}</div>
+        </div>
+      </div>
+      ${m.notes?`<div style="padding:10px 14px;font-size:12px;color:var(--text3);border-top:1px solid var(--border);">${m.notes}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// GOALS
+// ============================================================
+const DEFAULT_STANDARDS = {
+  'Clean and Jerk': [
+    {level:'Beginner',multiple:0.5},
+    {level:'Novice',multiple:0.75},
+    {level:'Intermediate',multiple:1.25},
+    {level:'Advanced',multiple:1.5},
+    {level:'Elite',multiple:2.0}
+  ],
+  'Snatch': [
+    {level:'Beginner',multiple:0.5},
+    {level:'Novice',multiple:0.75},
+    {level:'Intermediate',multiple:1.0},
+    {level:'Advanced',multiple:1.25},
+    {level:'Elite',multiple:1.75}
+  ]
+};
+
+function getStandards(){
+  const s=loadSettings();
+  return s.standards||JSON.parse(JSON.stringify(DEFAULT_STANDARDS));
+}
+
+function renderGoals(){
+  const el=document.getElementById('goalsContent');if(!el)return;
+  const s=loadSettings();
+  const bw=s.athleteBW||(s.bwLog&&s.bwLog[0]&&s.bwLog[0].weight)||79;
+  const standards=getStandards();
+  const {getPB}=getAllPBs();
+  // Get best PB for each lift from all sources
+  const meetPBs=getMeetPBs();
+
+  function getBestPB(lift){
+    const logPB=getPB(lift);
+    const meetPB=lift==='Snatch'?meetPBs.snatch:meetPBs.cj;
+    const logW=logPB?logPB.weight:0;
+    const meetW=meetPB?meetPB.weight:0;
+    return Math.max(logW,meetW)||null;
+  }
+
+  let html='';
+  ['Clean and Jerk','Snatch'].forEach(lift=>{
+    const pb=getBestPB(lift);
+    const levels=standards[lift];
+    const customGoal=s.customGoals&&s.customGoals[lift]||null;
+
+    // Find current level
+    let currentLevel=null;
+    levels.forEach(l=>{
+      const target=Math.round(bw*l.multiple*10)/10;
+      if(pb&&pb>=target)currentLevel=l.level;
+    });
+
+    html+=`<div class="section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div class="section-label" style="margin:0;">${lift}</div>
+        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">PB: ${pb?pb+'kg':'--'} · BW: ${bw}kg</div>
+      </div>
+      <div class="card">`;
+
+    levels.forEach((tier,i)=>{
+      const target=Math.round(bw*tier.multiple*10)/10;
+      const achieved=pb&&pb>=target;
+      const isNext=!achieved&&(i===0||(pb&&pb>=Math.round(bw*levels[i-1].multiple*10)/10));
+      const pct=pb?Math.min(Math.round(pb/target*100),100):0;
+      const isCurrent=tier.level===currentLevel;
+      html+=`<div class="goal-row">
+        <div class="goal-row-header">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="goal-level${isCurrent?' current':''}">${tier.level}</span>
+            ${achieved?'<span class="goal-checkmark">✓</span>':''}
+            ${isNext?'<span style="font-size:9px;color:var(--orange);font-family:'DM Mono',monospace;background:rgba(255,154,60,0.1);padding:2px 6px;border-radius:10px;">NEXT</span>':''}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">×<input class="goal-custom-input" type="number" value="${tier.multiple}" step="0.05" min="0.1" max="5"
+              style="width:48px;"
+              onchange="saveStandardMultiple('${lift}',${i},this.value)"></span>
+            <span class="goal-target${achieved?' achieved':''}">${target}kg</span>
+          </div>
+        </div>
+        <div class="goal-bar-bg"><div class="goal-bar-fill${achieved?' achieved':''}" style="width:${pct}%"></div></div>
+        <div class="goal-pct">${pb?pct+'% of target':'No PB logged'}</div>
       </div>`;
     });
-    html += '</div>';
-    el.innerHTML = html;
-  }
 
-  attemptBlock('snatchAttempts', snatchPB, 'snatch');
-  attemptBlock('cjAttempts', cjPB, 'cj');
-  updateTotal();
+    // Custom goal
+    html+=`<div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;">My Goal</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <input type="number" value="${customGoal||''}" placeholder="e.g. 98.75" step="0.5"
+          style="width:80px;background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-size:13px;font-family:'DM Mono',monospace;padding:4px 8px;border-radius:6px;text-align:right;outline:none;"
+          onchange="saveCustomGoal('${lift}',this.value)">
+        <span style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;">kg</span>
+        ${customGoal&&pb?`<span style="font-size:10px;color:${pb>=customGoal?'var(--accent)':'var(--text3)'};font-family:'DM Mono',monospace;">${pb>=customGoal?'✓ Achieved':Math.round((customGoal-pb)*10)/10+'kg to go'}</span>`:''}
+      </div>
+    </div>`;
+
+    html+=`</div></div>`;
+  });
+
+  // Edit multiples note
+  html+=`<div style="padding:0 16px 16px;font-size:11px;color:var(--text3);line-height:1.6;">Multiples are × bodyweight. Edit inline above -- changes save immediately. These default from IWF coaching standards.</div>`;
+  el.innerHTML=html;
 }
 
-function saveAttempt(liftKey, idx, val) {
-  const settings = loadSettings();
-  if (!settings.comp) settings.comp = {};
-  if (!settings.comp[liftKey]) settings.comp[liftKey] = [null, null, null];
-  settings.comp[liftKey][idx] = val ? parseFloat(val) : null;
-  saveSettingsData(settings);
-  updateTotal();
+function saveStandardMultiple(lift,idx,val){
+  const s=loadSettings();
+  if(!s.standards)s.standards=JSON.parse(JSON.stringify(DEFAULT_STANDARDS));
+  const v=parseFloat(val);
+  if(!isNaN(v)&&v>0)s.standards[lift][idx].multiple=v;
+  saveSettingsData(s);
+  renderGoals();
 }
 
-function updateTotal() {
-  const settings = loadSettings();
-  const comp = settings.comp || {};
-  const s3 = (comp.snatch || [])[2];
-  const c3 = (comp.cj || [])[2];
-  const total = s3 && c3 ? s3 + c3 : null;
-  document.getElementById('compTotal').textContent = total ? total : '--';
+function saveCustomGoal(lift,val){
+  const s=loadSettings();
+  if(!s.customGoals)s.customGoals={};
+  s.customGoals[lift]=parseFloat(val)||null;
+  saveSettingsData(s);
+  renderGoals();
 }
 
 // ============================================================
 // SETTINGS
 // ============================================================
-function saveSheetsUrl() {
-  const settings = loadSettings();
-  settings.sheetsUrl = document.getElementById('sheetsUrl').value.trim();
-  saveSettingsData(settings);
-}
-
-function saveSettings() {
-  const settings = loadSettings();
-  settings.autoSync = document.getElementById('autoSync').checked;
-  saveSettingsData(settings);
-}
-
-function renderCoeffSettings() {
-  const el = document.getElementById('coeffList');
-  let html = '';
-  const groups = [
-    { label: 'Position', data: COEFFICIENTS.position },
-    { label: 'Receiving', data: COEFFICIENTS.receiving },
-    { label: 'Technique', data: COEFFICIENTS.technique },
-  ];
-  groups.forEach(g => {
-    html += `<div style="padding:10px 14px;border-bottom:1px solid var(--border);"><div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:8px;">${g.label}</div>`;
-    Object.entries(g.data).forEach(([k, v]) => {
-      html += `<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border);">
-        <span style="color:var(--text2);">${k}</span>
-        <span style="font-family:'DM Mono',monospace;color:var(--accent);">${v}</span>
-      </div>`;
+function renderCoeffSettings(){
+  const C=getCoefficients();
+  const groups=[{label:'Position',key:'position',data:C.position},{label:'Receiving',key:'receiving',data:C.receiving},{label:'Technique',key:'technique',data:C.technique}];
+  let html='';
+  groups.forEach(g=>{
+    html+=`<div style="padding:8px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;border-bottom:1px solid var(--border);">${g.label}</div>`;
+    Object.entries(g.data).forEach(([k,v])=>{
+      html+=`<div class="coeff-row"><span class="coeff-name">${k}</span>
+        <input class="coeff-input" type="number" step="0.01" min="0.1" max="2" value="${v}" data-group="${g.key}" data-key="${k}"></div>`;
     });
-    html += '</div>';
   });
-  el.innerHTML = html;
+  document.getElementById('coeffList').innerHTML=html;
 }
+function saveCoefficients(){
+  const s=loadSettings();if(!s.coefficients)s.coefficients=JSON.parse(JSON.stringify(DEFAULT_COEFFICIENTS));
+  document.querySelectorAll('.coeff-input').forEach(input=>{const g=input.dataset.group,k=input.dataset.key,v=parseFloat(input.value);if(!isNaN(v)&&v>0)s.coefficients[g][k]=v;});
+  saveSettingsData(s);showToast('Coefficients saved','success');
+}
+function resetCoefficients(){const s=loadSettings();s.coefficients=JSON.parse(JSON.stringify(DEFAULT_COEFFICIENTS));saveSettingsData(s);renderCoeffSettings();showToast('Reset to defaults','success');}
+function saveSheetsUrl(){const s=loadSettings();s.sheetsUrl=document.getElementById('sheetsUrl').value.trim();saveSettingsData(s);}
+function saveSettings(){const s=loadSettings();s.autoSync=document.getElementById('autoSync').checked;saveSettingsData(s);}
+function exportCSV(){
+  const db=loadDB();
+  const h=['date','session','base','position','receiving','grip','technique','weight','sets','reps','quality','notes','id'];
+  const rows=db.entries.map(e=>[e.date,e.session,e.base,(e.position||[]).join(' + '),e.receiving,(e.grip||[]).join(' + '),(e.technique||[]).join(' + '),e.weight,e.sets||'',e.reps||'',e.quality||'',(e.notes||'').replace(/,/g,''),e.id]);
+  const csv=[h,...rows].map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`barbell-log-${new Date().toISOString().split('T')[0]}.csv`;a.click();
+  showToast('CSV exported','success');
+}
+function clearAllData(){if(!confirm('Clear ALL data? Export first. Cannot be undone.'))return;localStorage.removeItem(DB_KEY);renderLog();showToast('Data cleared','error');}
 
 // ============================================================
-// GOOGLE SHEETS SYNC
+// SYNC
 // ============================================================
-async function syncEntry(entry, url) {
-  try {
-    await fetch(url, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'log', entry })
-    });
-  } catch(e) { /* silent fail */ }
+async function syncEntryToSheets(entry,url){try{await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'log',entry})});}catch(e){}}
+async function syncBoth(){
+  const s=loadSettings();if(!s.sheetsUrl){showToast('Add Sheets URL in Settings first','error');return;}
+  const btn=document.getElementById('syncBtn');btn.textContent='⇅ ...';btn.classList.add('syncing');
+  try{
+    const pulled=await pullFromSheets(s.sheetsUrl);
+    const db=loadDB();const byId={};db.entries.forEach(e=>{byId[e.id]=e;});
+    if(pulled&&pulled.length)pulled.forEach(e=>{if(e.id)byId[e.id]=e;});
+    const merged=Object.values(byId).sort((a,b)=>b.date.localeCompare(a.date));
+    db.entries=merged;saveDB(db);
+    await fetch(s.sheetsUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'syncAll',entries:merged})});
+    renderLog();if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
+    showToast('Synced','success');
+  }catch(e){showToast('Sync failed -- check URL','error');}
+  btn.textContent='⇅ SYNC';btn.classList.remove('syncing');
 }
-
-async function syncToSheets() {
-  const settings = loadSettings();
-  if (!settings.sheetsUrl) {
-    showToast('Add Sheets URL in Settings first', 'error');
-    return;
-  }
-  const btn = document.getElementById('syncBtn');
-  btn.textContent = '↑ SYNC...';
-  btn.classList.add('syncing');
-  const db = loadDB();
-  try {
-    const response = await fetch(settings.sheetsUrl, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'syncAll', entries: db.entries })
-    });
-    showToast('Synced to Sheets', 'success');
-  } catch(e) {
-    showToast('Sync failed -- check URL', 'error');
-  }
-  btn.textContent = '↑ SYNC';
-  btn.classList.remove('syncing');
-}
-
-function exportCSV() {
-  const db = loadDB();
-  const headers = ['date','session','base','position','receiving','technique','weight','sets','reps','quality','notes'];
-  const rows = db.entries.map(e => [
-    e.date, e.session, e.base,
-    (e.position||[]).join(' + '),
-    e.receiving,
-    (e.technique||[]).join(' + '),
-    e.weight, e.sets||'', e.reps||'', e.quality||'', (e.notes||'').replace(/,/g,'')
-  ]);
-  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `barbell-log-${new Date().toISOString().split('T')[0]}.csv`;
-  a.click();
-  showToast('CSV exported', 'success');
-}
-
-function clearAllData() {
-  if (!confirm('Clear ALL data? Export first. This cannot be undone.')) return;
-  localStorage.removeItem(DB_KEY);
-  renderLog();
-  showToast('Data cleared', 'error');
-}
+async function pullFromSheets(url){try{const r=await fetch(url+'?action=getAll');const data=await r.json();return data.entries||[];}catch(e){return[];}}
 
 // ============================================================
 // TOAST
 // ============================================================
 let toastTimeout;
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show ' + (type || '');
-  clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => { t.className = ''; }, 2500);
-}
+function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+(type||'');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>{t.className='';},2500);}
 
 // ============================================================
 // INIT
 // ============================================================
 initDB();
 renderLog();
+renderPlannerBlocks();
+
+// LIVE CLOCK
+function updateClock() {
+  const el = document.getElementById('header-clock');
+  if (!el) return;
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+  const s = now.getSeconds().toString().padStart(2,'0');
+  el.textContent = h+':'+m+':'+s;
+}
+updateClock();
+setInterval(updateClock, 1000);
 </script>
 </body>
 </html>
