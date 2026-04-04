@@ -945,12 +945,16 @@ const SEED_DATA=[
   {id:uid(),date:'2025-01-28',session:'Coached Class',base:'Snatch',position:['Hang Below Knee'],receiving:'Squat (Full)',grip:[],technique:['Complex'],weight:50,sets:null,reps:null,quality:4,notes:'Pull + hang squat snatch'},
   {id:uid(),date:'2025-02-02',session:'Coached Class',base:'Snatch',position:[],receiving:'Squat (Full)',grip:[],technique:[],weight:50,sets:null,reps:1,quality:3,notes:'Built to max, at max managed only muscle variation'},
   {id:uid(),date:'2025-02-02',session:'Coached Class',base:'Clean',position:['Hang Below Knee'],receiving:'Squat (Full)',grip:[],technique:['Complex'],weight:70,sets:2,reps:5,quality:4,notes:'Pull + hang clean, 80-85% max'},
+  // PB entries -- these match SEED_PBS so training bests show correctly in Records
+  {id:uid(),date:'2025-12-23',session:'Coached Class',base:'Snatch',position:[],receiving:'Squat (Full)',grip:[],technique:[],weight:56,sets:1,reps:1,quality:5,notes:'PB'},
+  {id:uid(),date:'2025-12-23',session:'Coached Class',base:'Clean and Jerk',position:[],receiving:'Split',grip:[],technique:[],weight:82,sets:1,reps:1,quality:5,notes:'PB'},
+  {id:uid(),date:'2025-12-18',session:'Coached Class',base:'Clean',position:[],receiving:'Squat (Full)',grip:[],technique:[],weight:100,sets:1,reps:1,quality:5,notes:'PB'},
 ];
 
 const SEED_PBS=[
-  {date:'2026-12-23',lift:'Snatch',weight:56},
-  {date:'2026-12-23',lift:'Clean and Jerk',weight:82},
-  {date:'2026-12-18',lift:'Clean',weight:100},
+  {date:'2025-12-23',lift:'Snatch',weight:56},
+  {date:'2025-12-23',lift:'Clean and Jerk',weight:82},
+  {date:'2025-12-18',lift:'Clean',weight:100},
   {date:'2025-01-14',lift:'Jerk',weight:65},
 ];
 
@@ -1053,6 +1057,14 @@ function renderLog(){
   }
   const groups={};
   entries.forEach(e=>{if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e);});
+  // Build PB map: base|position[0]|receiving -> max weight across all entries
+  const pbMap={};
+  entries.forEach(e=>{
+    if(!e.weight)return;
+    const key=e.base+'|'+(e.position&&e.position[0]?e.position[0]:'')+' |'+(e.receiving||'');
+    if(!pbMap[key]||e.weight>pbMap[key])pbMap[key]=e.weight;
+  });
+
   let html='';
   Object.keys(groups).sort((a,b)=>b.localeCompare(a)).forEach(date=>{
     html+=`<div class="date-group-label">${formatDate(date)}</div><div class="card" style="margin:0 16px;">`;
@@ -1068,9 +1080,12 @@ function renderLog(){
         (!e.technique||e.technique.length===0)&&
         (!e.receiving||e.receiving==='Squat (Full)'||e.receiving==='Split'||e.receiving==='');
       const compLiftBadge=isCompLift?'<span style="font-size:9px;font-weight:700;font-family:DM Mono,monospace;letter-spacing:0.5px;background:rgba(255,215,0,0.15);color:#ffd700;border:1px solid rgba(255,215,0,0.3);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:middle;">COMP LIFT</span>':'';
+      const pbKey=e.base+'|'+(e.position&&e.position[0]?e.position[0]:'')+' |'+(e.receiving||'');
+      const isPBEntry=e.weight&&pbMap[pbKey]&&e.weight>=pbMap[pbKey];
+      const pbBadge=isPBEntry?'<span style="font-size:11px;margin-left:5px;vertical-align:middle;" title="PB for this lift">🏆</span>':'';
       html+=`<div class="log-entry ${borderClass}"${i>0?' style="border-top:1px solid var(--border)"':''}>
         <div class="log-entry-header">
-          <div class="log-entry-lift">${ln}${compLiftBadge}</div>
+          <div class="log-entry-lift">${ln}${compLiftBadge}${pbBadge}</div>
           <div class="log-entry-weight">${e.weight?dispW(e.weight)+'<span style="font-size:12px;color:var(--text3)">'+unitLabel()+'</span>':'--'}</div>
         </div>
         <div class="log-entry-meta">${[sr,e.notes].filter(Boolean).join(' · ')}</div>
