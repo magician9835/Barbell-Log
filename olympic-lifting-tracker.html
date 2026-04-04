@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Barbell Log">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -13,23 +16,25 @@
     --border: #333333; --accent: #c8f55a; --accent-dim: #9ab83e; --accent-bg: rgba(200,245,90,0.08);
     --text: #f0f0f0; --text2: #aaaaaa; --text3: #777777;
     --red: #ff5252; --orange: #ff9a3c; --blue: #5ab4ff;
-    --radius: 12px; --radius-sm: 8px; --tab-h: 64px; --header-h: 56px;
+    --radius: 12px; --radius-sm: 8px; --tab-h: 64px; --header-h: 56px; --safe-bottom: max(20px, env(safe-area-inset-bottom));
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; -webkit-text-size-adjust: 100%; }
   @supports (padding: max(0px)) {
-    #header { padding-top: max(12px, env(safe-area-inset-top)); }
-    #tab-bar { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+    #header { padding-top: max(8px, env(safe-area-inset-top)); }
+    #tabs { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
   }
   #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
-  #header { height: var(--header-h); background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; flex-shrink: 0; position: relative; }
+  #header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0 16px; flex-shrink: 0; display: flex; flex-direction: column; }
+  #header-row1 { display: flex; align-items: center; justify-content: space-between; height: 44px; }
+  #header-row2 { display: flex; align-items: center; justify-content: center; padding-bottom: 6px; }
   #header h1 { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; color: var(--accent); flex-shrink: 0; }
   #header .sync-btn { background: none; border: 1px solid var(--border); color: var(--text2); font-size: 11px; font-family: DM Mono,monospace; padding: 4px 10px; border-radius: 20px; cursor: pointer; white-space:nowrap; flex-shrink:0; }
   #header .sync-btn.syncing { color: var(--accent); border-color: var(--accent); }
   #content { flex: 1; overflow: hidden; position: relative; }
-  .tab-pane { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--tab-h) + 16px); display: none; }
+  .tab-pane { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--tab-h) + var(--safe-bottom, 20px) + 16px); display: none; }
   .tab-pane.active { display: block; }
-  #tabs { height: var(--tab-h); background: var(--surface); border-top: 1px solid var(--border); display: flex; flex-shrink: 0; }
+  #tabs { height: auto; min-height: var(--tab-h); background: var(--surface); border-top: 1px solid var(--border); display: flex; flex-shrink: 0; align-items: flex-start; }
   .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: var(--text3); transition: color 0.15s; border: none; background: none; padding: 0; }
   .tab.active { color: var(--accent); }
   .tab svg { width: 22px; height: 22px; }
@@ -135,7 +140,7 @@
   .empty-icon { font-size: 36px; margin-bottom: 12px; }
   .empty p { font-size: 14px; line-height: 1.6; }
   .date-group-label { padding: 16px 16px 8px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3); font-family: 'DM Mono', monospace; }
-  #toast { position: fixed; bottom: calc(var(--tab-h) + 16px); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface3); color: var(--text); padding: 10px 20px; border-radius: 24px; font-size: 13px; font-family: 'DM Mono', monospace; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 100; white-space: nowrap; border: 1px solid var(--border); }
+  #toast { position: fixed; bottom: calc(var(--tab-h) + var(--safe-bottom, 20px) + 8px); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface3); color: var(--text); padding: 10px 20px; border-radius: 24px; font-size: 13px; font-family: 'DM Mono', monospace; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 100; white-space: nowrap; border: 1px solid var(--border); }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   #toast.success { border-color: var(--accent); color: var(--accent); }
   #toast.error { border-color: var(--red); color: var(--red); }
@@ -236,7 +241,7 @@
   .log-entry.border-one::before { background: var(--orange); }
 
   /* HEADER CLOCK */
-  #header-clock { position:absolute; left:50%; transform:translateX(-50%); font-size:10px; font-family:DM Mono,monospace; color:var(--text3); letter-spacing:1px; pointer-events:none; white-space:nowrap; }
+  #header-clock { font-size:10px; font-family:DM Mono,monospace; color:var(--text3); letter-spacing:1.5px; pointer-events:none; white-space:nowrap; }
   #header-comp-badge { display:none; align-items:center; gap:4px; background:var(--accent-bg); border:1px solid var(--accent); border-radius:20px; padding:3px 10px; cursor:pointer; margin-right:8px; }
   #header-comp-badge span.days { font-size:12px; font-weight:800; color:var(--accent); font-family:DM Mono,monospace; line-height:1; }
   #header-comp-badge span.label { font-size:9px; color:var(--accent-dim); font-family:DM Mono,monospace; letter-spacing:0.5px; text-transform:uppercase; }
@@ -296,14 +301,18 @@
 <body>
 <div id="app">
   <div id="header">
-    <h1>BARBELL LOG</h1>
-    <div id="header-clock"></div>
-    <div style="position:absolute;right:16px;display:flex;align-items:center;gap:8px;">
-      <div id="header-comp-badge" onclick="switchTab('comp',document.querySelector('.tab:nth-child(4)'))">
-        <span class="days" id="header-badge-days"></span>
-        <span class="label">days</span>
+    <div id="header-row1">
+      <h1>BARBELL LOG</h1>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div id="header-comp-badge" onclick="switchTab('comp',document.querySelector('.tab:nth-child(4)'))">
+          <span class="days" id="header-badge-days"></span>
+          <span class="label">days</span>
+        </div>
+        <button class="sync-btn" id="syncBtn" onclick="syncBoth()">⇅ SYNC</button>
       </div>
-      <button class="sync-btn" id="syncBtn" onclick="syncBoth()" style="position:static;">⇅ SYNC</button>
+    </div>
+    <div id="header-row2">
+      <div id="header-clock"></div>
     </div>
   </div>
   <div id="content">
@@ -2909,32 +2918,45 @@ function importWithingsCSV(input){
     const s=loadSettings();
     if(!s.bwLog)s.bwLog=[];
     let imported=0;
-    lines.forEach(line=>{
-      const cols=line.split(',');
+    // Skip header row
+    const dataLines=lines.filter((_,i)=>i>0);
+    dataLines.forEach(line=>{
+      if(!line.trim())return;
+      // Parse CSV respecting quoted fields e.g. "2026-03-16 07:51:29",78.00,...
+      const cols=line.split(',').map(v=>v.trim().replace(/^"|"$/g,''));
       if(cols.length<2)return;
-      // Withings format: Date,Weight,... (weight in kg)
-      const date=cols[0].trim().replace(/"/g,'');
+      const rawDate=cols[0];
       const weight=parseFloat(cols[1]);
-      if(!date||isNaN(weight)||weight<20||weight>300)return;
+      if(!rawDate||isNaN(weight)||weight<20||weight>300)return;
       // Normalise date to YYYY-MM-DD
-      let d=date;
-      if(date.includes('/')){
-        const parts=date.split('/');
+      let d='';
+      if(/^\d{4}-\d{2}-\d{2}/.test(rawDate)){
+        // Already YYYY-MM-DD, possibly with timestamp -- just take the date part
+        d=rawDate.substring(0,10);
+      } else if(rawDate.includes('/')){
+        const parts=rawDate.split('/');
         if(parts.length===3){
-          // Could be MM/DD/YYYY or DD/MM/YYYY -- assume YYYY last
-          d=parts[2]+'-'+parts[0].padStart(2,'0')+'-'+parts[1].padStart(2,'0');
+          // MM/DD/YYYY or DD/MM/YYYY -- if first part >12 it must be DD
+          const [a,b,yr]=parts;
+          if(parseInt(a)>12){
+            d=yr.padStart(4,'20')+'-'+b.padStart(2,'0')+'-'+a.padStart(2,'0');
+          } else {
+            d=yr.padStart(4,'20')+'-'+a.padStart(2,'0')+'-'+b.padStart(2,'0');
+          }
         }
       }
-      // Dedup check
-      const exists=s.bwLog.find(e=>e.date===d&&Math.abs(e.weight-weight)<0.1);
-      if(!exists){s.bwLog.push({date:d,weight:Math.round(weight*10)/10,note:'Withings'});imported++;}
+      if(!d||d.length!==10)return;
+      // Dedup -- keep the earliest reading of each day
+      const exists=s.bwLog.find(e=>e.date===d);
+      if(!exists){s.bwLog.push({date:d,weight:Math.round(weight*100)/100,note:'Imported'});imported++;}
     });
     s.bwLog.sort((a,b)=>b.date.localeCompare(a.date));
     if(s.bwLog.length)s.athleteBW=s.bwLog[0].weight;
     saveSettingsData(s);
     renderBWChart();
     renderBWLog();
-    showToast(imported+' weigh-ins imported from CSV','success');
+    renderWeightClass(s.athleteBW);
+    showToast(imported+' weigh-ins imported','success');
     input.value='';
   };
   reader.readAsText(file);
