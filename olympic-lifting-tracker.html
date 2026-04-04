@@ -151,7 +151,7 @@
 
   /* SUB-NAV (comp plan/history, pbs records/goals) */
   .sub-nav { display:flex; gap:0; padding:12px 16px 0; }
-  .sub-nav-btn { flex:1; padding:8px 0; font-family:'DM Mono',monospace; font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; border:1px solid var(--border); background:none; color:var(--text3); cursor:pointer; }
+  .sub-nav-btn { flex:1; padding:8px 0; font-family:DM Mono,monospace; font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; border:1px solid var(--border); background:none; color:var(--text3); cursor:pointer; }
   .sub-nav-btn:first-child { border-radius:8px 0 0 8px; }
   .sub-nav-btn:last-child { border-radius:0 8px 8px 0; }
   .sub-nav-btn.active { background:var(--accent-bg); border-color:var(--accent); color:var(--accent); }
@@ -167,21 +167,21 @@
   .meet-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin:0 16px 12px; overflow:hidden; }
   .meet-card-header { padding:14px 16px; background:linear-gradient(135deg,var(--surface2),var(--surface)); border-bottom:1px solid var(--border); }
   .meet-card-name { font-size:16px; font-weight:800; color:var(--text); }
-  .meet-card-date { font-size:11px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:2px; }
-  .meet-card-bw { font-size:11px; color:var(--accent); font-family:'DM Mono',monospace; margin-top:2px; }
+  .meet-card-date { font-size:11px; color:var(--text3); font-family:DM Mono,monospace; margin-top:2px; }
+  .meet-card-bw { font-size:11px; color:var(--accent); font-family:DM Mono,monospace; margin-top:2px; }
   .meet-attempts { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); }
   .meet-lift-section { background:var(--surface); padding:12px 14px; }
-  .meet-lift-label { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text3); font-family:'DM Mono',monospace; margin-bottom:8px; }
+  .meet-lift-label { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text3); font-family:DM Mono,monospace; margin-bottom:8px; }
   .meet-attempt-row { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
   .meet-attempt-row:last-child { margin-bottom:0; }
-  .meet-attempt-weight { font-size:15px; font-weight:700; font-family:'DM Mono',monospace; color:var(--text); flex:1; }
+  .meet-attempt-weight { font-size:15px; font-weight:700; font-family:DM Mono,monospace; color:var(--text); flex:1; }
   .meet-attempt-result { font-size:14px; }
   .meet-totals { padding:12px 16px; display:flex; gap:0; border-top:1px solid var(--border); }
   .meet-total-item { flex:1; text-align:center; }
   .meet-total-item + .meet-total-item { border-left:1px solid var(--border); }
-  .meet-total-label { font-size:9px; color:var(--text3); font-family:'DM Mono',monospace; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:4px; }
-  .meet-total-value { font-size:22px; font-weight:800; color:var(--accent); font-family:'DM Mono',monospace; line-height:1; }
-  .meet-total-sub { font-size:9px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:2px; }
+  .meet-total-label { font-size:9px; color:var(--text3); font-family:DM Mono,monospace; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:4px; }
+  .meet-total-value { font-size:22px; font-weight:800; color:var(--accent); font-family:DM Mono,monospace; line-height:1; }
+  .meet-total-sub { font-size:9px; color:var(--text3); font-family:DM Mono,monospace; margin-top:2px; }
 
   /* GOAL PROGRESS */
   .goal-row { padding:12px 14px; border-bottom:1px solid var(--border); position:relative; }
@@ -189,14 +189,14 @@
   .goal-row-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
   .goal-level { font-size:11px; font-weight:700; color:var(--text2); }
   .goal-level.current { color:var(--accent); }
-  .goal-target { font-size:13px; font-weight:700; font-family:'DM Mono',monospace; color:var(--text); }
+  .goal-target { font-size:13px; font-weight:700; font-family:DM Mono,monospace; color:var(--text); }
   .goal-target.achieved { color:var(--accent); }
   .goal-bar-bg { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
   .goal-bar-fill { height:4px; background:var(--accent); border-radius:2px; transition:width 0.5s ease; }
   .goal-bar-fill.achieved { background:var(--accent); }
-  .goal-pct { font-size:9px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:3px; text-align:right; }
+  .goal-pct { font-size:9px; color:var(--text3); font-family:DM Mono,monospace; margin-top:3px; text-align:right; }
   .goal-checkmark { color:var(--accent); font-size:14px; margin-left:6px; }
-  .goal-custom-input { width:60px; background:var(--surface2); border:1px solid var(--border); color:var(--accent); font-size:12px; font-family:'DM Mono',monospace; padding:3px 6px; border-radius:6px; text-align:right; outline:none; }
+  .goal-custom-input { width:60px; background:var(--surface2); border:1px solid var(--border); color:var(--accent); font-size:12px; font-family:DM Mono,monospace; padding:3px 6px; border-radius:6px; text-align:right; outline:none; }
 
   /* TEXTURE & DEPTH */
   body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
@@ -224,15 +224,15 @@
   .log-entry.border-one::before { background: var(--orange); }
 
   /* HEADER CLOCK */
-  #header-clock { position:absolute; left:50%; transform:translateX(-50%); font-size:11px; font-family:'DM Mono',monospace; color:var(--text3); letter-spacing:1px; }
+  #header-clock { position:absolute; left:50%; transform:translateX(-50%); font-size:11px; font-family:DM Mono,monospace; color:var(--text3); letter-spacing:1px; }
 
   /* COMP CONTEXT */
   .context-row { padding: 12px 14px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); }
   .context-row:last-child { border-bottom:none; }
-  .context-label { font-size:11px; color:var(--text3); font-family:'DM Mono',monospace; }
-  .context-value { font-size:16px; font-weight:800; color:var(--text); font-family:'DM Mono',monospace; }
+  .context-label { font-size:11px; color:var(--text3); font-family:DM Mono,monospace; }
+  .context-value { font-size:16px; font-weight:800; color:var(--text); font-family:DM Mono,monospace; }
   .context-value.accent { color:var(--accent); }
-  .context-sub { font-size:10px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:1px; text-align:right; }
+  .context-sub { font-size:10px; color:var(--text3); font-family:DM Mono,monospace; margin-top:1px; text-align:right; }
 
   /* BARBELL VISUALISER */
   .barbell-viz { padding: 10px 14px 12px; border-top: 1px solid var(--border); background: var(--surface2); }
@@ -288,7 +288,7 @@
       <div style="padding:16px 16px 8px; display:flex; justify-content:space-between; align-items:center;">
         <div class="section-label" style="margin:0;">Session Planner</div>
         <button class="btn btn-sm" id="finishBtn" onclick="finishSession()"
-          style="display:none;background:var(--accent);color:#000;border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;padding:8px 14px;border-radius:20px;cursor:pointer;">
+          style="display:none;background:var(--accent);color:#000;border:none;font-family:Syne,sans-serif;font-weight:700;font-size:12px;padding:8px 14px;border-radius:20px;cursor:pointer;">
           Finish Session
         </button>
       </div>
@@ -368,15 +368,15 @@
         <div class="section">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
             <div class="section-label" style="margin:0;">Attempt Planner</div>
-            <button onclick="resetComp()" style="background:none;border:1px solid var(--border);color:var(--text3);font-size:11px;font-family:'DM Mono',monospace;padding:4px 12px;border-radius:20px;cursor:pointer;">Reset</button>
+            <button onclick="resetComp()" style="background:none;border:1px solid var(--border);color:var(--text3);font-size:11px;font-family:DM Mono,monospace;padding:4px 12px;border-radius:20px;cursor:pointer;">Reset</button>
           </div>
           <div class="card" id="compAttempts"></div>
         </div>
         <div class="section">
           <div class="section-label">Projected Total</div>
           <div class="card" style="padding:20px; text-align:center;">
-            <div id="compTotal" style="font-size:56px;font-weight:800;color:var(--accent);font-family:'DM Mono',monospace;line-height:1;">--</div>
-            <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:8px;">kg · 3rd Snatch + 3rd C&J</div>
+            <div id="compTotal" style="font-size:56px;font-weight:800;color:var(--accent);font-family:DM Mono,monospace;line-height:1;">--</div>
+            <div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;margin-top:8px;">kg · 3rd Snatch + 3rd C&J</div>
           </div>
         </div>
         <div class="section">
@@ -402,8 +402,8 @@
           <div class="settings-row">
             <div><div class="settings-label">Units</div><div class="settings-sub">Stored in kg, converted for display</div></div>
             <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
-              <button id="unit-kg" onclick="setUnit('kg')" style="padding:6px 16px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;border:none;cursor:pointer;background:var(--accent);color:#000;">kg</button>
-              <button id="unit-lbs" onclick="setUnit('lbs')" style="padding:6px 16px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;border:none;cursor:pointer;background:var(--surface2);color:var(--text2);">lbs</button>
+              <button id="unit-kg" onclick="setUnit('kg')" style="padding:6px 16px;font-family:DM Mono,monospace;font-size:12px;font-weight:700;border:none;cursor:pointer;background:var(--accent);color:#000;">kg</button>
+              <button id="unit-lbs" onclick="setUnit('lbs')" style="padding:6px 16px;font-family:DM Mono,monospace;font-size:12px;font-weight:700;border:none;cursor:pointer;background:var(--surface2);color:var(--text2);">lbs</button>
             </div>
           </div>
         </div>
@@ -415,13 +415,13 @@
             <label>Bodyweight (kg)</label>
             <input type="number" id="setting-bw" placeholder="e.g. 79.8" step="0.1" min="30" max="200"
               oninput="saveAthleteSettings()"
-              style="font-family:'DM Mono',monospace;font-size:18px;">
+              style="font-family:DM Mono,monospace;font-size:18px;">
           </div>
           <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
             <div><div class="settings-label">Weight Class</div><div class="settings-sub" id="weight-class-display">Enter bodyweight above</div></div>
           </div>
           <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;border-bottom:none;">
-            <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;line-height:1.6;" id="weight-class-detail"></div>
+            <div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;line-height:1.6;" id="weight-class-detail"></div>
           </div>
         </div>
       </div>
@@ -430,8 +430,8 @@
         <div class="card" id="bwLogList" style="max-height:180px;overflow-y:auto;"></div>
         <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
           <input type="number" id="bw-entry" placeholder="kg" step="0.1" min="30" max="200"
-            style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:'DM Mono',monospace;padding:8px 12px;border-radius:8px;outline:none;width:90px;">
-          <input type="date" id="bw-date" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:13px;font-family:'DM Mono',monospace;padding:8px 10px;border-radius:8px;outline:none;color-scheme:dark;flex:1;">
+            style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:DM Mono,monospace;padding:8px 12px;border-radius:8px;outline:none;width:90px;">
+          <input type="date" id="bw-date" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:13px;font-family:DM Mono,monospace;padding:8px 10px;border-radius:8px;outline:none;color-scheme:dark;flex:1;">
           <button class="btn btn-secondary btn-sm" onclick="logBodyweight()">Log</button>
         </div>
       </div>
@@ -441,7 +441,7 @@
           <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
             <div><div class="settings-label">Apps Script URL</div><div class="settings-sub">Paste your deployment URL here</div></div>
             <input type="text" id="sheetsUrl" placeholder="https://script.google.com/macros/s/..."
-              style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:12px;font-family:'DM Mono',monospace;padding:8px 10px;border-radius:8px;outline:none;"
+              style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:12px;font-family:DM Mono,monospace;padding:8px 10px;border-radius:8px;outline:none;"
               oninput="saveSheetsUrl()">
           </div>
           <div class="settings-row">
@@ -465,7 +465,7 @@
           <button class="btn btn-ghost btn-sm" onclick="resetCoefficients()">Reset to Defaults</button>
         </div>
       </div>
-      <div style="padding:16px;text-align:center;color:var(--text3);font-size:10px;font-family:'DM Mono',monospace;">BARBELL LOG v1.3 · Built for Brian</div>
+      <div style="padding:16px;text-align:center;color:var(--text3);font-size:10px;font-family:DM Mono,monospace;">BARBELL LOG v1.3 · Built for Brian</div>
     </div>
   </div>
 
@@ -587,13 +587,13 @@
     <div class="card" style="margin-bottom:8px;">
       <div class="field"><label>Competition Name</label><input type="text" id="mm-name" placeholder="e.g. Lift Off 2025"></div>
       <div class="field"><label>Date</label><input type="date" id="mm-date"></div>
-      <div class="field"><label>Bodyweight (kg)</label><input type="number" id="mm-bw" placeholder="e.g. 80.5" step="0.1" style="font-family:'DM Mono',monospace;font-size:18px;"></div>
+      <div class="field"><label>Bodyweight (kg)</label><input type="number" id="mm-bw" placeholder="e.g. 80.5" step="0.1" style="font-family:DM Mono,monospace;font-size:18px;"></div>
     </div>
     <div class="card" style="margin-bottom:8px;">
-      <div style="padding:10px 14px 6px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;">Snatch</div>
+      <div style="padding:10px 14px 6px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;">Snatch</div>
       ${[1,2,3].map(i=>`<div class="field" style="display:flex;align-items:center;gap:10px;">
         <label style="width:48px;margin:0;">Attempt ${i}</label>
-        <input type="number" id="mm-sn-w${i}" placeholder="kg" step="0.5" style="flex:1;font-family:'DM Mono',monospace;font-size:16px;background:transparent;border:none;color:var(--text);outline:none;">
+        <input type="number" id="mm-sn-w${i}" placeholder="kg" step="0.5" style="flex:1;font-family:DM Mono,monospace;font-size:16px;background:transparent;border:none;color:var(--text);outline:none;">
         <div style="display:flex;gap:6px;">
           <button onclick="setMeetResult('sn',${i},true)" id="mm-sn-r${i}-good" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:none;font-size:14px;cursor:pointer;">✅</button>
           <button onclick="setMeetResult('sn',${i},false)" id="mm-sn-r${i}-miss" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:none;font-size:14px;cursor:pointer;">❌</button>
@@ -601,10 +601,10 @@
       </div>`).join('')}
     </div>
     <div class="card" style="margin-bottom:8px;" id="mm-cj-card">
-      <div style="padding:10px 14px 6px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;">Clean and Jerk</div>
+      <div style="padding:10px 14px 6px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;">Clean and Jerk</div>
       ${[1,2,3].map(i=>`<div class="field" style="display:flex;align-items:center;gap:10px;">
         <label style="width:48px;margin:0;">Attempt ${i}</label>
-        <input type="number" id="mm-cj-w${i}" placeholder="kg" step="0.5" style="flex:1;font-family:'DM Mono',monospace;font-size:16px;background:transparent;border:none;color:var(--text);outline:none;">
+        <input type="number" id="mm-cj-w${i}" placeholder="kg" step="0.5" style="flex:1;font-family:DM Mono,monospace;font-size:16px;background:transparent;border:none;color:var(--text);outline:none;">
         <div style="display:flex;gap:6px;">
           <button onclick="setMeetResult('cj',${i},true)" id="mm-cj-r${i}-good" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:none;font-size:14px;cursor:pointer;">✅</button>
           <button onclick="setMeetResult('cj',${i},false)" id="mm-cj-r${i}-miss" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:none;font-size:14px;cursor:pointer;">❌</button>
@@ -931,9 +931,9 @@ function updateModalFields(){
     // Squats: show squat type as single-select first, then technique
     techEl.style.display='';
     document.getElementById('m-technique').innerHTML=
-      `<div style="width:100%;margin-bottom:6px;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.5px;text-transform:uppercase;">Type</div>`+
+      `<div style="width:100%;margin-bottom:6px;font-size:10px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:0.5px;text-transform:uppercase;">Type</div>`+
       cfg.squat_types.map(v=>`<div class="chip" data-val="${v}" data-group="squat_type" onclick="toggleModalChip(this,'technique',true)">${v}</div>`).join('')+
-      (techOptions.length?`<div style="width:100%;margin:8px 0 6px;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.5px;text-transform:uppercase;">Modifiers</div>`+
+      (techOptions.length?`<div style="width:100%;margin:8px 0 6px;font-size:10px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:0.5px;text-transform:uppercase;">Modifiers</div>`+
       techOptions.map(v=>`<div class="chip" data-val="${v}" onclick="toggleModalChip(this,'technique')">${v}</div>`).join(''):'');
   } else if(techOptions.length){
     techEl.style.display='';
@@ -1076,11 +1076,11 @@ function renderBWLog(){
   const log=s.bwLog||[];
   const el=document.getElementById('bwLogList');
   if(!el)return;
-  if(!log.length){el.innerHTML='<div style="padding:12px 14px;font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;">No weigh-ins logged yet</div>';return;}
+  if(!log.length){el.innerHTML='<div style="padding:12px 14px;font-size:12px;color:var(--text3);font-family:monospace;">No weigh-ins logged yet</div>';return;}
   el.innerHTML=log.slice(0,10).map((e,i)=>`
     <div style="padding:10px 14px;display:flex;justify-content:space-between;${i>0?'border-top:1px solid var(--border)':''}">
-      <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;">${formatDate(e.date)}</div>
-      <div style="font-size:14px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text);">${e.weight}<span style="font-size:10px;color:var(--text3)">kg</span></div>
+      <div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">${formatDate(e.date)}</div>
+      <div style="font-size:14px;font-weight:700;font-family:DM Mono,monospace;color:var(--text);">${e.weight}<span style="font-size:10px;color:var(--text3)">kg</span></div>
     </div>`).join('');
 }
 
@@ -1132,16 +1132,16 @@ function renderPBs(){
       const tot=snatchPB.weight+cjPB.weight;
       totalEl.innerHTML=`<div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;">Best Total</div>
-          <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px;">Snatch + C&J</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;">Best Total</div>
+          <div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px;">Snatch + C&J</div>
         </div>
         <div style="text-align:right;">
-          <div style="font-size:44px;font-weight:800;color:var(--accent);font-family:'DM Mono',monospace;line-height:1;letter-spacing:-2px;">${dispW(tot)}<span style="font-size:16px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:2px;">${u}</span></div>
-          <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px;">${dispW(snatchPB.weight)} + ${dispW(cjPB.weight)} ${u}</div>
+          <div style="font-size:44px;font-weight:800;color:var(--accent);font-family:DM Mono,monospace;line-height:1;letter-spacing:-2px;">${dispW(tot)}<span style="font-size:16px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:2px;">${u}</span></div>
+          <div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px;">${dispW(snatchPB.weight)} + ${dispW(cjPB.weight)} ${u}</div>
         </div>
       </div>`;
     } else {
-      totalEl.innerHTML='<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;">Log Snatch and C&J to see total</div>';
+      totalEl.innerHTML='<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:DM Mono,monospace;">Log Snatch and C&J to see total</div>';
     }
   }
 
@@ -1202,18 +1202,18 @@ function renderPBs(){
     sinclairEl.innerHTML=`<div style="padding:16px;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
         <div>
-          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;">Sinclair Score</div>
-          <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px;">2025-2028 IWF coefficients</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;">Sinclair Score</div>
+          <div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px;">2025-2028 IWF coefficients</div>
         </div>
         <div style="text-align:right;">
-          <div style="font-size:36px;font-weight:800;color:var(--accent);font-family:'DM Mono',monospace;line-height:1;">${sc?sc:'--'}</div>
-          ${bw?`<div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px;">at ${bw}kg BW</div>`:''}
+          <div style="font-size:36px;font-weight:800;color:var(--accent);font-family:DM Mono,monospace;line-height:1;">${sc?sc:'--'}</div>
+          ${bw?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px;">at ${bw}kg BW</div>`:''}
         </div>
       </div>
-      ${wc?`<div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;padding-top:10px;border-top:1px solid var(--border);">
+      ${wc?`<div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;padding-top:10px;border-top:1px solid var(--border);">
         Weight class: <span style="color:var(--text2);">IWF ${wc.iwf}</span>${wc.iwf!==wc.bwf?` · <span style="color:var(--text2);">BWF ${wc.bwf}</span>`:''}
       </div>`:''}
-      ${!bw?`<div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;padding-top:10px;border-top:1px solid var(--border);">Add your bodyweight in Settings to calculate Sinclair</div>`:''}
+      ${!bw?`<div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;padding-top:10px;border-top:1px solid var(--border);">Add your bodyweight in Settings to calculate Sinclair</div>`:''}
     </div>`;
   }
 }
@@ -1274,7 +1274,7 @@ function renderPlannerBlocks(){
     const liftId=lift.id;
     const warmupHTML=warmup.length?`
       <div style="border-top:1px solid var(--border);">
-        <div style="padding:8px 14px 4px;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;">Warmup Ladder</div>
+        <div style="padding:8px 14px 4px;font-size:10px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;">Warmup Ladder</div>
         ${warmup.map((s,i)=>`<div class="warmup-row${s.isWorking?' working':''}" onclick="selectWarmupRow('${liftId}',${i},${s.weight})" id="wrow-${liftId}-${i}">
           <div class="warmup-set">${s.isWorking?'Working':`Set ${i+1}`}</div>
           <div class="warmup-weight">${dispW(s.weight)}<span style="font-size:12px;color:var(--text3);font-weight:400">${unitLabel()}</span></div>
@@ -1317,7 +1317,7 @@ function renderPlannerBlocks(){
           <label>Target %</label>
           <input type="number" value="${lift.pct}" placeholder="e.g. 70" min="1" max="120"
             oninput="plannerSetPct('${lift.id}',this.value)"
-            style="font-family:'DM Mono',monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;width:100%;">
+            style="font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;width:100%;">
         </div>
         ${refHTML}
         ${warmupHTML}
@@ -1471,13 +1471,13 @@ function finishSession(){
         <div class="finish-field"><label>Sets</label><input type="number" id="fs-${i}" placeholder="--"></div>
         <div class="finish-field"><label>Reps</label><input type="number" id="fr-${i}" placeholder="--"></div>
       </div>
-      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;">Quality</div>
+      <div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;">Quality</div>
       <div class="finish-quality" id="fq-${i}">
         ${[1,2,3,4,5].map(n=>`<div class="finish-q" onclick="setFinishQ(${i},${n})">${n}</div>`).join('')}
       </div>
       <input type="hidden" id="fqv-${i}" value="">
       <div style="margin-top:8px;">
-        <textarea id="fn-${i}" placeholder="Notes..." style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);font-size:13px;resize:none;outline:none;font-family:'Syne',sans-serif;min-height:48px;"></textarea>
+        <textarea id="fn-${i}" placeholder="Notes..." style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);font-size:13px;resize:none;outline:none;font-family:Syne,sans-serif;min-height:48px;"></textarea>
       </div>
       <input type="hidden" id="fb-${i}" value="${lift.base}">
       <input type="hidden" id="fp-${i}" value='${JSON.stringify(lift.position)}'>
@@ -1727,17 +1727,17 @@ function renderCompContext(projectedTotal) {
 
   let html = '';
   // Snatch PBs
-  html += `<div style="padding:10px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;border-bottom:1px solid var(--border);">Snatch</div>`;
+  html += `<div style="padding:10px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;border-bottom:1px solid var(--border);">Snatch</div>`;
   html += row('Competition PB', snatchCompPB ? snatchCompPB.weight+'kg' : '--', snatchCompPB ? formatDate(snatchCompPB.date) : null, true);
   html += row('Training best', snatchLogBest ? snatchLogBest.weight+'kg' : '--', snatchLogBest ? snatchLogBest.session : null, false);
 
   // C&J PBs
-  html += `<div style="padding:10px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;border-bottom:1px solid var(--border);border-top:1px solid var(--border);">Clean and Jerk</div>`;
+  html += `<div style="padding:10px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;border-bottom:1px solid var(--border);border-top:1px solid var(--border);">Clean and Jerk</div>`;
   html += row('Competition PB', cjCompPB ? cjCompPB.weight+'kg' : '--', cjCompPB ? formatDate(cjCompPB.date) : null, true);
   html += row('Training best', cjLogBest ? cjLogBest.weight+'kg' : '--', cjLogBest ? cjLogBest.session : null, false);
 
   // Totals
-  html += `<div style="padding:10px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;border-bottom:1px solid var(--border);border-top:1px solid var(--border);">Totals</div>`;
+  html += `<div style="padding:10px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;border-bottom:1px solid var(--border);border-top:1px solid var(--border);">Totals</div>`;
   html += row('Best competition total', bestCompTotal ? bestCompTotal+'kg' : '--', bestCompDate ? formatDate(bestCompDate) + (compDiff ? ' · projected '+( compDiff > 0 ? '+' : '')+compDiff+'%' : '') : null, true);
   html += row('Best theoretical total', bestTheoTotal ? bestTheoTotal+'kg' : '--', theoDiff ? 'projected '+( theoDiff > 0 ? '+' : '')+theoDiff+'%' : 'any lift, any session', false);
 
@@ -1899,12 +1899,12 @@ function renderMeetList(){
         <div class="meet-lift-section">
           <div class="meet-lift-label">Snatch</div>
           ${snAttempts||'<div style="color:var(--text3);font-size:12px;">No data</div>'}
-          ${bestSn?`<div style="font-size:11px;color:var(--accent);font-family:'DM Mono',monospace;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">Best: ${bestSn}kg</div>`:''}
+          ${bestSn?`<div style="font-size:11px;color:var(--accent);font-family:DM Mono,monospace;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">Best: ${bestSn}kg</div>`:''}
         </div>
         <div class="meet-lift-section">
           <div class="meet-lift-label">Clean &amp; Jerk</div>
           ${cjAttempts||'<div style="color:var(--text3);font-size:12px;">No data</div>'}
-          ${bestCJ?`<div style="font-size:11px;color:var(--accent);font-family:'DM Mono',monospace;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">Best: ${bestCJ}kg</div>`:''}
+          ${bestCJ?`<div style="font-size:11px;color:var(--accent);font-family:DM Mono,monospace;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">Best: ${bestCJ}kg</div>`:''}
         </div>
       </div>
       <div class="meet-totals">
@@ -1982,7 +1982,7 @@ function renderGoals(){
     html+=`<div class="section">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <div class="section-label" style="margin:0;">${lift}</div>
-        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">PB: ${pb?pb+'kg':'--'} · BW: ${bw}kg</div>
+        <div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;">PB: ${pb?pb+'kg':'--'} · BW: ${bw}kg</div>
       </div>
       <div class="card">`;
 
@@ -1997,10 +1997,10 @@ function renderGoals(){
           <div style="display:flex;align-items:center;gap:6px;">
             <span class="goal-level${isCurrent?' current':''}">${tier.level}</span>
             ${achieved?'<span class="goal-checkmark">✓</span>':''}
-            ${isNext?'<span style="font-size:9px;color:var(--orange);font-family:'DM Mono',monospace;background:rgba(255,154,60,0.1);padding:2px 6px;border-radius:10px;">NEXT</span>':''}
+            ${isNext?'<span style="font-size:9px;color:var(--orange);font-family:DM Mono,monospace;background:rgba(255,154,60,0.1);padding:2px 6px;border-radius:10px;">NEXT</span>':''}
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">×<input class="goal-custom-input" type="number" value="${tier.multiple}" step="0.05" min="0.1" max="5"
+            <span style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;">×<input class="goal-custom-input" type="number" value="${tier.multiple}" step="0.05" min="0.1" max="5"
               style="width:48px;"
               onchange="saveStandardMultiple('${lift}',${i},this.value)"></span>
             <span class="goal-target${achieved?' achieved':''}">${target}kg</span>
@@ -2013,13 +2013,13 @@ function renderGoals(){
 
     // Custom goal
     html+=`<div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;">My Goal</span>
+      <span style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">My Goal</span>
       <div style="display:flex;align-items:center;gap:6px;">
         <input type="number" value="${customGoal||''}" placeholder="e.g. 98.75" step="0.5"
-          style="width:80px;background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-size:13px;font-family:'DM Mono',monospace;padding:4px 8px;border-radius:6px;text-align:right;outline:none;"
+          style="width:80px;background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-size:13px;font-family:DM Mono,monospace;padding:4px 8px;border-radius:6px;text-align:right;outline:none;"
           onchange="saveCustomGoal('${lift}',this.value)">
-        <span style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;">kg</span>
-        ${customGoal&&pb?`<span style="font-size:10px;color:${pb>=customGoal?'var(--accent)':'var(--text3)'};font-family:'DM Mono',monospace;">${pb>=customGoal?'✓ Achieved':Math.round((customGoal-pb)*10)/10+'kg to go'}</span>`:''}
+        <span style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">kg</span>
+        ${customGoal&&pb?`<span style="font-size:10px;color:${pb>=customGoal?'var(--accent)':'var(--text3)'};font-family:DM Mono,monospace;">${pb>=customGoal?'✓ Achieved':Math.round((customGoal-pb)*10)/10+'kg to go'}</span>`:''}
       </div>
     </div>`;
 
@@ -2056,7 +2056,7 @@ function renderCoeffSettings(){
   const groups=[{label:'Position',key:'position',data:C.position},{label:'Receiving',key:'receiving',data:C.receiving},{label:'Technique',key:'technique',data:C.technique}];
   let html='';
   groups.forEach(g=>{
-    html+=`<div style="padding:8px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;border-bottom:1px solid var(--border);">${g.label}</div>`;
+    html+=`<div style="padding:8px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;border-bottom:1px solid var(--border);">${g.label}</div>`;
     Object.entries(g.data).forEach(([k,v])=>{
       html+=`<div class="coeff-row"><span class="coeff-name">${k}</span>
         <input class="coeff-input" type="number" step="0.01" min="0.1" max="2" value="${v}" data-group="${g.key}" data-key="${k}"></div>`;
