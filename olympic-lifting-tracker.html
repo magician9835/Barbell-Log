@@ -2724,36 +2724,17 @@ async function syncBoth(){
   try{
     const pulled=await pullFromSheets(s.sheetsUrl);
 
-    // Merge log entries -- sheet is source of truth
+    // PULL ONLY -- sheet is source of truth, never append on sync
     const db=loadDB();
     const byId={};
+    // Start with local entries
     db.entries.forEach(e=>{byId[e.id]=e;});
-
-    // Build a fingerprint set from sheet entries for dedup (date+base+weight)
-    const sheetFingerprints=new Set();
+    // Sheet entries overwrite local (sheet wins)
     if(pulled.entries&&pulled.entries.length){
       pulled.entries.forEach(e=>{
-        if(!e.id) e.id=uid(); // assign ID to sheet entries missing one
-        byId[e.id]=e;         // sheet wins on conflict
-        // Record fingerprint to avoid re-appending
-        const fp=(e.date||'')+'|'+(e.base||'')+'|'+(e.weight||'');
-        sheetFingerprints.add(fp);
-        if(e.id) sheetFingerprints.add('id:'+e.id);
+        if(!e.id) e.id=uid();
+        byId[e.id]=e;
       });
-    }
-
-    // Only append local entries that are genuinely not in the sheet
-    // Check both by ID and by date+base+weight fingerprint
-    const toAppend=db.entries.filter(e=>{
-      if(!e.id) return false; // no ID, skip
-      const idKey='id:'+e.id;
-      const fp=(e.date||'')+'|'+(e.base||'')+'|'+(e.weight||'');
-      return !sheetFingerprints.has(idKey)&&!sheetFingerprints.has(fp);
-    });
-    if(toAppend.length&&s.sheetsUrl){
-      for(const entry of toAppend){
-        await appendEntryToSheet(entry,s.sheetsUrl);
-      }
     }
     db.entries=Object.values(byId).sort((a,b)=>b.date.localeCompare(a.date));
     saveDB(db);
