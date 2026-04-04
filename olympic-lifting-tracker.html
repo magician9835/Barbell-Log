@@ -209,9 +209,8 @@
   .goal-level.current { color:var(--accent); }
   .goal-target { font-size:13px; font-weight:700; font-family:DM Mono,monospace; color:var(--text); }
   .goal-target.achieved { color:var(--accent); }
-  .goal-bar-bg { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
-  .goal-bar-fill { height:4px; background:var(--accent); border-radius:2px; transition:width 0.5s ease; }
-  .goal-bar-fill.achieved { background:var(--accent); }
+  .goal-bar-bg { height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+  .goal-bar-fill { height:6px; border-radius:3px; transition:width 0.5s ease, background-color 0.5s ease; }
   .goal-pct { font-size:9px; color:var(--text3); font-family:DM Mono,monospace; margin-top:3px; text-align:right; }
   .goal-checkmark { color:var(--accent); font-size:14px; margin-left:6px; }
   .goal-custom-input { width:64px; background:var(--surface2); border:1px solid var(--border); color:var(--accent); font-size:12px; font-family:DM Mono,monospace; padding:3px 6px; border-radius:6px; text-align:right; outline:none; }
@@ -1526,7 +1525,7 @@ function renderPBs(){
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
       <div style="padding:12px;border-right:1px solid var(--border);background:rgba(255,215,0,0.06);">
         <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,215,0,0.5);font-family:DM Mono,monospace;margin-bottom:6px;">Sinclair</div>
-        ${scComp?`<div style="font-size:24px;font-weight:800;color:#ffd700;font-family:DM Mono,monospace;line-height:1;">${scComp}</div>${compBW||bw?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">at ${compBW||bw}kg</div>`:''}`:'<div style="font-size:18px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
+        ${scComp?`<div style="font-size:24px;font-weight:800;color:#ffd700;font-family:DM Mono,monospace;line-height:1;">${scComp}</div>${compBWForSinclair||bw?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">at ${compBWForSinclair||bw}kg</div>`:''}`:'<div style="font-size:18px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
       </div>
       <div style="padding:12px;background:rgba(200,245,90,0.06);">
         <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(200,245,90,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Sinclair</div>
@@ -2484,7 +2483,7 @@ function renderGoals(){
   }
 
   let html='';
-  ['Clean and Jerk','Snatch'].forEach(lift=>{
+  ['Snatch','Clean and Jerk'].forEach(lift=>{
     const pb=getBestPB(lift);
     const levels=standards[lift];
     const customGoal=s.customGoals&&s.customGoals[lift]||null;
@@ -2523,7 +2522,7 @@ function renderGoals(){
             <span class="goal-target${achieved?' achieved':''}">${target}kg</span>
           </div>
         </div>
-        <div class="goal-bar-bg"><div class="goal-bar-fill${achieved?' achieved':''}" style="width:${pct}%"></div></div>
+        <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${Math.min(pct,100)}%;background:${pct>=100?'#c8f55a':pct>=70?'#e8e840':pct>=40?'#ff9a3c':'#ff5252'};"></div></div>
         <div class="goal-pct">${pb?pct+'% of target':'No PB logged'}</div>
       </div>`;
     });
