@@ -2728,14 +2728,18 @@ async function syncBoth(){
     const db=loadDB();
     const byId={};
     db.entries.forEach(e=>{byId[e.id]=e;});
+
     if(pulled.entries&&pulled.entries.length){
-      pulled.entries.forEach(e=>{if(e.id)byId[e.id]=e;}); // sheet overwrites local
+      pulled.entries.forEach(e=>{
+        if(!e.id) e.id=uid(); // assign ID to sheet entries that don't have one
+        byId[e.id]=e;         // sheet wins on conflict
+      });
     }
+
     // Find entries that exist locally but not in sheet -- append them
     const sheetIds=new Set((pulled.entries||[]).map(e=>e.id).filter(Boolean));
     const localOnly=db.entries.filter(e=>e.id&&!sheetIds.has(e.id));
     if(localOnly.length&&s.sheetsUrl){
-      // Append missing entries to sheet
       for(const entry of localOnly){
         await appendEntryToSheet(entry,s.sheetsUrl);
       }
