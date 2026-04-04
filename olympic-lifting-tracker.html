@@ -481,7 +481,7 @@
         <div class="section">
           <div class="section-label">Next Competition</div>
           <div class="card">
-            <div class="field"><label>Name</label><input type="text" id="comp-name" placeholder="e.g. Liftoff Nov 2026" oninput="saveCompMeta()"></div>
+            <div class="field"><label>Name</label><input type="text" id="comp-name" placeholder="e.g. Lift Off" oninput="saveCompMeta()"></div>
             <div class="field"><label>Date</label><input type="date" id="comp-date" onchange="saveCompMeta()"></div>
             <div class="field"><label>Location</label><input type="text" id="comp-location" placeholder="e.g. London" oninput="saveCompMeta()"></div>
           </div>
@@ -731,6 +731,70 @@
 <div id="toast"></div>
 
 <!-- MEET MODAL -->
+<div class="modal-overlay" id="editModal" onclick="if(event.target===this)closeEditModal()">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeEditModal()">✕</button>
+    <h2>Edit Entry</h2>
+    <div class="card" style="margin-bottom:8px;">
+      <div class="field"><label>Date</label><input type="date" id="edit-date" onchange="this.blur()"></div>
+      <div class="field">
+        <label>Session</label>
+        <select id="edit-session">
+          <option value="Coached Class">Coached Class</option>
+          <option value="1:1 Session">1:1 Session</option>
+          <option value="Solo">Solo</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Base Lift</label>
+        <select id="edit-base" onchange="updateEditChips()">
+          <option value="">Select...</option>
+          <option>Snatch</option>
+          <option>Clean and Jerk</option>
+          <option>Clean</option>
+          <option>Jerk</option>
+          <option>Squat</option>
+          <option>Pull</option>
+          <option>Deadlift</option>
+          <option>Pendlay Row</option>
+          <option>Barbell Row</option>
+          <option>Bench Press</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:8px;" id="edit-chips-card">
+      <div class="field" id="edit-position-field" style="display:none;"><label>Position</label><div class="chips" id="edit-position"></div></div>
+      <div class="field" id="edit-receiving-field" style="display:none;"><label>Receiving</label><div class="chips" id="edit-receiving"></div></div>
+      <div class="field" id="edit-grip-field" style="display:none;"><label>Grip</label><div class="chips" id="edit-grip"></div></div>
+      <div class="field" id="edit-technique-field" style="display:none;"><label>Technique</label><div class="chips" id="edit-technique"></div></div>
+    </div>
+    <div class="card" style="margin-bottom:8px;">
+      <div class="field"><label id="edit-weight-label">Weight (kg)</label><input type="number" id="edit-weight" placeholder="0.0" step="0.25" min="0"></div>
+      <div class="field"><label>Sets</label><input type="number" id="edit-sets" placeholder="--" min="1" max="20" style="font-family:DM Mono,monospace;font-size:18px;"></div>
+      <div class="field"><label>Reps</label><input type="number" id="edit-reps" placeholder="--" min="1" max="20" style="font-family:DM Mono,monospace;font-size:18px;"></div>
+      <div class="field">
+        <label>Quality</label>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <div class="q-dot" id="eq1" onclick="setEditQuality(1)">1</div>
+          <div class="q-dot" id="eq2" onclick="setEditQuality(2)">2</div>
+          <div class="q-dot" id="eq3" onclick="setEditQuality(3)">3</div>
+          <div class="q-dot" id="eq4" onclick="setEditQuality(4)">4</div>
+          <div class="q-dot" id="eq5" onclick="setEditQuality(5)">5</div>
+        </div>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="edit-notes" placeholder="Notes..."></textarea></div>
+    </div>
+    <button class="btn btn-primary" onclick="saveEditEntry()" style="margin-bottom:8px;">Save &amp; Push to Sheet</button>
+    <button class="btn btn-secondary" onclick="closeEditModal()" style="margin-bottom:8px;">Cancel</button>
+    <button class="btn" onclick="deleteEditEntry()"
+      style="background:rgba(255,82,82,0.1);border:1px solid rgba(255,82,82,0.3);color:var(--red);font-weight:700;">
+      Delete Entry
+    </button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="meetModal" onclick="if(event.target===this)closeMeetModal()">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -897,6 +961,15 @@ const LIFT_CONFIG = {
 };
 
 const SEP = ' · ';
+
+// Build a competition display title from its components
+function buildCompTitle(name, date, location){
+  if(!name)return'';
+  const parts=[name];
+  if(date){const d=new Date(date+'T00:00:00');parts.push(d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}));}
+  if(location)parts.push(location);
+  return parts.join(' · ');
+}
 
 // ============================================================
 // DATA
@@ -1083,7 +1156,7 @@ function renderLog(){
       const pbKey=e.base+'|'+(e.position&&e.position[0]?e.position[0]:'')+' |'+(e.receiving||'');
       const isPBEntry=e.weight&&pbMap[pbKey]&&e.weight>=pbMap[pbKey];
       const pbBadge=isPBEntry?'<span style="font-size:11px;margin-left:5px;vertical-align:middle;" title="PB for this lift">🏆</span>':'';
-      html+=`<div class="log-entry ${borderClass}"${i>0?' style="border-top:1px solid var(--border)"':''}>
+      html+=`<div class="log-entry ${borderClass}" onclick="openEditModal('${e.id}')"${i>0?' style="border-top:1px solid var(--border)"':''}>
         <div class="log-entry-header">
           <div class="log-entry-lift">${ln}${compLiftBadge}${pbBadge}</div>
           <div class="log-entry-weight">${e.weight?dispW(e.weight)+'<span style="font-size:12px;color:var(--text3)">'+unitLabel()+'</span>':'--'}</div>
@@ -1226,8 +1299,30 @@ function updatePBs(entry){
     if(idx>=0)s.pbs[idx]=pb;else s.pbs.push(pb);
     saveSettingsData(s);
   }
+
+function recalculatePBs(){
+  // Rebuild settings.pbs from scratch by scanning all log entries
+  // Called after deletion to ensure PBs stay accurate
+  const db=loadDB();
+  const s=loadSettings();
+  const pbMap={};
+  db.entries.forEach(e=>{
+    if(!e.base||!e.weight)return;
+    const ex=pbMap[e.base];
+    if(!ex||e.weight>ex.weight){
+      pbMap[e.base]={date:e.date,lift:e.base,weight:e.weight};
+    }
+  });
+  // Keep seeded PBs where no log entry beats them
+  (s.pbs||[]).forEach(seed=>{
+    const fromLog=pbMap[seed.lift];
+    if(!fromLog||seed.weight>fromLog.weight) pbMap[seed.lift]=seed;
+  });
+  s.pbs=Object.values(pbMap);
+  saveSettingsData(s);
 }
 
+}
 // ============================================================
 // PBs TAB
 // ============================================================
@@ -2619,33 +2714,48 @@ function clearAllData(){if(!confirm('Clear ALL data? Export first. Cannot be und
 // ============================================================
 // SYNC
 // ============================================================
-async function syncEntryToSheets(entry,url){try{await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'log',entry})});}catch(e){}}
+async function syncEntryToSheets(entry,url){await appendEntryToSheet(entry,url);}
+// ── SYNC -- Sheet is source of truth ────────────────────────────────────────
+// Pull: sheet wins. Push: append only. Never overwrite sheet rows.
+
 async function syncBoth(){
   const s=loadSettings();if(!s.sheetsUrl){showToast('Add Sheets URL in Settings first','error');return;}
   const btn=document.getElementById('syncBtn');btn.textContent='⇅ ...';btn.classList.add('syncing');
   try{
-    // Pull all data from Sheets
     const pulled=await pullFromSheets(s.sheetsUrl);
 
-    // Merge log entries
-    const db=loadDB();const byId={};db.entries.forEach(e=>{byId[e.id]=e;});
-    if(pulled.entries&&pulled.entries.length)pulled.entries.forEach(e=>{if(e.id)byId[e.id]=e;});
-    const merged=Object.values(byId).sort((a,b)=>b.date.localeCompare(a.date));
-    db.entries=merged;saveDB(db);
+    // Merge log entries -- sheet wins on conflict (same ID)
+    const db=loadDB();
+    const byId={};
+    db.entries.forEach(e=>{byId[e.id]=e;});
+    if(pulled.entries&&pulled.entries.length){
+      pulled.entries.forEach(e=>{if(e.id)byId[e.id]=e;}); // sheet overwrites local
+    }
+    // Find entries that exist locally but not in sheet -- append them
+    const sheetIds=new Set((pulled.entries||[]).map(e=>e.id).filter(Boolean));
+    const localOnly=db.entries.filter(e=>e.id&&!sheetIds.has(e.id));
+    if(localOnly.length&&s.sheetsUrl){
+      // Append missing entries to sheet
+      for(const entry of localOnly){
+        await appendEntryToSheet(entry,s.sheetsUrl);
+      }
+    }
+    db.entries=Object.values(byId).sort((a,b)=>b.date.localeCompare(a.date));
+    saveDB(db);
 
-    // Merge meets
+    // Merge meets -- sheet wins
     if(pulled.meets&&pulled.meets.length){
       const existing=s.meets||[];
-      const meetById={};existing.forEach(m=>{meetById[m.id]=m;});
+      const meetById={};
+      existing.forEach(m=>{meetById[m.id]=m;});
       pulled.meets.forEach(m=>{if(m.id)meetById[m.id]=m;});
       s.meets=Object.values(meetById).sort((a,b)=>b.date.localeCompare(a.date));
     }
 
-    // Merge bodyweight log
+    // Merge bodyweight -- sheet wins, dedup by date+weight
     if(pulled.bw&&pulled.bw.length){
       const existingBW=s.bwLog||[];
-      const allBW=[...existingBW,...pulled.bw];
-      // Dedupe by date+weight
+      const allBW=[...pulled.bw,...existingBW];
       const bwSeen=new Set();
       s.bwLog=allBW.filter(e=>{const k=e.date+'_'+e.weight;if(bwSeen.has(k))return false;bwSeen.add(k);return true;})
         .sort((a,b)=>b.date.localeCompare(a.date));
@@ -2653,24 +2763,21 @@ async function syncBoth(){
     }
     saveSettingsData(s);
 
-    // Push everything back to Sheets in one call
-    await fetch(s.sheetsUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        action:'syncFull',
-        entries:merged,
-        meets:s.meets||[],
-        bw:s.bwLog||[],
-        pbs:s.pbs||[],
-      })
-    });
-
     renderLog();
     if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
     if(document.getElementById('pane-comp').classList.contains('active'))renderMeetList();
     showToast('Synced','success');
-  }catch(e){showToast('Sync failed -- check URL','error');}
+  }catch(e){console.error(e);showToast('Sync failed -- check URL','error');}
   btn.textContent='⇅ SYNC';btn.classList.remove('syncing');
 }
+
+async function appendEntryToSheet(entry,url){
+  try{
+    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'log',entry})});
+  }catch(e){}
+}
+
 async function pullFromSheets(url){
   try{
     const r=await fetch(url+'?action=getAll');
@@ -2679,7 +2786,166 @@ async function pullFromSheets(url){
   }catch(e){return{entries:[],meets:[],bw:[]};}
 }
 
+async function pushEditToSheet(entry,url){
+  // Update a specific row in the sheet by ID
+  try{
+    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'updateEntry',entry})});
+  }catch(e){}
+}
+
 // ============================================================
+// EDIT ENTRY MODAL
+// ============================================================
+let editEntryId = null;
+let editQuality = null;
+
+function openEditModal(id){
+  const db=loadDB();
+  const entry=db.entries.find(e=>e.id===id);
+  if(!entry)return;
+  editEntryId=id;
+  editQuality=entry.quality||null;
+
+  document.getElementById('edit-date').value=entry.date||'';
+  document.getElementById('edit-session').value=entry.session||'Coached Class';
+  document.getElementById('edit-base').value=entry.base||'';
+  document.getElementById('edit-weight').value=entry.weight||'';
+  document.getElementById('edit-sets').value=entry.sets||'';
+  document.getElementById('edit-reps').value=entry.reps||'';
+  document.getElementById('edit-notes').value=entry.notes||'';
+
+  // Quality dots
+  document.querySelectorAll('[id^="eq"]').forEach(d=>{
+    d.classList.toggle('selected',parseInt(d.id.replace('eq',''))===editQuality);
+  });
+
+  // Chips
+  updateEditChips(entry);
+
+  document.getElementById('editModal').classList.add('open');
+}
+
+function setEditQuality(val){
+  editQuality=val;
+  document.querySelectorAll('[id^="eq"]').forEach(d=>{
+    d.classList.toggle('selected',parseInt(d.id.replace('eq',''))===val);
+  });
+}
+
+function updateEditChips(existingEntry){
+  const base=document.getElementById('edit-base').value;
+  const cfg=LIFT_CONFIG[base]||{positions:[],receiving:[],grip:[],technique:[]};
+  const entry=existingEntry||{position:[],receiving:'',grip:[],technique:[]};
+
+  function showField(id,show){document.getElementById(id).style.display=show?'':'none';}
+  function renderChips(containerId,options,selected,single){
+    const el=document.getElementById(containerId);if(!el)return;
+    el.innerHTML=options.map(v=>{
+      const isSel=Array.isArray(selected)?selected.includes(v):selected===v;
+      return `<div class="chip${isSel?' selected':''}" onclick="toggleEditChip(this,'${containerId}',${single})">${v}</div>`;
+    }).join('');
+  }
+
+  showField('edit-position-field',cfg.positions&&cfg.positions.length>0);
+  showField('edit-receiving-field',cfg.receiving&&cfg.receiving.length>0);
+  showField('edit-grip-field',cfg.grip&&cfg.grip.length>0);
+  showField('edit-technique-field',(cfg.technique&&cfg.technique.length>0)||(cfg.squat_types&&cfg.squat_types.length>0));
+
+  if(cfg.positions&&cfg.positions.length)renderChips('edit-position',cfg.positions,entry.position||[],false);
+  if(cfg.receiving&&cfg.receiving.length)renderChips('edit-receiving',cfg.receiving,entry.receiving||'',true);
+  if(cfg.grip&&cfg.grip.length)renderChips('edit-grip',cfg.grip,entry.grip||[],true);
+  const techOpts=[...(cfg.squat_types||[]),...(cfg.technique||[])];
+  if(techOpts.length)renderChips('edit-technique',techOpts,entry.technique||[],false);
+}
+
+function toggleEditChip(el,groupId,single){
+  if(single){
+    el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+  } else {
+    el.classList.toggle('selected');
+  }
+}
+
+function getEditChips(containerId){
+  const el=document.getElementById(containerId);if(!el)return[];
+  return Array.from(el.querySelectorAll('.chip.selected')).map(c=>c.textContent);
+}
+
+function closeEditModal(){
+  document.getElementById('editModal').classList.remove('open');
+  editEntryId=null;
+  editQuality=null;
+}
+
+async function deleteEditEntry(){
+  if(!editEntryId)return;
+  if(!confirm('Delete this entry? It will also be removed from the sheet.'))return;
+  const db=loadDB();
+  const entry=db.entries.find(e=>e.id===editEntryId);
+  db.entries=db.entries.filter(e=>e.id!==editEntryId);
+  saveDB(db);
+  recalculatePBs();
+  const s=loadSettings();
+  if(s.sheetsUrl&&entry){
+    try{
+      await fetch(s.sheetsUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'deleteEntry',id:editEntryId})});
+    }catch(e){}
+  }
+  closeEditModal();
+  renderLog();
+  if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
+  showToast('Entry deleted','success');
+}
+
+
+async function saveEditEntry(){
+  if(!editEntryId)return;
+  const db=loadDB();
+  const idx=db.entries.findIndex(e=>e.id===editEntryId);
+  if(idx<0)return;
+
+  const weight=parseFloat(document.getElementById('edit-weight').value)||null;
+  const updated={
+    ...db.entries[idx],
+    date:document.getElementById('edit-date').value||db.entries[idx].date,
+    session:document.getElementById('edit-session').value,
+    base:document.getElementById('edit-base').value||db.entries[idx].base,
+    position:getEditChips('edit-position'),
+    receiving:getEditChips('edit-receiving')[0]||'',
+    grip:getEditChips('edit-grip'),
+    technique:getEditChips('edit-technique'),
+    weight,
+    sets:parseInt(document.getElementById('edit-sets').value)||null,
+    reps:parseInt(document.getElementById('edit-reps').value)||null,
+    quality:editQuality,
+    notes:document.getElementById('edit-notes').value.trim(),
+  };
+
+  db.entries[idx]=updated;
+  saveDB(db);
+  updatePBs(updated);
+
+  // Push edit to sheet
+  const s=loadSettings();
+  if(s.sheetsUrl){
+    showToast('Saving...','');
+    await pushEditToSheet(updated,s.sheetsUrl);
+  }
+
+  closeEditModal();
+  renderLog();
+  if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
+  showToast('Entry updated','success');
+}
+
+
+// ============================================================
+// EDIT ENTRY MODAL
+// ============================================================
+
 // TOAST
 // ============================================================
 let toastTimeout;
@@ -2746,8 +3012,7 @@ function renderCountdown(){
     el.innerHTML=`
       <div>
         <div class="countdown-label">Next Competition</div>
-        <div class="countdown-name">${comp.name}${comp.location?' · '+comp.location:''}</div>
-        ${comp.date?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px;">${new Date(comp.date+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>`:''}
+        <div class="countdown-name">${buildCompTitle(comp.name,comp.date,comp.location)}</div>
       </div>
       <div style="text-align:right;">
         <div class="countdown-days">${diff}</div>
@@ -2764,7 +3029,7 @@ function renderCountdown(){
   // Log tab banner
   if(logBanner&&logBannerName&&logBannerDays){
     logBanner.style.display='block';
-    logBannerName.textContent=comp.name;
+    logBannerName.textContent=buildCompTitle(comp.name,comp.date,comp.location);
     logBannerDays.textContent=diff;
   }
 }
@@ -3112,7 +3377,7 @@ ATHLETE DATA:
 - Most trained lifts: ${JSON.stringify(Object.entries(liftCounts).sort((a,b)=>b[1]-a[1]).slice(0,5))}
 - Avg quality rating last 8 weeks: ${avgQuality?avgQuality+'/5':'no data'}
 - Days to next competition: ${daysToComp!==null?(daysToComp<=0?'passed':daysToComp+' days'):'none scheduled'}
-- Competition: ${comp.name||'none'}
+- Competition: ${buildCompTitle(comp.name,comp.date,comp.location)||'none'}
 - Meets completed: ${meets.length}
 
 Give 3-5 specific, actionable insights. Consider lift ratio balance, training frequency, quality trends, competition prep if applicable. Max 250 words. Short paragraphs, no bullet points, no headers. Speak directly to the athlete.`;
