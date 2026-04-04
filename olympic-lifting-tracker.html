@@ -2724,23 +2724,34 @@ async function syncBoth(){
   try{
     const pulled=await pullFromSheets(s.sheetsUrl);
 
-    // Merge log entries -- sheet wins on conflict (same ID)
+    // Merge log entries -- sheet is source of truth
     const db=loadDB();
     const byId={};
     db.entries.forEach(e=>{byId[e.id]=e;});
 
+    // Build a fingerprint set from sheet entries for dedup (date+base+weight)
+    const sheetFingerprints=new Set();
     if(pulled.entries&&pulled.entries.length){
       pulled.entries.forEach(e=>{
-        if(!e.id) e.id=uid(); // assign ID to sheet entries that don't have one
+        if(!e.id) e.id=uid(); // assign ID to sheet entries missing one
         byId[e.id]=e;         // sheet wins on conflict
+        // Record fingerprint to avoid re-appending
+        const fp=(e.date||'')+'|'+(e.base||'')+'|'+(e.weight||'');
+        sheetFingerprints.add(fp);
+        if(e.id) sheetFingerprints.add('id:'+e.id);
       });
     }
 
-    // Find entries that exist locally but not in sheet -- append them
-    const sheetIds=new Set((pulled.entries||[]).map(e=>e.id).filter(Boolean));
-    const localOnly=db.entries.filter(e=>e.id&&!sheetIds.has(e.id));
-    if(localOnly.length&&s.sheetsUrl){
-      for(const entry of localOnly){
+    // Only append local entries that are genuinely not in the sheet
+    // Check both by ID and by date+base+weight fingerprint
+    const toAppend=db.entries.filter(e=>{
+      if(!e.id) return false; // no ID, skip
+      const idKey='id:'+e.id;
+      const fp=(e.date||'')+'|'+(e.base||'')+'|'+(e.weight||'');
+      return !sheetFingerprints.has(idKey)&&!sheetFingerprints.has(fp);
+    });
+    if(toAppend.length&&s.sheetsUrl){
+      for(const entry of toAppend){
         await appendEntryToSheet(entry,s.sheetsUrl);
       }
     }
