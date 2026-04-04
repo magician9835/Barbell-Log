@@ -551,14 +551,23 @@
         </div>
       </div>
       <div class="section">
-        <div class="section-label">Bodyweight Log</div>
-        <div class="card" id="bwLogList" style="max-height:180px;overflow-y:auto;"></div>
-        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div class="section-label" style="margin:0;">Bodyweight Log</div>
+          <button onclick="toggleBWLog()" id="bwLogToggle"
+            style="font-size:11px;font-family:DM Mono,monospace;color:var(--text3);background:none;border:1px solid var(--border);border-radius:20px;padding:3px 10px;cursor:pointer;">
+            Show all
+          </button>
+        </div>
+        <!-- Quick log row -->
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
           <input type="number" id="bw-entry" placeholder="kg" step="0.1" min="30" max="200"
             style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:DM Mono,monospace;padding:8px 12px;border-radius:8px;outline:none;width:90px;">
           <input type="date" id="bw-date" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:13px;font-family:DM Mono,monospace;padding:8px 10px;border-radius:8px;outline:none;color-scheme:dark;flex:1;">
           <button class="btn btn-secondary btn-sm" onclick="logBodyweight()">Log</button>
         </div>
+        <!-- Recent entries (collapsed = 5 rows, expanded = all) -->
+        <div class="card" id="bwLogList"></div>
+        <!-- Import -->
         <div style="margin-top:8px;">
           <button class="btn btn-secondary btn-sm" onclick="document.getElementById('bw-csv-import').click()">Import Bodyweight CSV</button>
           <input type="file" id="bw-csv-import" accept=".csv" style="display:none;" onchange="importWithingsCSV(this)">
@@ -1336,16 +1345,36 @@ function logBodyweight(){
   showToast('Bodyweight logged','success');
 }
 
+let bwLogExpanded = false;
+
+function toggleBWLog(){
+  bwLogExpanded = !bwLogExpanded;
+  const btn = document.getElementById('bwLogToggle');
+  if(btn) btn.textContent = bwLogExpanded ? 'Show less' : 'Show all';
+  renderBWLog();
+}
+
 function renderBWLog(){
   const s=loadSettings();
   const log=s.bwLog||[];
   const el=document.getElementById('bwLogList');
+  const toggleBtn=document.getElementById('bwLogToggle');
   if(!el)return;
-  if(!log.length){el.innerHTML='<div style="padding:12px 14px;font-size:12px;color:var(--text3);font-family:monospace;">No weigh-ins logged yet</div>';return;}
-  el.innerHTML=log.slice(0,10).map((e,i)=>`
-    <div style="padding:10px 14px;display:flex;justify-content:space-between;${i>0?'border-top:1px solid var(--border)':''}">
-      <div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">${formatDate(e.date)}</div>
-      <div style="font-size:14px;font-weight:700;font-family:DM Mono,monospace;color:var(--text);">${e.weight}<span style="font-size:10px;color:var(--text3)">kg</span></div>
+  if(!log.length){
+    el.innerHTML='<div style="padding:12px 14px;font-size:12px;color:var(--text3);font-family:monospace;">No weigh-ins logged yet</div>';
+    if(toggleBtn)toggleBtn.style.display='none';
+    return;
+  }
+  const PREVIEW = 5;
+  const shown = bwLogExpanded ? log : log.slice(0, PREVIEW);
+  if(toggleBtn){
+    toggleBtn.style.display = log.length > PREVIEW ? 'inline-block' : 'none';
+    toggleBtn.textContent = bwLogExpanded ? 'Show less' : `Show all (${log.length})`;
+  }
+  el.innerHTML = shown.map((e,i)=>`
+    <div style="padding:9px 14px;display:flex;justify-content:space-between;align-items:center;${i>0?'border-top:1px solid var(--border)':''}">
+      <div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">${formatDate(e.date)}${e.note?'<span style="margin-left:6px;font-size:9px;opacity:0.5;">'+e.note+'</span>':''}</div>
+      <div style="font-size:14px;font-weight:700;font-family:DM Mono,monospace;color:var(--text);">${e.weight}<span style="font-size:10px;color:var(--text3);margin-left:2px;">kg</span></div>
     </div>`).join('');
 }
 
@@ -1937,12 +1966,59 @@ function closeSummaryModal(){document.getElementById('summaryModal').classList.r
 // TIMER
 // ============================================================
 let timerInterval=null,timerRemaining=120,timerTotal=120,timerRunning=false;
+let audioCtx=null;
+
+function getAudioCtx(){
+  if(!audioCtx||audioCtx.state==='closed'){
+    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  }
+  // Resume if suspended (iOS requires user gesture to start audio context)
+  if(audioCtx.state==='suspended')audioCtx.resume();
+  return audioCtx;
+}
+
+function playTimerSound(){
+  try{
+    const ctx=getAudioCtx();
+    // Two-tone beep: short rising pair then a longer tone
+    const beeps=[
+      {freq:880, start:0,    dur:0.12, vol:0.4},
+      {freq:1100,start:0.15, dur:0.12, vol:0.4},
+      {freq:1320,start:0.32, dur:0.35, vol:0.5},
+    ];
+    beeps.forEach(({freq,start,dur,vol})=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type='sine';
+      osc.frequency.value=freq;
+      const t=ctx.currentTime+start;
+      gain.gain.setValueAtTime(0,t);
+      gain.gain.linearRampToValueAtTime(vol,t+0.01);
+      gain.gain.linearRampToValueAtTime(0,t+dur);
+      osc.start(t);
+      osc.stop(t+dur+0.05);
+    });
+  }catch(e){
+    // Audio unavailable -- vibrate only
+  }
+}
+
+// Unlock audio context on first user interaction (required by iOS Safari)
+function unlockAudio(){
+  getAudioCtx();
+  document.removeEventListener('touchstart',unlockAudio);
+  document.removeEventListener('click',unlockAudio);
+}
+document.addEventListener('touchstart',unlockAudio,{once:true});
+document.addEventListener('click',unlockAudio,{once:true});
 function setTimerPreset(s,el){document.querySelectorAll('.timer-preset').forEach(b=>b.classList.remove('active'));el.classList.add('active');resetTimer(s);}
 function resetTimer(s){clearInterval(timerInterval);timerRunning=false;timerTotal=s||timerTotal;timerRemaining=timerTotal;document.getElementById('timerStartBtn').textContent='Start';document.getElementById('timerCircle').className='timer-circle';document.getElementById('timerLabel').textContent='Ready';updateTimerDisplay();}
 function toggleTimer(){
   if(timerRunning){clearInterval(timerInterval);timerRunning=false;document.getElementById('timerStartBtn').textContent='Resume';document.getElementById('timerLabel').textContent='Paused';document.getElementById('timerCircle').className='timer-circle';}
   else{if(timerRemaining<=0)resetTimer();timerRunning=true;document.getElementById('timerStartBtn').textContent='Pause';document.getElementById('timerCircle').className='timer-circle running';document.getElementById('timerLabel').textContent='Resting...';
-    timerInterval=setInterval(()=>{timerRemaining--;updateTimerDisplay();if(timerRemaining<=0){clearInterval(timerInterval);timerRunning=false;document.getElementById('timerCircle').className='timer-circle done';document.getElementById('timerLabel').textContent='Go!';document.getElementById('timerStartBtn').textContent='Start';if(navigator.vibrate)navigator.vibrate([200,100,200]);}},1000);}
+    timerInterval=setInterval(()=>{timerRemaining--;updateTimerDisplay();if(timerRemaining<=0){clearInterval(timerInterval);timerRunning=false;document.getElementById('timerCircle').className='timer-circle done';document.getElementById('timerLabel').textContent='Go!';document.getElementById('timerStartBtn').textContent='Start';if(navigator.vibrate)navigator.vibrate([200,100,200]);playTimerSound();}},1000);}
 }
 function updateTimerDisplay(){const m=Math.floor(timerRemaining/60),s=timerRemaining%60;document.getElementById('timerTime').textContent=`${m}:${s.toString().padStart(2,'0')}`;}
 
