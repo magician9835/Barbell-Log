@@ -16,11 +16,15 @@
     --radius: 12px; --radius-sm: 8px; --tab-h: 64px; --header-h: 56px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; -webkit-text-size-adjust: 100%; }
+  @supports (padding: max(0px)) {
+    #header { padding-top: max(12px, env(safe-area-inset-top)); }
+    #tab-bar { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+  }
   #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
   #header { height: var(--header-h); background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; flex-shrink: 0; position: relative; }
-  #header h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; color: var(--accent); }
-  #header .sync-btn { position: absolute; right: 16px; background: none; border: 1px solid var(--border); color: var(--text2); font-size: 11px; font-family: 'DM Mono', monospace; padding: 4px 10px; border-radius: 20px; cursor: pointer; }
+  #header h1 { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; color: var(--accent); flex-shrink: 0; }
+  #header .sync-btn { background: none; border: 1px solid var(--border); color: var(--text2); font-size: 11px; font-family: DM Mono,monospace; padding: 4px 10px; border-radius: 20px; cursor: pointer; white-space:nowrap; flex-shrink:0; }
   #header .sync-btn.syncing { color: var(--accent); border-color: var(--accent); }
   #content { flex: 1; overflow: hidden; position: relative; }
   .tab-pane { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--tab-h) + 16px); display: none; }
@@ -83,14 +87,21 @@
   .planner-lift-body.collapsed { display: none; }
   .ref-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-bg); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text2); margin: 8px 14px; }
   .ref-pill strong { color: var(--accent); }
-  .warmup-row { padding: 10px 14px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+  .warmup-layout { display: grid; grid-template-columns: 160px 1fr; gap: 0; border-top: 1px solid var(--border); }
+  .warmup-list { border-right: 1px solid var(--border); }
+  .warmup-row { padding: 10px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
   .warmup-row:last-child { border-bottom: none; }
-  .warmup-set { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; width: 64px; }
-  .warmup-weight { font-size: 20px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); flex: 1; }
-  .warmup-pct { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; }
+  .warmup-set { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; width: 52px; flex-shrink: 0; }
+  .warmup-weight { font-size: 17px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); flex: 1; }
+  .warmup-pct { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; }
   .warmup-row.working { background: var(--accent-bg); }
   .warmup-row.working .warmup-weight { color: var(--accent); }
   .warmup-row.working .warmup-set { color: var(--accent-dim); font-weight: 700; }
+  .warmup-diagram { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 8px; background: var(--surface2); min-height: 120px; position: sticky; top: 0; }
+  .warmup-diagram-label { font-size: 9px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; text-align: center; }
+  .warmup-diagram-weight { font-size: 22px; font-weight: 800; color: var(--accent); font-family: 'DM Mono', monospace; line-height: 1; margin-bottom: 2px; text-align: center; }
+  .warmup-diagram-plates { font-size: 9px; color: var(--text3); font-family: 'DM Mono', monospace; text-align: center; margin-bottom: 10px; min-height: 12px; line-height: 1.4; }
+  .warmup-diagram-svg { width: 100%; overflow: visible; }
   .timer-display { text-align: center; padding: 20px 16px; }
   .timer-circle { width: 130px; height: 130px; border-radius: 50%; border: 3px solid var(--border); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
   .timer-circle.running { border-color: var(--accent); }
@@ -129,10 +140,11 @@
   #toast.error { border-color: var(--red); color: var(--red); }
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: none; align-items: flex-end; }
   .modal-overlay.open { display: flex; }
-  .modal { background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px 16px 40px; }
+  .modal { background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; width: 100%; max-height: 90dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 16px 40px; position: relative; }
   .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+  .modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface2); color: var(--text2); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; line-height: 1; }
   .modal h2 { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
-  .filter-bar { padding: 10px 16px; display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-bottom: 1px solid var(--border); }
+  .filter-bar { padding: 10px 16px; display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-bottom: 1px solid var(--border); -webkit-overflow-scrolling: touch; white-space: nowrap; }
   .filter-bar::-webkit-scrollbar { display: none; }
   .filter-chip { flex-shrink: 0; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer; background: none; font-family: 'DM Mono', monospace; white-space: nowrap; }
   .filter-chip.active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
@@ -196,14 +208,13 @@
   .goal-bar-fill.achieved { background:var(--accent); }
   .goal-pct { font-size:9px; color:var(--text3); font-family:DM Mono,monospace; margin-top:3px; text-align:right; }
   .goal-checkmark { color:var(--accent); font-size:14px; margin-left:6px; }
-  .goal-custom-input { width:60px; background:var(--surface2); border:1px solid var(--border); color:var(--accent); font-size:12px; font-family:DM Mono,monospace; padding:3px 6px; border-radius:6px; text-align:right; outline:none; }
+  .goal-custom-input { width:64px; background:var(--surface2); border:1px solid var(--border); color:var(--accent); font-size:12px; font-family:DM Mono,monospace; padding:3px 6px; border-radius:6px; text-align:right; outline:none; }
 
   /* TEXTURE & DEPTH */
   body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
     opacity:1; }
   .card { box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 2px 8px rgba(0,0,0,0.3); }
-  .tab-pane { position: relative; z-index: 1; }
 
   /* SCOREBOARD PBs */
   .pb-card { padding: 14px 16px; position: relative; overflow: hidden; }
@@ -224,7 +235,10 @@
   .log-entry.border-one::before { background: var(--orange); }
 
   /* HEADER CLOCK */
-  #header-clock { position:absolute; left:50%; transform:translateX(-50%); font-size:11px; font-family:DM Mono,monospace; color:var(--text3); letter-spacing:1px; }
+  #header-clock { position:absolute; left:50%; transform:translateX(-50%); font-size:10px; font-family:DM Mono,monospace; color:var(--text3); letter-spacing:1px; pointer-events:none; white-space:nowrap; }
+  #header-comp-badge { display:none; align-items:center; gap:4px; background:var(--accent-bg); border:1px solid var(--accent); border-radius:20px; padding:3px 10px; cursor:pointer; margin-right:8px; }
+  #header-comp-badge span.days { font-size:12px; font-weight:800; color:var(--accent); font-family:DM Mono,monospace; line-height:1; }
+  #header-comp-badge span.label { font-size:9px; color:var(--accent-dim); font-family:DM Mono,monospace; letter-spacing:0.5px; text-transform:uppercase; }
 
   /* COMP CONTEXT */
   .context-row { padding: 12px 14px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); }
@@ -235,15 +249,38 @@
   .context-sub { font-size:10px; color:var(--text3); font-family:DM Mono,monospace; margin-top:1px; text-align:right; }
 
   /* BARBELL VISUALISER */
-  .barbell-viz { padding: 10px 14px 12px; border-top: 1px solid var(--border); background: var(--surface2); }
-  .barbell-viz-label { font-size: 9px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center; }
-  .barbell-svg-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-  .barbell-svg-wrap::-webkit-scrollbar { display: none; }
   .warmup-row { cursor: pointer; transition: background 0.1s; }
   .warmup-row:active { background: var(--surface3); }
-  .warmup-row.selected { background: rgba(200,245,90,0.12); }
-  .warmup-row.working.selected { background: rgba(200,245,90,0.2); }
-  .plate-label { font-size: 8px; font-family: 'DM Mono', monospace; font-weight: 700; fill: rgba(0,0,0,0.7); }
+  .warmup-row.selected { background: rgba(200,245,90,0.15) !important; }
+  .warmup-row.selected .warmup-weight { color: var(--accent) !important; }
+  .warmup-row.selected .warmup-set { color: var(--accent-dim) !important; }
+  .plate-label { font-size: 7px; font-family: 'DM Mono', monospace; font-weight: 700; }
+
+  /* ANALYTICS */
+  .chart-wrap { position:relative; width:100%; overflow:hidden; }
+  .chart-canvas { display:block; width:100%; }
+  .chart-legend { display:flex; gap:12px; flex-wrap:wrap; padding:8px 12px 12px; }
+  .chart-legend-item { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--text3); font-family:DM Mono,monospace; }
+  .chart-legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .analytics-stat { padding:12px 14px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .analytics-stat:last-child { border-bottom:none; }
+  .analytics-stat-label { font-size:12px; color:var(--text2); }
+  .analytics-stat-val { font-size:18px; font-weight:800; color:var(--accent); font-family:DM Mono,monospace; }
+
+  /* SESSION SUMMARY */
+  .summary-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); }
+  .summary-cell { background:var(--surface); padding:14px; }
+  .summary-cell-label { font-size:9px; color:var(--text3); font-family:DM Mono,monospace; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:4px; }
+  .summary-cell-val { font-size:22px; font-weight:800; color:var(--accent); font-family:DM Mono,monospace; line-height:1; }
+  .summary-cell-sub { font-size:10px; color:var(--text3); font-family:DM Mono,monospace; margin-top:3px; }
+  .summary-pb-badge { background:var(--accent-bg); border:1px solid var(--accent); border-radius:8px; padding:8px 12px; margin:0 16px 8px; font-size:12px; color:var(--accent); font-family:DM Mono,monospace; }
+
+  /* COUNTDOWN */
+  .countdown-banner { margin:12px 16px 0; background:linear-gradient(135deg,var(--surface2),var(--surface)); border:1px solid var(--border); border-radius:var(--radius); padding:12px 16px; display:flex; justify-content:space-between; align-items:center; }
+  .countdown-label { font-size:10px; color:var(--text3); font-family:DM Mono,monospace; letter-spacing:1px; text-transform:uppercase; margin-bottom:2px; }
+  .countdown-name { font-size:13px; font-weight:700; color:var(--text); }
+  .countdown-days { font-size:36px; font-weight:800; color:var(--accent); font-family:DM Mono,monospace; line-height:1; }
+  .countdown-days-label { font-size:9px; color:var(--text3); font-family:DM Mono,monospace; text-align:right; margin-top:2px; }
 
   /* PULSE ANIMATION for new PB */
   @keyframes pbPulse { 0%{box-shadow:0 0 0 0 rgba(200,245,90,0.4)} 70%{box-shadow:0 0 0 12px rgba(200,245,90,0)} 100%{box-shadow:0 0 0 0 rgba(200,245,90,0)} }
@@ -260,27 +297,105 @@
   <div id="header">
     <h1>BARBELL LOG</h1>
     <div id="header-clock"></div>
-    <button class="sync-btn" id="syncBtn" onclick="syncBoth()">⇅ SYNC</button>
+    <div style="position:absolute;right:16px;display:flex;align-items:center;gap:8px;">
+      <div id="header-comp-badge" onclick="switchTab('comp',document.querySelector('.tab:nth-child(4)'))">
+        <span class="days" id="header-badge-days"></span>
+        <span class="label">days</span>
+      </div>
+      <button class="sync-btn" id="syncBtn" onclick="syncBoth()" style="position:static;">⇅ SYNC</button>
+    </div>
   </div>
   <div id="content">
 
     <!-- LOG TAB -->
     <div class="tab-pane active" id="pane-log">
-      <div style="padding:12px 16px 8px;">
-        <button class="btn btn-primary" onclick="openLogModal()">+ Log a Set</button>
+      <div class="sub-nav">
+        <button class="sub-nav-btn active" id="log-sub-entries" onclick="switchLogSub('entries')">Log</button>
+        <button class="sub-nav-btn" id="log-sub-analytics" onclick="switchLogSub('analytics')">Analytics</button>
       </div>
-      <div class="filter-bar">
-        <button class="filter-chip active" onclick="setFilter('all',this)">All</button>
-        <button class="filter-chip" onclick="setFilter('Snatch',this)">Snatch</button>
-        <button class="filter-chip" onclick="setFilter('Clean and Jerk',this)">C&J</button>
-        <button class="filter-chip" onclick="setFilter('Clean',this)">Clean</button>
-        <button class="filter-chip" onclick="setFilter('Jerk',this)">Jerk</button>
-        <button class="filter-chip" onclick="setFilter('Squat',this)">Squat</button>
-        <button class="filter-chip" onclick="setFilter('Pull',this)">Pull</button>
-        <button class="filter-chip" onclick="setFilter('Deadlift',this)">Deadlift</button>
-        <button class="filter-chip" onclick="setFilter('Row',this)">Row</button>
+      <!-- ENTRIES SUB-PANE -->
+      <div class="sub-pane active" id="log-pane-entries">
+        <div id="log-countdown-banner" style="display:none;margin:10px 16px 0;background:linear-gradient(135deg,rgba(200,245,90,0.08),rgba(200,245,90,0.04));border:1px solid var(--accent);border-radius:var(--radius);padding:10px 14px;display:none;cursor:pointer;" onclick="switchTab('comp',document.querySelector('.tab:nth-child(4)'))">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:9px;color:var(--accent-dim);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;">Next Competition</div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);margin-top:1px;" id="log-banner-name"></div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:32px;font-weight:800;color:var(--accent);font-family:DM Mono,monospace;line-height:1;" id="log-banner-days"></div>
+              <div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;">days to go</div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:12px 16px 8px;">
+          <button class="btn btn-primary" onclick="openLogModal()">+ Log a Set</button>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-chip active" onclick="setFilter('all',this)">All</button>
+          <button class="filter-chip" onclick="setFilter('Snatch',this)">Snatch</button>
+          <button class="filter-chip" onclick="setFilter('Clean and Jerk',this)">C&J</button>
+          <button class="filter-chip" onclick="setFilter('Clean',this)">Clean</button>
+          <button class="filter-chip" onclick="setFilter('Jerk',this)">Jerk</button>
+          <button class="filter-chip" onclick="setFilter('Squat',this)">Squat</button>
+          <button class="filter-chip" onclick="setFilter('Pull',this)">Pull</button>
+          <button class="filter-chip" onclick="setFilter('Row',this)">Row</button>
+          <button class="filter-chip" onclick="setFilter('Deadlift',this)">Deadlift</button>
+        <button class="filter-chip" onclick="setFilter('Bench Press',this)">Bench</button>
+        </div>
+        <div id="logList"></div>
       </div>
-      <div id="logList"></div>
+      <!-- ANALYTICS SUB-PANE -->
+      <div class="sub-pane" id="log-pane-analytics">
+        <div class="section">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div class="section-label" style="margin:0;">Progress</div>
+            <select id="analytics-lift" onchange="renderAnalytics()"
+              style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:12px;font-family:DM Mono,monospace;padding:5px 10px;border-radius:8px;outline:none;">
+              <option value="Snatch">Snatch</option>
+              <option value="Clean and Jerk">C&J</option>
+              <option value="Clean">Clean</option>
+              <option value="Jerk">Jerk</option>
+              <option value="Squat">Squat</option>
+              <option value="Pull">Pull</option>
+              <option value="Deadlift">Deadlift</option>
+              <option value="Pendlay Row">Pendlay Row</option>
+              <option value="Barbell Row">Barbell Row</option>
+              <option value="Bench Press">Bench</option>
+            </select>
+          </div>
+          <div class="filter-bar" style="padding:0 0 10px;border:none;">
+            <button class="filter-chip active" data-period="all" onclick="setAnalyticsPeriod('all',this)">All time</button>
+            <button class="filter-chip" data-period="ytd" onclick="setAnalyticsPeriod('ytd',this)">YTD</button>
+            <button class="filter-chip" data-period="lastyear" onclick="setAnalyticsPeriod('lastyear',this)">Last Year</button>
+            <button class="filter-chip" data-period="12m" onclick="setAnalyticsPeriod('12m',this)">12 Months</button>
+            <button class="filter-chip" data-period="6m" onclick="setAnalyticsPeriod('6m',this)">6 Months</button>
+            <button class="filter-chip" data-period="3m" onclick="setAnalyticsPeriod('3m',this)">3 Months</button>
+          </div>
+          <div class="card" style="padding:0;overflow:visible;">
+            <div id="analytics-chart" style="padding:16px 8px 8px;"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div class="section-label" style="margin:0;">AI Insights</div>
+            <button class="btn btn-sm btn-primary" onclick="generateInsights()" id="insights-btn"
+              style="padding:8px 16px;font-size:12px;">Generate</button>
+          </div>
+          <div id="insights-output" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);min-height:80px;padding:14px;font-size:13px;color:var(--text2);line-height:1.7;">
+            Tap Generate to get personalised training insights based on your log.
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-label">Volume &amp; Frequency</div>
+          <div class="card" id="analytics-volume"></div>
+        </div>
+        <div class="section">
+          <div class="section-label">Bodyweight Trend</div>
+          <div class="card" style="padding:0;overflow:visible;">
+            <div id="analytics-bw-chart" style="padding:16px 8px 8px;"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- PLANNER TAB -->
@@ -319,7 +434,7 @@
     </div>
 
     <!-- PBs TAB -->
-    <div class="tab-pane" id="pane-pbs" style="position:relative;">
+    <div class="tab-pane" id="pane-pbs">
       <div id="pbs-photo-bg" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.07;background-image:url('https://magician9835.github.io/Barbell-Log/photo.jpg');background-size:cover;background-position:center top;"></div>
       <div style="position:relative;z-index:1;">
         <div class="sub-nav">
@@ -330,16 +445,11 @@
         <div class="sub-pane active" id="pbs-pane-records">
           <div class="section">
             <div class="section-label">Competition Lifts</div>
-            <div class="card" id="pbTotalCard" style="margin-bottom:8px;"></div>
-            <div class="card" id="pbCompList"></div>
+            <div class="card" id="pbMainCard"></div>
           </div>
           <div class="section">
             <div class="section-label">All Records</div>
             <div class="card" id="pbAllList"></div>
-          </div>
-          <div class="section">
-            <div class="section-label">Sinclair</div>
-            <div class="card" id="pbSinclair"></div>
           </div>
         </div>
         <!-- GOALS -->
@@ -358,11 +468,13 @@
 
       <!-- PLAN SUB-PANE -->
       <div class="sub-pane active" id="comp-pane-plan">
+        <div id="comp-countdown" class="countdown-banner" style="display:none;"></div>
         <div class="section">
           <div class="section-label">Next Competition</div>
           <div class="card">
             <div class="field"><label>Name</label><input type="text" id="comp-name" placeholder="e.g. Liftoff Nov 2026" oninput="saveCompMeta()"></div>
             <div class="field"><label>Date</label><input type="date" id="comp-date" oninput="saveCompMeta()"></div>
+            <div class="field"><label>Location</label><input type="text" id="comp-location" placeholder="e.g. London" oninput="saveCompMeta()"></div>
           </div>
         </div>
         <div class="section">
@@ -375,7 +487,7 @@
         <div class="section">
           <div class="section-label">Projected Total</div>
           <div class="card" style="padding:20px; text-align:center;">
-            <div id="compTotal" style="font-size:56px;font-weight:800;color:var(--accent);font-family:DM Mono,monospace;line-height:1;">--</div>
+            <div id="compTotal" style="font-size:48px;font-weight:800;color:var(--accent);font-family:DM Mono,monospace;line-height:1;">--</div>
             <div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;margin-top:8px;">kg · 3rd Snatch + 3rd C&J</div>
           </div>
         </div>
@@ -411,11 +523,14 @@
       <div class="section">
         <div class="section-label">Athlete</div>
         <div class="card">
-          <div class="field">
-            <label>Bodyweight (kg)</label>
-            <input type="number" id="setting-bw" placeholder="e.g. 79.8" step="0.1" min="30" max="200"
-              oninput="saveAthleteSettings()"
-              style="font-family:DM Mono,monospace;font-size:18px;">
+          <div class="field" style="display:flex;align-items:center;gap:10px;">
+            <div style="flex:1;">
+              <label>Bodyweight (kg)</label>
+              <input type="number" id="setting-bw" placeholder="e.g. 79.8" step="0.1" min="30" max="200"
+                oninput="saveAthleteSettings()"
+                style="font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;width:100%;min-width:0;">
+            </div>
+            <button onclick="logBWFromField()" style="flex-shrink:0;background:var(--accent);color:#000;border:none;border-radius:8px;padding:8px 12px;font-family:Syne,sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Log today</button>
           </div>
           <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
             <div><div class="settings-label">Weight Class</div><div class="settings-sub" id="weight-class-display">Enter bodyweight above</div></div>
@@ -433,6 +548,11 @@
             style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:DM Mono,monospace;padding:8px 12px;border-radius:8px;outline:none;width:90px;">
           <input type="date" id="bw-date" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:13px;font-family:DM Mono,monospace;padding:8px 10px;border-radius:8px;outline:none;color-scheme:dark;flex:1;">
           <button class="btn btn-secondary btn-sm" onclick="logBodyweight()">Log</button>
+        </div>
+        <div style="margin-top:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="document.getElementById('bw-csv-import').click()">Import Bodyweight CSV</button>
+          <input type="file" id="bw-csv-import" accept=".csv" style="display:none;" onchange="importWithingsCSV(this)">
+          <div style="margin-top:6px;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Supports Withings and most CSV exports with Date, Weight columns.</div>
         </div>
       </div>
       <div class="section">
@@ -494,9 +614,10 @@
 </div>
 
 <!-- LOG MODAL -->
-<div class="modal-overlay" id="logModal">
+<div class="modal-overlay" id="logModal" onclick="if(event.target===this)closeLogModal()">
   <div class="modal">
     <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeLogModal()">✕</button>
     <h2>Log a Set</h2>
     <div class="card" style="margin-bottom:8px;">
       <div class="field"><label>Date</label><input type="date" id="m-date"></div>
@@ -506,7 +627,6 @@
           <option value="Coached Class">Coached Class</option>
           <option value="1:1 Session">1:1 Session</option>
           <option value="Solo">Solo</option>
-          <option value="Competition">Competition</option>
         </select>
       </div>
     </div>
@@ -516,14 +636,15 @@
         <select id="m-base" onchange="updateModalFields()">
           <option value="">Select...</option>
           <option>Snatch</option>
+          <option>Clean and Jerk</option>
           <option>Clean</option>
           <option>Jerk</option>
-          <option>Clean and Jerk</option>
           <option>Squat</option>
           <option>Pull</option>
           <option>Deadlift</option>
           <option>Pendlay Row</option>
           <option>Barbell Row</option>
+          <option>Bench Press</option>
           <option>Other</option>
         </select>
       </div>
@@ -566,9 +687,10 @@
 </div>
 
 <!-- FINISH SESSION MODAL -->
-<div class="modal-overlay" id="finishModal">
+<div class="modal-overlay" id="finishModal" onclick="if(event.target===this)closeFinishModal()">
   <div class="modal">
     <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeFinishModal()">✕</button>
     <h2>Finish Session</h2>
     <div style="font-size:13px;color:var(--text3);margin-bottom:16px;">Review each lift. Edit anything that changed from the plan.</div>
     <div id="finishCards"></div>
@@ -577,39 +699,102 @@
   </div>
 </div>
 
+<!-- SESSION SUMMARY MODAL -->
+<div class="modal-overlay" id="summaryModal" onclick="if(event.target===this)closeSummaryModal()">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeSummaryModal()">✕</button>
+    <h2>Session Done</h2>
+    <div id="summaryContent"></div>
+    <button class="btn btn-primary" onclick="closeSummaryModal()" style="margin-top:8px;">Close</button>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <!-- MEET MODAL -->
-<div class="modal-overlay" id="meetModal">
+<div class="modal-overlay" id="meetModal" onclick="if(event.target===this)closeMeetModal()">
   <div class="modal">
     <div class="modal-handle"></div>
-    <h2 id="meetModalTitle">Log a Meet</h2>
+    <button class="modal-close" onclick="closeMeetModal()">✕</button>
+    <h2>Log a Meet</h2>
     <div class="card" style="margin-bottom:8px;">
       <div class="field"><label>Competition Name</label><input type="text" id="mm-name" placeholder="e.g. Lift Off 2025"></div>
       <div class="field"><label>Date</label><input type="date" id="mm-date"></div>
+      <div class="field"><label>Location</label><input type="text" id="mm-location" placeholder="e.g. London"></div>
       <div class="field"><label>Bodyweight (kg)</label><input type="number" id="mm-bw" placeholder="e.g. 80.5" step="0.1" style="font-family:DM Mono,monospace;font-size:18px;"></div>
     </div>
     <div class="card" style="margin-bottom:8px;">
       <div style="padding:10px 14px 6px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;">Snatch</div>
-      ${[1,2,3].map(i=>`<div class="field" style="display:flex;align-items:center;gap:10px;">
-        <label style="width:48px;margin:0;">Attempt ${i}</label>
-        <input type="number" id="mm-sn-w${i}" placeholder="kg" step="0.5" style="flex:1;font-family:DM Mono,monospace;font-size:16px;background:transparent;border:none;color:var(--text);outline:none;">
+      <div class="field" style="display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
+        <label style="width:64px;margin:0;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Attempt 1</label>
+        <input type="number" id="mm-sn-w1" placeholder="kg" step="0.5"
+          style="flex:1;font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;">
         <div style="display:flex;gap:6px;">
-          <button onclick="setMeetResult('sn',${i},true)" id="mm-sn-r${i}-good" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:none;font-size:14px;cursor:pointer;">✅</button>
-          <button onclick="setMeetResult('sn',${i},false)" id="mm-sn-r${i}-miss" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:none;font-size:14px;cursor:pointer;">❌</button>
+          <button onclick="setMeetResult('sn',1,true)" id="mm-sn-r1-good"
+            style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">✅</button>
+          <button onclick="setMeetResult('sn',1,false)" id="mm-sn-r1-miss"
+            style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">❌</button>
         </div>
-      </div>`).join('')}
+      </div>
+      <div class="field" style="display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
+        <label style="width:64px;margin:0;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Attempt 2</label>
+        <input type="number" id="mm-sn-w2" placeholder="kg" step="0.5"
+          style="flex:1;font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;">
+        <div style="display:flex;gap:6px;">
+          <button onclick="setMeetResult('sn',2,true)" id="mm-sn-r2-good"
+            style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">✅</button>
+          <button onclick="setMeetResult('sn',2,false)" id="mm-sn-r2-miss"
+            style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">❌</button>
+        </div>
+      </div>
+      <div class="field" style="display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
+        <label style="width:64px;margin:0;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Attempt 3</label>
+        <input type="number" id="mm-sn-w3" placeholder="kg" step="0.5"
+          style="flex:1;font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;">
+        <div style="display:flex;gap:6px;">
+          <button onclick="setMeetResult('sn',3,true)" id="mm-sn-r3-good"
+            style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">✅</button>
+          <button onclick="setMeetResult('sn',3,false)" id="mm-sn-r3-miss"
+            style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">❌</button>
+        </div>
+      </div>
     </div>
-    <div class="card" style="margin-bottom:8px;" id="mm-cj-card">
+    <div class="card" style="margin-bottom:8px;">
       <div style="padding:10px 14px 6px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;">Clean and Jerk</div>
-      ${[1,2,3].map(i=>`<div class="field" style="display:flex;align-items:center;gap:10px;">
-        <label style="width:48px;margin:0;">Attempt ${i}</label>
-        <input type="number" id="mm-cj-w${i}" placeholder="kg" step="0.5" style="flex:1;font-family:DM Mono,monospace;font-size:16px;background:transparent;border:none;color:var(--text);outline:none;">
+      <div class="field" style="display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
+        <label style="width:64px;margin:0;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Attempt 1</label>
+        <input type="number" id="mm-cj-w1" placeholder="kg" step="0.5"
+          style="flex:1;font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;">
         <div style="display:flex;gap:6px;">
-          <button onclick="setMeetResult('cj',${i},true)" id="mm-cj-r${i}-good" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:none;font-size:14px;cursor:pointer;">✅</button>
-          <button onclick="setMeetResult('cj',${i},false)" id="mm-cj-r${i}-miss" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:none;font-size:14px;cursor:pointer;">❌</button>
+          <button onclick="setMeetResult('cj',1,true)" id="mm-cj-r1-good"
+            style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">✅</button>
+          <button onclick="setMeetResult('cj',1,false)" id="mm-cj-r1-miss"
+            style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">❌</button>
         </div>
-      </div>`).join('')}
+      </div>
+      <div class="field" style="display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
+        <label style="width:64px;margin:0;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Attempt 2</label>
+        <input type="number" id="mm-cj-w2" placeholder="kg" step="0.5"
+          style="flex:1;font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;">
+        <div style="display:flex;gap:6px;">
+          <button onclick="setMeetResult('cj',2,true)" id="mm-cj-r2-good"
+            style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">✅</button>
+          <button onclick="setMeetResult('cj',2,false)" id="mm-cj-r2-miss"
+            style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">❌</button>
+        </div>
+      </div>
+      <div class="field" style="display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
+        <label style="width:64px;margin:0;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Attempt 3</label>
+        <input type="number" id="mm-cj-w3" placeholder="kg" step="0.5"
+          style="flex:1;font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;">
+        <div style="display:flex;gap:6px;">
+          <button onclick="setMeetResult('cj',3,true)" id="mm-cj-r3-good"
+            style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">✅</button>
+          <button onclick="setMeetResult('cj',3,false)" id="mm-cj-r3-miss"
+            style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">❌</button>
+        </div>
+      </div>
     </div>
     <div class="card" style="margin-bottom:8px;">
       <div class="field"><label>Notes</label><textarea id="mm-notes" placeholder="Anything notable about the meet..."></textarea></div>
@@ -671,13 +856,19 @@ const LIFT_CONFIG = {
     positions: [],
     receiving: [],
     grip: ['Overhand','Underhand'],
-    technique: ['Pause','Tempo'],
+    technique: [],
   },
   'Barbell Row': {
-    positions: ['Hang Below Knee','Hang Above Knee','Hang Mid-Thigh'],
+    positions: [],
     receiving: [],
     grip: ['Overhand','Underhand'],
-    technique: ['Pause','Tempo'],
+    technique: [],
+  },
+  'Bench Press': {
+    positions: ['Flat','Incline','Decline'],
+    receiving: [],
+    grip: ['Overhand','Close Grip','Wide Grip'],
+    technique: ['Pause','Tempo','Banded','Pin','Dumbbell'],
   },
   'Other': {
     positions: [],
@@ -767,6 +958,7 @@ function initDB(){
   if(settings.comp){
     if(settings.comp.name)document.getElementById('comp-name').value=settings.comp.name;
     if(settings.comp.date)document.getElementById('comp-date').value=settings.comp.date;
+    if(settings.comp.location&&document.getElementById('comp-location'))document.getElementById('comp-location').value=settings.comp.location;
   }
   // Units
   const u=settings.unit||'kg';
@@ -794,11 +986,11 @@ function initDB(){
 // ============================================================
 function buildLiftName(e){
   const parts=[];
-  if(e.position&&e.position.length)parts.push(...e.position);
-  if(e.grip&&e.grip.length)parts.push(...e.grip);
-  if(e.receiving&&e.receiving!=='Squat (Full)'&&e.receiving!=='Split'&&e.receiving!=='')parts.push(e.receiving);
-  if(e.technique&&e.technique.length)parts.push(...e.technique);
   parts.push(e.base);
+  if(e.receiving&&e.receiving!=='Squat (Full)'&&e.receiving!=='Split'&&e.receiving!=='')parts.push(e.receiving);
+  if(e.grip&&e.grip.length)parts.push(...e.grip);
+  if(e.technique&&e.technique.length)parts.push(...e.technique);
+  if(e.position&&e.position.length)parts.push(...e.position);
   return parts.join(SEP);
 }
 
@@ -812,7 +1004,7 @@ function switchTab(name,el){
   el.classList.add('active');
   if(name==='log')renderLog();
   if(name==='pbs'){renderPBs();renderGoals();}
-  if(name==='comp'){renderComp();renderMeetList();}
+  if(name==='comp'){renderComp();renderMeetList();renderCountdown();}
   if(name==='settings'){renderCoeffSettings();renderBWLog();const s=loadSettings();renderWeightClass(s.athleteBW||(s.bwLog&&s.bwLog[0]&&s.bwLog[0].weight)||null);}
 }
 
@@ -853,9 +1045,14 @@ function renderLog(){
       const sr=[e.sets?`${e.sets}×`:'',e.reps?`${e.reps} reps`:''].filter(Boolean).join(' ');
       const qb=e.quality?`<div class="quality-bar">${[1,2,3,4,5].map(n=>`<div class="qb${n<=e.quality?' filled':''}"></div>`).join('')}</div>`:'';
       const borderClass=e.session==='Coached Class'?'border-coached':e.session==='Solo'?'border-solo':e.session==='Competition'?'border-comp':'border-one';
+      const isCompLift=(e.base==='Snatch'||e.base==='Clean and Jerk')&&
+        (!e.position||e.position.length===0||(e.position.length===1&&e.position[0]==='Floor'))&&
+        (!e.technique||e.technique.length===0)&&
+        (!e.receiving||e.receiving==='Squat (Full)'||e.receiving==='Split'||e.receiving==='');
+      const compLiftBadge=isCompLift?'<span style="font-size:9px;font-weight:700;font-family:DM Mono,monospace;letter-spacing:0.5px;background:rgba(255,215,0,0.15);color:#ffd700;border:1px solid rgba(255,215,0,0.3);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:middle;">COMP LIFT</span>':'';
       html+=`<div class="log-entry ${borderClass}"${i>0?' style="border-top:1px solid var(--border)"':''}>
         <div class="log-entry-header">
-          <div class="log-entry-lift">${ln}</div>
+          <div class="log-entry-lift">${ln}${compLiftBadge}</div>
           <div class="log-entry-weight">${e.weight?dispW(e.weight)+'<span style="font-size:12px;color:var(--text3)">'+unitLabel()+'</span>':'--'}</div>
         </div>
         <div class="log-entry-meta">${[sr,e.notes].filter(Boolean).join(' · ')}</div>
@@ -911,7 +1108,7 @@ function updateModalFields(){
   if(cfg.receiving&&cfg.receiving.length){
     recEl.style.display='';
     document.getElementById('m-receiving').innerHTML=cfg.receiving.map(v=>
-      `<div class="chip" data-val="${v}" onclick="toggleModalChip(this,'receiving')">${v}</div>`
+      `<div class="chip" data-val="${v}" onclick="toggleModalChip(this,'receiving',true)">${v}</div>`
     ).join('');
   } else { recEl.style.display='none'; }
 
@@ -920,7 +1117,7 @@ function updateModalFields(){
   if(cfg.grip&&cfg.grip.length){
     gripEl.style.display='';
     document.getElementById('m-grip').innerHTML=cfg.grip.map(v=>
-      `<div class="chip" data-val="${v}" onclick="toggleModalChip(this,'grip')">${v}</div>`
+      `<div class="chip" data-val="${v}" onclick="toggleModalChip(this,'grip',true)">${v}</div>`
     ).join('');
   } else { gripEl.style.display='none'; }
 
@@ -945,9 +1142,9 @@ function updateModalFields(){
 
 function toggleModalChip(el,group,singleSelect){
   if(singleSelect){
-    // deselect siblings in same group
-    el.parentElement.querySelectorAll(`[data-group="${el.dataset.group}"]`).forEach(c=>c.classList.remove('selected'));
-    el.classList.toggle('selected');
+    // deselect all siblings in the same container first
+    el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
   } else {
     el.classList.toggle('selected');
   }
@@ -1018,18 +1215,36 @@ function setUnit(u){
 }
 
 // ── WEIGHT CLASSES ───────────────────────────────────────────────────────────
-const IWF_CLASSES_M = [55,61,67,73,81,89,96,102,109,Infinity];
-const IWF_CLASSES_F = [45,49,55,59,64,71,76,81,87,Infinity];
-const BWF_CLASSES_M = [56,62,69,77,85,94,105,Infinity]; // British Weightlifting
-const BWF_CLASSES_F = [48,53,58,63,69,75,90,Infinity];
+// IWF classes effective August 1, 2026 (confirmed for LA 2028 Olympics)
+const IWF_CLASSES_M = [60,65,70,75,85,95,110,Infinity];
+const IWF_CLASSES_F = [49,53,57,61,69,77,86,Infinity];
+// BWL -- British Weightlifting (aligned with IWF from Aug 2026, confirm with BWL)
+const BWF_CLASSES_M = [60,65,70,75,85,95,110,Infinity];
+const BWF_CLASSES_F = [49,53,57,61,69,77,86,Infinity];
 
 function getWeightClass(bw){
   if(!bw)return null;
-  const iwf=IWF_CLASSES_M.find(c=>bw<=c);
-  const bwf=BWF_CLASSES_M.find(c=>bw<=c);
-  const iwfLabel = iwf===Infinity?'+109kg':iwf+'kg';
-  const bwfLabel = bwf===Infinity?'+105kg':bwf+'kg';
-  return{iwf:iwfLabel,bwf:bwfLabel,same:iwfLabel===bwfLabel};
+  const iwfIdx=IWF_CLASSES_M.findIndex(c=>bw<=c);
+  const bwfIdx=BWF_CLASSES_M.findIndex(c=>bw<=c);
+  const iwf=IWF_CLASSES_M[iwfIdx];
+  const bwf=BWF_CLASSES_M[bwfIdx];
+  const iwfBelow=iwfIdx>0?IWF_CLASSES_M[iwfIdx-1]:0;
+  const bwfBelow=bwfIdx>0?BWF_CLASSES_M[bwfIdx-1]:0;
+  const iwfAbove=IWF_CLASSES_M[iwfIdx+1];
+  const bwfAbove=BWF_CLASSES_M[bwfIdx+1];
+  function label(cls){ return cls===Infinity?'+110kg (heaviest)':cls+'kg'; }
+  function labelBWF(cls){ return cls===Infinity?'+110kg (heaviest)':cls+'kg'; }
+  function labelAbove(cls,isBWF){ return !cls?null:(cls===Infinity?'+110kg':cls+'kg'); }
+  return{
+    iwf:iwf===Infinity?'+110kg':iwf+'kg',
+    bwf:bwf===Infinity?'+110kg':bwf+'kg',
+    iwfFloor: iwfBelow+'kg',
+    iwfCeil: iwf===Infinity?null:iwf+'kg', // null means heaviest class
+    iwfNext: labelAbove(iwfAbove,false),
+    bwfFloor: bwfBelow+'kg',
+    bwfCeil: bwf===Infinity?null:bwf+'kg',
+    bwfNext: labelAbove(bwfAbove,true),
+  };
 }
 
 function saveAthleteSettings(){
@@ -1038,18 +1253,58 @@ function saveAthleteSettings(){
   renderWeightClass(bw);
 }
 
+function logBWFromField(){
+  const bw=parseFloat(document.getElementById('setting-bw').value)||null;
+  if(!bw){showToast('Enter a bodyweight first','error');return;}
+  const today=new Date().toISOString().split('T')[0];
+  const s=loadSettings();
+  if(!s.bwLog)s.bwLog=[];
+  // Avoid duplicate for today
+  const existing=s.bwLog.find(e=>e.date===today);
+  if(existing){existing.weight=bw;}
+  else{s.bwLog.push({date:today,weight:bw});}
+  s.bwLog.sort((a,b)=>b.date.localeCompare(a.date));
+  s.athleteBW=s.bwLog[0].weight;
+  saveSettingsData(s);
+  renderBWLog();
+  renderWeightClass(bw);
+  showToast(bw+'kg logged for today','success');
+}
+
 function renderWeightClass(bw){
   const el=document.getElementById('weight-class-display');
   const det=document.getElementById('weight-class-detail');
   if(!el)return;
   if(!bw){el.textContent='Enter bodyweight above';det.innerHTML='';return;}
   const wc=getWeightClass(bw);
-  el.innerHTML=`<span style="color:var(--accent);font-weight:700;">IWF: ${wc.iwf}</span>`;
-  if(wc.iwf!==wc.bwf){
-    det.innerHTML=`British Weightlifting: <span style="color:var(--accent);font-weight:700;">${wc.bwf}</span><br><span style="color:var(--text3);">IWF and BWF use different class structures. IWF classes apply at international competitions; BWF classes at domestic GB competitions.</span>`;
-  } else {
-    det.innerHTML=`British Weightlifting: <span style="color:var(--accent);font-weight:700;">${wc.bwf}</span><br><span style="color:var(--text3);">IWF and BWF classes match at this bodyweight.</span>`;
+
+  function classRow(org, floor, current, next, bw){
+    const toTop = current ? (parseFloat(current)-bw).toFixed(1) : null;
+    const toNext = next ? (parseFloat(next)-bw).toFixed(1) : null;
+    return `<div style="margin-top:8px;background:var(--surface2);border-radius:8px;overflow:hidden;">
+      <div style="padding:6px 10px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;border-bottom:1px solid var(--border);">${org}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;">
+        <div style="padding:8px 10px;border-right:1px solid var(--border);text-align:center;">
+          <div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-bottom:2px;">Class below</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text2);font-family:DM Mono,monospace;">${floor}</div>
+        </div>
+        <div style="padding:8px 10px;border-right:1px solid var(--border);text-align:center;background:var(--accent-bg);">
+          <div style="font-size:9px;color:var(--accent-dim);font-family:DM Mono,monospace;margin-bottom:2px;">Your class</div>
+          <div style="font-size:15px;font-weight:800;color:var(--accent);font-family:DM Mono,monospace;">${current||'+109'}</div>
+          ${toTop?`<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-top:1px;">${toTop}kg to limit</div>`:'<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-top:1px;">heaviest class</div>'}
+        </div>
+        <div style="padding:8px 10px;text-align:center;">
+          <div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-bottom:2px;">Class above</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text2);font-family:DM Mono,monospace;">${next||'--'}</div>
+        </div>
+      </div>
+    </div>`;
   }
+
+  el.innerHTML=`<span style="color:var(--accent);font-weight:700;">IWF: ${wc.iwf}</span>${wc.iwf!==wc.bwf?` &nbsp;·&nbsp; <span style="color:var(--accent);font-weight:700;">BWL: ${wc.bwf}</span>`:''}`;
+  det.innerHTML=
+    classRow('IWF (International)', wc.iwfFloor, wc.iwfCeil, wc.iwfNext, bw)+
+    (wc.iwf!==wc.bwf?classRow('BWL (British Weightlifting)', wc.bwfFloor, wc.bwfCeil, wc.bwfNext, bw):`<div style="margin-top:6px;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">IWF and BWL classes match at this bodyweight.</div>`);
 }
 
 // ── BODYWEIGHT LOG ───────────────────────────────────────────────────────────
@@ -1122,99 +1377,152 @@ function renderPBs(){
   const s=loadSettings();
   const {getPB, allLifts} = getAllPBs();
   const u=unitLabel();
+  const bw=s.athleteBW||(s.bwLog&&s.bwLog[0]&&s.bwLog[0].weight)||null;
 
-  // Competition lifts total card
-  const snatchPB=getPB('Snatch');
-  const cjPB=getPB('Clean and Jerk');
-  const totalEl=document.getElementById('pbTotalCard');
-  if(totalEl){
-    if(snatchPB&&cjPB){
-      const tot=snatchPB.weight+cjPB.weight;
-      totalEl.innerHTML=`<div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;">Best Total</div>
-          <div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px;">Snatch + C&J</div>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-size:44px;font-weight:800;color:var(--accent);font-family:DM Mono,monospace;line-height:1;letter-spacing:-2px;">${dispW(tot)}<span style="font-size:16px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:2px;">${u}</span></div>
-          <div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px;">${dispW(snatchPB.weight)} + ${dispW(cjPB.weight)} ${u}</div>
-        </div>
-      </div>`;
-    } else {
-      totalEl.innerHTML='<div style="padding:14px 16px;font-size:12px;color:var(--text3);font-family:DM Mono,monospace;">Log Snatch and C&J to see total</div>';
-    }
+  // Get competition PBs from meet log
+  const meetPBs=getMeetPBs();
+  const compSnatch=meetPBs.snatch; // {weight, date, meet}
+  const compCJ=meetPBs.cj;
+
+  // Get training bests from log (all sessions)
+  function getTrainingBest(lift){
+    const db=loadDB();
+    const entries=db.entries.filter(e=>e.base===lift&&e.weight);
+    if(!entries.length)return null;
+    const max=Math.max(...entries.map(e=>e.weight));
+    const best=entries.find(e=>e.weight===max);
+    return{weight:max,date:best.date,session:best.session};
+  }
+  const trainSnatch=getTrainingBest('Snatch');
+  const trainCJ=getTrainingBest('Clean and Jerk');
+
+  // Totals
+  const compTotal=compSnatch&&compCJ?compSnatch.weight+compCJ.weight:null;
+  const trainTotal=trainSnatch&&trainCJ?trainSnatch.weight+trainCJ.weight:null;
+
+  // Sinclair -- use bodyweight closest to date of each best
+  function bwAtDate(targetDate){
+    if(!s.bwLog||!s.bwLog.length)return bw;
+    if(!targetDate)return bw;
+    const target=new Date(targetDate+'T00:00:00').getTime();
+    return s.bwLog.reduce((best,entry)=>{
+      const diff=Math.abs(new Date(entry.date+'T00:00:00').getTime()-target);
+      const bestDiff=Math.abs(new Date(best.date+'T00:00:00').getTime()-target);
+      return diff<bestDiff?entry:best;
+    }).weight||bw;
+  }
+  // Competition: use meet bodyweight if available, else closest log entry
+  const _meetsForBW=getMeets();
+  const compBWForSinclair=compSnatch?.date?(
+    _meetsForBW.length?_meetsForBW.reduce((best,m)=>{
+      if(!m.bw)return best;
+      const diff=Math.abs(new Date(m.date)-new Date(compSnatch.date));
+      const bestDiff=best?Math.abs(new Date(best.date)-new Date(compSnatch.date)):Infinity;
+      return diff<bestDiff?m:best;
+    },null)?.bw||bwAtDate(compSnatch.date):bwAtDate(compSnatch.date)
+  ):bw;
+  // Training: use bodyweight closest to date of training best
+  const trainSnatchBWDate=trainSnatch?.date||null;
+  const trainCJBWDate=trainCJ?.date||null;
+  const trainBWForSinclair=trainTotal?(bwAtDate(trainSnatchBWDate)||bwAtDate(trainCJBWDate)||bw):bw;
+  const scComp=sinclair(compTotal,compBWForSinclair);
+  const scTrain=sinclair(trainTotal,trainBWForSinclair);
+
+  // Helper: render one weight cell
+  function wCell(weight,date,extra){
+    if(!weight)return`<div style="font-size:24px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;line-height:1;">--</div>`;
+    return`<div style="font-size:28px;font-weight:800;color:var(--accent);font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(weight)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div>
+      <div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${formatDate(date)}</div>
+      ${extra?`<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-top:1px;">${extra}</div>`:''}`;
   }
 
-  // Comp lifts list
-  const compEl=document.getElementById('pbCompList');
-  if(compEl){
-    compEl.innerHTML=['Snatch','Clean and Jerk'].map((lift,i)=>{
-      const pb=getPB(lift);
-      return `<div class="pb-card pb-comp"${i>0?' style="border-top:1px solid var(--border)"':''}>
-        <div style="flex:1;">
-          <div class="pb-lift">${lift}</div>
-          <div class="pb-date">${pb?formatDate(pb.date):'No data'}</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="pb-weight">${pb?dispW(pb.weight):'--'}<span>${u}</span></div>
-          ${pb&&u==='kg'?`<div class="pb-lbs">${(pb.weight*2.20462).toFixed(1)} lbs</div>`:''}
-          ${pb&&u==='lbs'?`<div class="pb-lbs">${pb.weight} kg</div>`:''}
-        </div>
-      </div>`;
-    }).join('');
+  const mainEl=document.getElementById('pbMainCard');
+  if(mainEl){
+    // Column cell helpers
+    const compCell=(w,date,sub)=>w?`<div style="font-size:24px;font-weight:800;color:#ffd700;font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(w)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div><div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${formatDate(date)}</div>${sub?`<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-top:1px;">${sub}</div>`:''}`:
+      '<div style="font-size:22px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>';
+    const trainCell=(w,date,sub)=>w?`<div style="font-size:24px;font-weight:800;color:#c8f55a;font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(w)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div><div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${formatDate(date)}</div>${sub?`<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-top:1px;">${sub}</div>`:''}`:
+      '<div style="font-size:22px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>';
+
+    mainEl.innerHTML=`
+    <!-- Column headers -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border);">
+      <div style="padding:8px 12px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#ffd700;font-family:DM Mono,monospace;border-right:1px solid var(--border);background:rgba(255,215,0,0.06);">🏅 Competition</div>
+      <div style="padding:8px 12px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#c8f55a;font-family:DM Mono,monospace;background:rgba(200,245,90,0.06);">🏋️ Training</div>
+    </div>
+    <!-- Snatch row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border);">
+      <div style="padding:10px 8px;border-right:1px solid var(--border);background:rgba(255,215,0,0.06);">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,215,0,0.5);font-family:DM Mono,monospace;margin-bottom:6px;">Snatch</div>
+        ${compCell(compSnatch?.weight,compSnatch?.date,compSnatch?.meet)}
+      </div>
+      <div style="padding:12px;background:rgba(200,245,90,0.06);">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(200,245,90,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Snatch</div>
+        ${trainCell(trainSnatch?.weight,trainSnatch?.date,trainSnatch?.session)}
+      </div>
+    </div>
+    <!-- C&J row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border);">
+      <div style="padding:12px;border-right:1px solid var(--border);background:rgba(255,215,0,0.06);">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,215,0,0.5);font-family:DM Mono,monospace;margin-bottom:6px;">Clean &amp; Jerk</div>
+        ${compCell(compCJ?.weight,compCJ?.date,compCJ?.meet)}
+      </div>
+      <div style="padding:12px;background:rgba(200,245,90,0.06);">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(200,245,90,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Clean &amp; Jerk</div>
+        ${trainCell(trainCJ?.weight,trainCJ?.date,trainCJ?.session)}
+      </div>
+    </div>
+    <!-- Total row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border);">
+      <div style="padding:12px;border-right:1px solid var(--border);background:rgba(255,215,0,0.06);">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,215,0,0.5);font-family:DM Mono,monospace;margin-bottom:6px;">Total</div>
+        ${compTotal?`<div style="font-size:26px;font-weight:800;color:#ffd700;font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(compTotal)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div><div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${dispW(compSnatch.weight)} + ${dispW(compCJ.weight)}</div>`:'<div style="font-size:20px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
+      </div>
+      <div style="padding:12px;background:rgba(200,245,90,0.06);">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(200,245,90,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Total</div>
+        ${trainTotal?`<div style="font-size:26px;font-weight:800;color:#c8f55a;font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(trainTotal)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div><div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${dispW(trainSnatch.weight)} + ${dispW(trainCJ.weight)}</div>`:'<div style="font-size:20px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
+      </div>
+    </div>
+    <!-- Sinclair row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+      <div style="padding:12px;border-right:1px solid var(--border);background:rgba(255,215,0,0.06);">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,215,0,0.5);font-family:DM Mono,monospace;margin-bottom:6px;">Sinclair</div>
+        ${scComp?`<div style="font-size:24px;font-weight:800;color:#ffd700;font-family:DM Mono,monospace;line-height:1;">${scComp}</div>${compBW||bw?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">at ${compBW||bw}kg</div>`:''}`:'<div style="font-size:18px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
+      </div>
+      <div style="padding:12px;background:rgba(200,245,90,0.06);">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(200,245,90,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Sinclair</div>
+        ${scTrain?`<div style="font-size:24px;font-weight:800;color:#c8f55a;font-family:DM Mono,monospace;line-height:1;">${scTrain}</div>${bw?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">at ${bw}kg</div>`:''}`:'<div style="font-size:18px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
+      </div>
+    </div>`;
   }
 
   // All records -- Jerk shows max of Jerk or C&J
   const allEl=document.getElementById('pbAllList');
   if(allEl){
-    // Build list: exclude Snatch and C&J (shown above), show Jerk as max(Jerk, C&J)
     const shown=new Set(['Snatch','Clean and Jerk']);
     const others=allLifts.filter(l=>!shown.has(l));
-    // Ensure Jerk is included even if not in log
     const listLifts=[...new Set(['Jerk',...others])];
     allEl.innerHTML=listLifts.map((lift,i)=>{
       let pb=getPB(lift);
-      // For Jerk, take max of Jerk PB and C&J PB
       if(lift==='Jerk'){
         const cj=getPB('Clean and Jerk');
-        if(cj&&(!pb||cj.weight>pb.weight)) pb={...cj,lift:'Clean and Jerk (used)'};
+        if(cj&&(!pb||cj.weight>pb.weight))pb={...cj,lift:'Clean and Jerk (used)'};
       }
-      return `<div class="pb-card pb-strength"${i>0?' style="border-top:1px solid var(--border)"':''}>
+      function _sClass(s){return s==='Coached Class'?'session-coached':s==='Solo'?'session-solo':s==='Competition'?'session-comp':'session-one';}
+      function _sLabel(s){return s==='Coached Class'?'Class':s==='1:1 Session'?'1:1':s==='Competition'?'Comp':'Solo';}
+      const sessionTag=pb&&pb.session?('<span class="tag '+_sClass(pb.session)+'" style="margin-top:4px;display:inline-block;">'+_sLabel(pb.session)+'</span>'):'';
+      return`<div class="pb-card pb-strength"${i>0?' style="border-top:1px solid var(--border)"':''}>
         <div style="flex:1;">
           <div class="pb-lift">${lift}${lift==='Jerk'&&pb&&pb.lift==='Clean and Jerk (used)'?' <span style="font-size:9px;color:var(--text3);">(from C&J)</span>':''}</div>
           <div class="pb-date">${pb?formatDate(pb.date):'No data'}</div>
+          ${sessionTag}
         </div>
         <div style="text-align:right;">
           <div class="pb-weight">${pb?dispW(pb.weight):'--'}<span>${u}</span></div>
           ${pb&&u==='kg'?`<div class="pb-lbs">${(pb.weight*2.20462).toFixed(1)} lbs</div>`:''}
         </div>
       </div>`;
-    }).join('') || '<div style="padding:16px;color:var(--text3);font-size:13px;">No data yet</div>';
-  }
-
-  // Sinclair
-  const sinclairEl=document.getElementById('pbSinclair');
-  if(sinclairEl){
-    const bw=s.athleteBW||(s.bwLog&&s.bwLog[0]&&s.bwLog[0].weight)||null;
-    const total=snatchPB&&cjPB?snatchPB.weight+cjPB.weight:null;
-    const sc=sinclair(total,bw);
-    const wc=bw?getWeightClass(bw):null;
-    sinclairEl.innerHTML=`<div style="padding:16px;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
-        <div>
-          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;">Sinclair Score</div>
-          <div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px;">2025-2028 IWF coefficients</div>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-size:36px;font-weight:800;color:var(--accent);font-family:DM Mono,monospace;line-height:1;">${sc?sc:'--'}</div>
-          ${bw?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px;">at ${bw}kg BW</div>`:''}
-        </div>
-      </div>
-      ${wc?`<div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;padding-top:10px;border-top:1px solid var(--border);">
-        Weight class: <span style="color:var(--text2);">IWF ${wc.iwf}</span>${wc.iwf!==wc.bwf?` · <span style="color:var(--text2);">BWF ${wc.bwf}</span>`:''}
-      </div>`:''}
-      ${!bw?`<div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;padding-top:10px;border-top:1px solid var(--border);">Add your bodyweight in Settings to calculate Sinclair</div>`:''}
-    </div>`;
+    }).join('')||'<div style="padding:16px;color:var(--text3);font-size:13px;">No data yet</div>';
   }
 }
 
@@ -1224,7 +1532,7 @@ function renderPBs(){
 let plannerLifts=[];
 
 function addPlannerLift(){
-  plannerLifts.push({id:uid(),base:'',position:[],receiving:'',grip:[],technique:[],pct:'',collapsed:false});
+  plannerLifts.push({id:uid(),base:'',position:[],receiving:'',grip:[],technique:[],pct:'',notes:'',collapsed:false});
   renderPlannerBlocks();
   document.getElementById('finishBtn').style.display='inline-block';
 }
@@ -1243,10 +1551,19 @@ function plannerSetBase(id,val){
 }
 function plannerSetReceiving(id,val){const l=plannerLifts.find(x=>x.id===id);if(l){l.receiving=val;renderPlannerBlocks();}}
 function plannerSetPct(id,val){const l=plannerLifts.find(x=>x.id===id);if(l){l.pct=val;renderPlannerBlocks();}}
+function plannerSetNotes(id,val){const l=plannerLifts.find(x=>x.id===id);if(l)l.notes=val;}
 function plannerToggleChip(id,group,val,single){
   const l=plannerLifts.find(x=>x.id===id);if(!l)return;
-  if(single){l[group]=[val];}
-  else{const i=l[group].indexOf(val);i>=0?l[group].splice(i,1):l[group].push(val);}
+  if(single){
+    // Toggle off if already selected, otherwise set exclusively
+    l[group]=l[group]===val||( Array.isArray(l[group])&&l[group][0]===val&&l[group].length===1)?'':val;
+    // Normalise to string for single-select groups
+    if(group==='receiving')l[group]=l[group]||'';
+  } else {
+    if(!Array.isArray(l[group]))l[group]=[];
+    const i=l[group].indexOf(val);
+    i>=0?l[group].splice(i,1):l[group].push(val);
+  }
   renderPlannerBlocks();
 }
 
@@ -1273,18 +1590,22 @@ function renderPlannerBlocks(){
 
     const liftId=lift.id;
     const warmupHTML=warmup.length?`
-      <div style="border-top:1px solid var(--border);">
-        <div style="padding:8px 14px 4px;font-size:10px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;">Warmup Ladder</div>
-        ${warmup.map((s,i)=>`<div class="warmup-row${s.isWorking?' working':''}" onclick="selectWarmupRow('${liftId}',${i},${s.weight})" id="wrow-${liftId}-${i}">
-          <div class="warmup-set">${s.isWorking?'Working':`Set ${i+1}`}</div>
-          <div class="warmup-weight">${dispW(s.weight)}<span style="font-size:12px;color:var(--text3);font-weight:400">${unitLabel()}</span></div>
-          <div class="warmup-pct">${s.pct}%</div>
-        </div>`).join('')}
-        <div class="barbell-viz" id="barbell-${liftId}">
-          <div class="barbell-viz-label">
-            <span id="barbell-label-${liftId}">Tap a set to see bar loading</span>
+      <div>
+        <div style="padding:8px 14px 4px;font-size:10px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;border-top:1px solid var(--border);">Warmup Ladder</div>
+        <div class="warmup-layout">
+          <div class="warmup-list">
+            ${warmup.map((s,i)=>`<div class="warmup-row${s.isWorking?' working':''}" onclick="selectWarmupRow('${liftId}',${i},${s.weight})" id="wrow-${liftId}-${i}">
+              <div class="warmup-set">${s.isWorking?'Working':`Set ${i+1}`}</div>
+              <div class="warmup-weight">${dispW(s.weight)}<span style="font-size:10px;color:var(--text3);font-weight:400">${unitLabel()}</span></div>
+              <div class="warmup-pct">${s.pct}%</div>
+            </div>`).join('')}
           </div>
-          <div class="barbell-svg-wrap" id="barbell-svg-wrap-${liftId}"></div>
+          <div class="warmup-diagram" id="barbell-panel-${liftId}">
+            <div class="warmup-diagram-label">Tap set to load</div>
+            <div class="warmup-diagram-weight" id="barbell-wt-${liftId}"></div>
+            <div class="warmup-diagram-plates" id="barbell-plates-${liftId}"></div>
+            <div id="barbell-svg-${liftId}"></div>
+          </div>
         </div>
       </div>`:'';
     const refHTML=ref.refWeight?`<div class="ref-pill">Ref <strong>${dispW(ref.refWeight)}${unitLabel()}</strong>&nbsp;·&nbsp;Target <strong>${dispW(ref.targetWeight)}${unitLabel()}</strong></div>`:'';
@@ -1316,8 +1637,15 @@ function renderPlannerBlocks(){
         <div class="field">
           <label>Target %</label>
           <input type="number" value="${lift.pct}" placeholder="e.g. 70" min="1" max="120"
-            oninput="plannerSetPct('${lift.id}',this.value)"
-            style="font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;width:100%;">
+            onblur="plannerSetPct('${lift.id}',this.value)"
+            onkeydown="if(event.key==='Enter'){this.blur();}"
+            style="font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;width:100%;min-width:0;">
+        </div>
+        <div class="field">
+          <label>Coach Notes</label>
+          <textarea placeholder="Tips, cues, things to focus on..."
+            onblur="plannerSetNotes('${lift.id}',this.value)"
+            style="width:100%;background:transparent;border:none;color:var(--text);font-size:13px;font-family:Syne,sans-serif;outline:none;resize:none;min-height:52px;">${lift.notes||''}</textarea>
         </div>
         ${refHTML}
         ${warmupHTML}
@@ -1375,54 +1703,68 @@ function calcPlates(totalKg) {
 }
 
 function renderBarbellSVG(totalKg, liftId) {
-  const wrap = document.getElementById('barbell-svg-wrap-' + liftId);
-  const labelEl = document.getElementById('barbell-label-' + liftId);
-  if(!wrap) return;
+  const svgEl    = document.getElementById('barbell-svg-' + liftId);
+  const wtEl     = document.getElementById('barbell-wt-' + liftId);
+  const platesEl = document.getElementById('barbell-plates-' + liftId);
+  const panel    = document.getElementById('barbell-panel-' + liftId);
+  if(!svgEl) return;
 
   const plates = calcPlates(totalKg);
-  const BAR_H = 14; // bar height (half-bar shown)
-  const BAR_COLLAR_W = 8;
-  const BAR_STUB_W = 24; // visible bar stub left of plates
-  const SLEEVE_H = 10; // sleeve (thinner)
-  const GAP = 1; // gap between plates
-  const SVG_H = 72;
+
+  // Scale plates up significantly for readability
+  const SCALE = 2.4;
+  const BAR_H    = Math.round(14 * SCALE);
+  const BAR_STUB = Math.round(20 * SCALE);
+  const SLEEVE_H = Math.round(9  * SCALE);
+  const GAP      = Math.round(2  * SCALE);
+  const SVG_H    = Math.round(120 * SCALE / 2.4); // fixed height ~120px
   const CENTER_Y = SVG_H / 2;
 
-  // Calculate total width needed
-  let platesW = plates.reduce((sum, p) => sum + p.width + GAP, 0);
-  const totalW = BAR_STUB_W + BAR_COLLAR_W + platesW + 20;
+  // Scaled plate dimensions
+  const scaledPlates = plates.map(p => ({
+    ...p,
+    w: Math.max(Math.round(p.width  * SCALE), 12),
+    h: Math.round(p.height * SCALE),
+  }));
+
+  let platesW = scaledPlates.reduce((sum, p) => sum + p.w + GAP, 0);
+  const totalW = BAR_STUB + platesW + 8;
 
   let svgParts = [];
 
-  // Bar stub (left)
-  svgParts.push(`<rect x="0" y="${CENTER_Y - BAR_H/2}" width="${BAR_STUB_W}" height="${BAR_H}" fill="#b0b0b0" rx="2"/>`);
+  // Bar stub
+  svgParts.push(`<rect x="0" y="${CENTER_Y - BAR_H/2}" width="${BAR_STUB}" height="${BAR_H}" fill="#c0c0c0" rx="3"/>`);
 
-  // No collar -- plastic collars not counted in weight
-
-  // Sleeve (continues right)
-  let sleeveStart = BAR_STUB_W;
-  let sleeveEnd = totalW - 4;
-  svgParts.push(`<rect x="${sleeveStart}" y="${CENTER_Y - SLEEVE_H/2}" width="${sleeveEnd - sleeveStart}" height="${SLEEVE_H}" fill="#999" rx="2"/>`);
+  // Sleeve
+  svgParts.push(`<rect x="${BAR_STUB}" y="${CENTER_Y - SLEEVE_H/2}" width="${totalW - BAR_STUB}" height="${SLEEVE_H}" fill="#aaaaaa" rx="2"/>`);
 
   // Plates
-  let x = sleeveStart;
-  plates.forEach((plate) => {
-    const py = CENTER_Y - plate.height/2;
+  let x = BAR_STUB;
+  scaledPlates.forEach(plate => {
+    const py = CENTER_Y - plate.h/2;
+    // Drop shadow
+    svgParts.push(`<rect x="${x+1}" y="${py+2}" width="${plate.w}" height="${plate.h}" fill="rgba(0,0,0,0.25)" rx="2"/>`);
     // Plate body
-    svgParts.push(`<rect x="${x}" y="${py}" width="${plate.width}" height="${plate.height}" fill="${plate.color}" rx="1.5" stroke="rgba(0,0,0,0.15)" stroke-width="0.5"/>`);
-    // Label (rotated)
-    const labelX = x + plate.width/2;
-    const labelY = CENTER_Y;
-    svgParts.push(`<text x="${labelX}" y="${labelY}" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90,${labelX},${labelY})" class="plate-label" fill="${plate.textColor}">${plate.label}</text>`);
-    x += plate.width + GAP;
+    svgParts.push(`<rect x="${x}" y="${py}" width="${plate.w}" height="${plate.h}" fill="${plate.color}" rx="2" stroke="rgba(0,0,0,0.2)" stroke-width="0.5"/>`);
+    // Highlight strip at top
+    svgParts.push(`<rect x="${x+1}" y="${py+1}" width="${plate.w-2}" height="${Math.max(3, Math.round(plate.h*0.08))}" fill="rgba(255,255,255,0.25)" rx="1"/>`);
+    // Label
+    const lx = x + plate.w/2;
+    const ly = CENTER_Y;
+    const fs = Math.max(8, Math.round(plate.w * 0.55));
+    svgParts.push(`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90,${lx},${ly})" font-size="${fs}" font-family="DM Mono,monospace" font-weight="700" fill="${plate.textColor}" opacity="0.85">${plate.label}</text>`);
+    x += plate.w + GAP;
   });
 
-  const svg = `<svg viewBox="0 0 ${totalW} ${SVG_H}" width="${Math.max(totalW, 120)}" height="${SVG_H}" xmlns="http://www.w3.org/2000/svg" style="display:block;">${svgParts.join('')}</svg>`;
+  const svg = `<svg viewBox="0 0 ${totalW} ${SVG_H}" width="100%" height="${SVG_H}" xmlns="http://www.w3.org/2000/svg" style="display:block;max-width:${totalW}px;">${svgParts.join('')}</svg>`;
 
-  // Plate summary text
-  const summary = plateSummary(plates);
-  if(labelEl) labelEl.innerHTML = `<span style="color:var(--text2)">${totalKg}kg</span>&nbsp;<span style="color:var(--text3);font-size:9px;">${summary}</span>`;
-  wrap.innerHTML = svg;
+  // Update panel label
+  const label = panel ? panel.querySelector('.warmup-diagram-label') : null;
+  if(label) label.style.display = 'none'; // hide "tap set" prompt once selected
+
+  if(wtEl) wtEl.textContent = totalKg + 'kg';
+  if(platesEl) platesEl.innerHTML = plateSummary(plates).replace(' each side','<br>each side');
+  svgEl.innerHTML = svg;
 }
 
 function plateSummary(plates) {
@@ -1484,6 +1826,7 @@ function finishSession(){
       <input type="hidden" id="frc-${i}" value="${lift.receiving}">
       <input type="hidden" id="fg-${i}" value='${JSON.stringify(lift.grip||[])}'>
       <input type="hidden" id="ft-${i}" value='${JSON.stringify(lift.technique)}'>
+      <input type="hidden" id="fpn-${i}" value="${lift.notes||''}">
     </div>`;
   }).join('');
   document.getElementById('finishModal').classList.add('open');
@@ -1512,17 +1855,73 @@ function confirmFinishSession(){
       sets:parseInt(document.getElementById(`fs-${i}`).value)||null,
       reps:parseInt(document.getElementById(`fr-${i}`).value)||null,
       quality:parseInt(document.getElementById(`fqv-${i}`).value)||null,
-      notes:document.getElementById(`fn-${i}`).value.trim(),
+      notes:[document.getElementById(`fpn-${i}`)?.value,document.getElementById(`fn-${i}`).value.trim()].filter(Boolean).join(' · '),
     };
     const db=loadDB();db.entries.push(entry);saveDB(db);updatePBs(entry);saved++;
     const s=loadSettings();if(s.autoSync&&s.sheetsUrl)syncEntryToSheets(entry,s.sheetsUrl);
   });
   closeFinishModal();
+
+  // Build session summary
+  const sessionEntries=allEntries;
+  showSessionSummary(sessionEntries);
+
   plannerLifts=[];renderPlannerBlocks();
   document.getElementById('finishBtn').style.display='none';
-  showToast(`${saved} lift${saved!==1?'s':''} saved`,'success');
   renderLog();
 }
+
+function showSessionSummary(entries){
+  if(!entries||!entries.length)return;
+  const totalVol=entries.reduce((sum,e)=>{
+    if(e.weight&&e.sets&&e.reps)return sum+(e.weight*e.sets*e.reps);
+    if(e.weight&&e.reps)return sum+(e.weight*e.reps);
+    return sum;
+  },0);
+  const heaviest=entries.reduce((mx,e)=>e.weight>mx.weight?e:mx,entries[0]);
+  const newPBs=[];
+  entries.forEach(e=>{
+    const s=loadSettings();const pbs=s.pbs||[];
+    const prev=pbs.find(p=>p.lift===e.base&&p.date!==e.date);
+    if(prev&&e.weight>prev.weight)newPBs.push({lift:e.base,weight:e.weight,prev:prev.weight});
+  });
+  const u=unitLabel();
+  let html='';
+  if(newPBs.length){
+    newPBs.forEach(pb=>{
+      html+=`<div class="summary-pb-badge">🏆 New PB: ${pb.lift} ${dispW(pb.weight)}${u} (was ${dispW(pb.prev)}${u})</div>`;
+    });
+  }
+  html+=`<div class="summary-grid">
+    <div class="summary-cell">
+      <div class="summary-cell-label">Lifts</div>
+      <div class="summary-cell-val">${entries.length}</div>
+      <div class="summary-cell-sub">sets logged</div>
+    </div>
+    <div class="summary-cell">
+      <div class="summary-cell-label">Heaviest</div>
+      <div class="summary-cell-val">${dispW(heaviest.weight)}<span style="font-size:12px;color:var(--text3);">${u}</span></div>
+      <div class="summary-cell-sub">${heaviest.base}</div>
+    </div>
+    ${totalVol>0?`<div class="summary-cell">
+      <div class="summary-cell-label">Volume</div>
+      <div class="summary-cell-val">${dispW(Math.round(totalVol))}<span style="font-size:12px;color:var(--text3);">${u}</span></div>
+      <div class="summary-cell-sub">total kg lifted</div>
+    </div>`:''}
+    <div class="summary-cell">
+      <div class="summary-cell-label">Quality avg</div>
+      <div class="summary-cell-val">${entries.filter(e=>e.quality).length?( Math.round(entries.filter(e=>e.quality).reduce((s,e)=>s+e.quality,0)/entries.filter(e=>e.quality).length*10)/10):'--'}</div>
+      <div class="summary-cell-sub">out of 5</div>
+    </div>
+  </div>
+  <div style="padding:12px 16px;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">
+    ${entries.map(e=>buildLiftName(e)+(e.weight?' · '+dispW(e.weight)+u:'')).join('<br>')}
+  </div>`;
+  document.getElementById('summaryContent').innerHTML=html;
+  document.getElementById('summaryModal').classList.add('open');
+}
+
+function closeSummaryModal(){document.getElementById('summaryModal').classList.remove('open');}
 
 // ============================================================
 // TIMER
@@ -1555,6 +1954,18 @@ function renderComp() {
   const comp = s.comp || {};
   if (comp.name) document.getElementById('comp-name').value = comp.name;
   if (comp.date) document.getElementById('comp-date').value = comp.date;
+  if (comp.location && document.getElementById('comp-location')) document.getElementById('comp-location').value = comp.location;
+  // Dynamic section label
+  const planLabel = document.querySelector('#comp-pane-plan .section-label');
+  if (planLabel && comp.name) {
+    const labelParts = [comp.name];
+    if (comp.date) {
+      const d = new Date(comp.date + 'T00:00:00');
+      labelParts.push(d.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'2-digit'}));
+    }
+    if (comp.location) labelParts.push(comp.location);
+    planLabel.textContent = labelParts.join(' · ');
+  }
   const pcts = getCompPcts();
   const lifts = [
     {key:'snatch', label:'Snatch', pb: pbs.find(p=>p.lift==='Snatch')},
@@ -1634,7 +2045,10 @@ function saveCompMeta() {
   if (!s.comp) s.comp = {};
   s.comp.name = document.getElementById('comp-name').value;
   s.comp.date = document.getElementById('comp-date').value;
+  s.comp.location = document.getElementById('comp-location')?.value||'';
   saveSettingsData(s);
+  renderCountdown();
+  renderComp();
 }
 
 function resetComp() {
@@ -1706,10 +2120,20 @@ function renderCompContext(projectedTotal) {
     }
   });
 
-  // Best theoretical total (best ever snatch + best ever CJ regardless of date/session)
-  const bestSnatchEver = snatchLogBest ? snatchLogBest.weight : (snatchCompPB ? snatchCompPB.weight : null);
-  const bestCJEver = cjLogBest ? cjLogBest.weight : (cjCompPB ? cjCompPB.weight : null);
+  // Best theoretical total -- highest of comp or training for each lift
+  const bestSnatchComp = snatchCompPB ? snatchCompPB.weight : null;
+  const bestCJComp = cjCompPB ? cjCompPB.weight : null;
+  const bestSnatchTrain = snatchLogBest ? snatchLogBest.weight : null;
+  const bestCJTrain = cjLogBest ? cjLogBest.weight : null;
+
+  // Best ever snatch (whichever is higher -- comp or training)
+  const bestSnatchEver = Math.max(bestSnatchComp||0, bestSnatchTrain||0) || null;
+  const bestCJEver = Math.max(bestCJComp||0, bestCJTrain||0) || null;
   const bestTheoTotal = bestSnatchEver && bestCJEver ? bestSnatchEver + bestCJEver : null;
+
+  // Source labels for theoretical total
+  const snatchSource = bestSnatchComp >= (bestSnatchTrain||0) ? 'comp' : 'training';
+  const cjSource = bestCJComp >= (bestCJTrain||0) ? 'comp' : 'training';
 
   // % diff to projected total
   const compDiff = projectedTotal && bestCompTotal ? (((projectedTotal - bestCompTotal) / bestCompTotal) * 100).toFixed(1) : null;
@@ -1729,17 +2153,21 @@ function renderCompContext(projectedTotal) {
   // Snatch PBs
   html += `<div style="padding:10px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;border-bottom:1px solid var(--border);">Snatch</div>`;
   html += row('Competition PB', snatchCompPB ? snatchCompPB.weight+'kg' : '--', snatchCompPB ? formatDate(snatchCompPB.date) : null, true);
-  html += row('Training best', snatchLogBest ? snatchLogBest.weight+'kg' : '--', snatchLogBest ? snatchLogBest.session : null, false);
+  html += row('Training best', snatchLogBest ? snatchLogBest.weight+'kg' : '--',
+    snatchLogBest ? formatDate(snatchLogBest.date) + ' · ' + snatchLogBest.session : null, false);
 
   // C&J PBs
   html += `<div style="padding:10px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;border-bottom:1px solid var(--border);border-top:1px solid var(--border);">Clean and Jerk</div>`;
   html += row('Competition PB', cjCompPB ? cjCompPB.weight+'kg' : '--', cjCompPB ? formatDate(cjCompPB.date) : null, true);
-  html += row('Training best', cjLogBest ? cjLogBest.weight+'kg' : '--', cjLogBest ? cjLogBest.session : null, false);
+  html += row('Training best', cjLogBest ? cjLogBest.weight+'kg' : '--',
+    cjLogBest ? formatDate(cjLogBest.date) + ' · ' + cjLogBest.session : null, false);
 
   // Totals
   html += `<div style="padding:10px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;border-bottom:1px solid var(--border);border-top:1px solid var(--border);">Totals</div>`;
-  html += row('Best competition total', bestCompTotal ? bestCompTotal+'kg' : '--', bestCompDate ? formatDate(bestCompDate) + (compDiff ? ' · projected '+( compDiff > 0 ? '+' : '')+compDiff+'%' : '') : null, true);
-  html += row('Best theoretical total', bestTheoTotal ? bestTheoTotal+'kg' : '--', theoDiff ? 'projected '+( theoDiff > 0 ? '+' : '')+theoDiff+'%' : 'any lift, any session', false);
+  html += row('Best competition total', bestCompTotal ? bestCompTotal+'kg' : '--',
+    bestCompDate ? formatDate(bestCompDate) + (compDiff ? ' · projected '+( compDiff > 0 ? '+' : '')+compDiff+'%' : '') : null, true);
+  html += row('Best theoretical total', bestTheoTotal ? bestTheoTotal+'kg' : '--',
+    'Snatch '+snatchSource+' · C&J '+cjSource+(theoDiff ? ' · projected '+( theoDiff > 0 ? '+' : '')+theoDiff+'%' : ''), false);
 
   el.innerHTML = html;
 }
@@ -1773,6 +2201,7 @@ const SEED_MEETS = [{
   id:'liftoff2025',
   name:'Lift Off',
   date:'2025-11-29',
+  location:'London',
   bw:80.5,
   snatch:[
     {weight:50,made:true},
@@ -1802,6 +2231,7 @@ function openMeetModal(){
   meetResults={sn:{1:null,2:null,3:null},cj:{1:null,2:null,3:null}};
   document.getElementById('mm-name').value='';
   document.getElementById('mm-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('mm-location').value='';
   document.getElementById('mm-bw').value='';
   document.getElementById('mm-notes').value='';
   [1,2,3].forEach(i=>{
@@ -1846,7 +2276,8 @@ function saveMeet(){
     weight:parseFloat(document.getElementById('mm-cj-w'+i).value)||null,
     made:meetResults.cj[i]||false
   }));
-  const meet={id:uid(),name,date,bw,snatch,cj,notes:document.getElementById('mm-notes').value.trim()};
+  const location=document.getElementById('mm-location').value.trim();
+  const meet={id:uid(),name,date,location,bw,snatch,cj,notes:document.getElementById('mm-notes').value.trim()};
   const s=loadSettings();
   if(!s.meets)s.meets=[];
   s.meets.push(meet);
@@ -1995,13 +2426,13 @@ function renderGoals(){
       html+=`<div class="goal-row">
         <div class="goal-row-header">
           <div style="display:flex;align-items:center;gap:6px;">
-            <span class="goal-level${isCurrent?' current':''}">${tier.level}</span>
+            <span class="goal-level${achieved?' current':isCurrent?' current':''}">${tier.level}</span>
             ${achieved?'<span class="goal-checkmark">✓</span>':''}
             ${isNext?'<span style="font-size:9px;color:var(--orange);font-family:DM Mono,monospace;background:rgba(255,154,60,0.1);padding:2px 6px;border-radius:10px;">NEXT</span>':''}
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
             <span style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;">×<input class="goal-custom-input" type="number" value="${tier.multiple}" step="0.05" min="0.1" max="5"
-              style="width:48px;"
+              style="width:64px;"
               onchange="saveStandardMultiple('${lift}',${i},this.value)"></span>
             <span class="goal-target${achieved?' achieved':''}">${target}kg</span>
           </div>
@@ -2011,11 +2442,13 @@ function renderGoals(){
       </div>`;
     });
 
-    // Custom goal
+    // Custom goal -- default placeholder is competition best
+    const meetPBsForGoals=getMeetPBs();
+    const meetBestForLift=lift==='Clean and Jerk'?(meetPBsForGoals.cj?meetPBsForGoals.cj.weight:null):(meetPBsForGoals.snatch?meetPBsForGoals.snatch.weight:null);
     html+=`<div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
       <span style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">My Goal</span>
       <div style="display:flex;align-items:center;gap:6px;">
-        <input type="number" value="${customGoal||''}" placeholder="e.g. 98.75" step="0.5"
+        <input type="number" value="${customGoal||''}" placeholder="${meetBestForLift||'--'}" step="0.5"
           style="width:80px;background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-size:13px;font-family:DM Mono,monospace;padding:4px 8px;border-radius:6px;text-align:right;outline:none;"
           onchange="saveCustomGoal('${lift}',this.value)">
         <span style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">kg</span>
@@ -2091,18 +2524,60 @@ async function syncBoth(){
   const s=loadSettings();if(!s.sheetsUrl){showToast('Add Sheets URL in Settings first','error');return;}
   const btn=document.getElementById('syncBtn');btn.textContent='⇅ ...';btn.classList.add('syncing');
   try{
+    // Pull all data from Sheets
     const pulled=await pullFromSheets(s.sheetsUrl);
+
+    // Merge log entries
     const db=loadDB();const byId={};db.entries.forEach(e=>{byId[e.id]=e;});
-    if(pulled&&pulled.length)pulled.forEach(e=>{if(e.id)byId[e.id]=e;});
+    if(pulled.entries&&pulled.entries.length)pulled.entries.forEach(e=>{if(e.id)byId[e.id]=e;});
     const merged=Object.values(byId).sort((a,b)=>b.date.localeCompare(a.date));
     db.entries=merged;saveDB(db);
-    await fetch(s.sheetsUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'syncAll',entries:merged})});
-    renderLog();if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
+
+    // Merge meets
+    if(pulled.meets&&pulled.meets.length){
+      const existing=s.meets||[];
+      const meetById={};existing.forEach(m=>{meetById[m.id]=m;});
+      pulled.meets.forEach(m=>{if(m.id)meetById[m.id]=m;});
+      s.meets=Object.values(meetById).sort((a,b)=>b.date.localeCompare(a.date));
+    }
+
+    // Merge bodyweight log
+    if(pulled.bw&&pulled.bw.length){
+      const existingBW=s.bwLog||[];
+      const allBW=[...existingBW,...pulled.bw];
+      // Dedupe by date+weight
+      const bwSeen=new Set();
+      s.bwLog=allBW.filter(e=>{const k=e.date+'_'+e.weight;if(bwSeen.has(k))return false;bwSeen.add(k);return true;})
+        .sort((a,b)=>b.date.localeCompare(a.date));
+      if(s.bwLog.length)s.athleteBW=s.bwLog[0].weight;
+    }
+    saveSettingsData(s);
+
+    // Push everything back to Sheets in one call
+    await fetch(s.sheetsUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        action:'syncFull',
+        entries:merged,
+        meets:s.meets||[],
+        bw:s.bwLog||[],
+        pbs:s.pbs||[],
+      })
+    });
+
+    renderLog();
+    if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
+    if(document.getElementById('pane-comp').classList.contains('active'))renderMeetList();
     showToast('Synced','success');
   }catch(e){showToast('Sync failed -- check URL','error');}
   btn.textContent='⇅ SYNC';btn.classList.remove('syncing');
 }
-async function pullFromSheets(url){try{const r=await fetch(url+'?action=getAll');const data=await r.json();return data.entries||[];}catch(e){return[];}}
+async function pullFromSheets(url){
+  try{
+    const r=await fetch(url+'?action=getAll');
+    const data=await r.json();
+    return{entries:data.entries||[],meets:data.meets||[],bw:data.bw||[]};
+  }catch(e){return{entries:[],meets:[],bw:[]};}
+}
 
 // ============================================================
 // TOAST
@@ -2116,6 +2591,452 @@ function showToast(msg,type){const t=document.getElementById('toast');t.textCont
 initDB();
 renderLog();
 renderPlannerBlocks();
+renderCountdown();
+
+// ============================================================
+// LOG SUB-NAV
+// ============================================================
+function switchLogSub(name){
+  document.getElementById('log-pane-entries').className='sub-pane'+(name==='entries'?' active':'');
+  document.getElementById('log-pane-analytics').className='sub-pane'+(name==='analytics'?' active':'');
+  document.getElementById('log-sub-entries').className='sub-nav-btn'+(name==='entries'?' active':'');
+  document.getElementById('log-sub-analytics').className='sub-nav-btn'+(name==='analytics'?' active':'');
+  if(name==='analytics')renderAnalytics();
+}
+
+// ============================================================
+// COMPETITION COUNTDOWN
+// ============================================================
+function renderCountdown(){
+  const s=loadSettings();
+  const comp=s.comp||{};
+
+  // Comp tab banner
+  const el=document.getElementById('comp-countdown');
+
+  // Header badge
+  const badge=document.getElementById('header-comp-badge');
+  const badgeDays=document.getElementById('header-badge-days');
+
+  // Log tab banner
+  const logBanner=document.getElementById('log-countdown-banner');
+  const logBannerName=document.getElementById('log-banner-name');
+  const logBannerDays=document.getElementById('log-banner-days');
+
+  if(!comp.date||!comp.name){
+    if(el)el.style.display='none';
+    if(badge)badge.style.display='none';
+    if(logBanner)logBanner.style.display='none';
+    return;
+  }
+  const today=new Date();today.setHours(0,0,0,0);
+  const compDate=new Date(comp.date+'T00:00:00');
+  const diff=Math.round((compDate-today)/(1000*60*60*24));
+
+  if(diff<0){
+    if(el)el.style.display='none';
+    if(badge)badge.style.display='none';
+    if(logBanner)logBanner.style.display='none';
+    return;
+  }
+
+  // Comp tab
+  if(el){
+    el.style.display='flex';
+    el.innerHTML=`
+      <div>
+        <div class="countdown-label">Next Competition</div>
+        <div class="countdown-name">${comp.name}${comp.location?' · '+comp.location:''}</div>
+        ${comp.date?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px;">${new Date(comp.date+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>`:''}
+      </div>
+      <div style="text-align:right;">
+        <div class="countdown-days">${diff}</div>
+        <div class="countdown-days-label">${diff===1?'day':'days'} to go</div>
+      </div>`;
+  }
+
+  // Header badge
+  if(badge&&badgeDays){
+    badge.style.display='flex';
+    badgeDays.textContent=diff;
+  }
+
+  // Log tab banner
+  if(logBanner&&logBannerName&&logBannerDays){
+    logBanner.style.display='block';
+    logBannerName.textContent=comp.name;
+    logBannerDays.textContent=diff;
+  }
+}
+
+// ============================================================
+// ANALYTICS
+// ============================================================
+let analyticsPeriod='all';
+
+function setAnalyticsPeriod(period, el){
+  analyticsPeriod=period;
+  document.querySelectorAll('[data-period]').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderAnalytics();
+}
+
+function getAnalyticsCutoff(){
+  const now=new Date(); now.setHours(0,0,0,0);
+  if(analyticsPeriod==='all') return null;
+  if(analyticsPeriod==='ytd') return new Date(now.getFullYear(),0,1).toISOString().split('T')[0];
+  if(analyticsPeriod==='lastyear'){
+    const y=now.getFullYear()-1;
+    return {from:new Date(y,0,1).toISOString().split('T')[0], to:new Date(y,11,31).toISOString().split('T')[0]};
+  }
+  const months={'3m':3,'6m':6,'12m':12}[analyticsPeriod];
+  if(months){
+    const d=new Date(now); d.setMonth(d.getMonth()-months);
+    return d.toISOString().split('T')[0];
+  }
+  return null;
+}
+
+function renderAnalytics(){
+  const lift=document.getElementById('analytics-lift')?.value||'Snatch';
+  const db=loadDB();
+  const cutoff=getAnalyticsCutoff();
+  let entries=db.entries.filter(e=>e.base===lift&&e.weight&&e.date);
+
+  if(cutoff){
+    if(typeof cutoff==='object'&&cutoff.from){
+      entries=entries.filter(e=>e.date>=cutoff.from&&e.date<=cutoff.to);
+    } else {
+      entries=entries.filter(e=>e.date>=cutoff);
+    }
+  }
+  entries.sort((a,b)=>a.date.localeCompare(b.date));
+
+  // Group by date -- get session max and all weights
+  const byDate={};
+  entries.forEach(e=>{
+    if(!byDate[e.date])byDate[e.date]={max:0,all:[],date:e.date};
+    byDate[e.date].all.push(e.weight);
+    if(e.weight>byDate[e.date].max)byDate[e.date].max=e.weight;
+  });
+  const dates=Object.values(byDate).sort((a,b)=>a.date.localeCompare(b.date));
+
+  renderProgressChart(dates, lift);
+  renderVolumeStats(db);
+  renderBWChart();
+}
+
+function renderProgressChart(dates, lift){
+  const el=document.getElementById('analytics-chart');
+  if(!el)return;
+  if(!dates.length){
+    el.innerHTML='<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px;">No '+lift+' entries yet</div>';
+    return;
+  }
+
+  const W=Math.max(el.offsetWidth||320, 280);
+  const H=180;
+  const PAD={top:16,right:16,bottom:32,left:40};
+  const cW=W-PAD.left-PAD.right;
+  const cH=H-PAD.top-PAD.bottom;
+
+  const allWeights=dates.flatMap(d=>d.all);
+  const minW=Math.min(...allWeights)*0.95;
+  const maxW=Math.max(...allWeights)*1.02;
+
+  const xScale=(i)=>PAD.left+(i/(Math.max(dates.length-1,1)))*cW;
+  const yScale=(w)=>PAD.top+cH-((w-minW)/(maxW-minW))*cH;
+
+  // Build SVG
+  let svg=`<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">`;
+
+  // Grid lines
+  const yTicks=4;
+  for(let i=0;i<=yTicks;i++){
+    const y=PAD.top+(cH/yTicks)*i;
+    const val=Math.round(maxW-((maxW-minW)/yTicks)*i);
+    svg+=`<line x1="${PAD.left}" y1="${y}" x2="${PAD.left+cW}" y2="${y}" stroke="#333" stroke-width="1"/>`;
+    svg+=`<text x="${PAD.left-4}" y="${y+4}" text-anchor="end" fill="#555" font-size="10" font-family="DM Mono,monospace">${val}</text>`;
+  }
+
+  // All sets dots (faint)
+  dates.forEach((d,i)=>{
+    const x=xScale(i);
+    d.all.forEach(w=>{
+      const y=yScale(w);
+      svg+=`<circle cx="${x}" cy="${y}" r="3" fill="rgba(200,245,90,0.2)" stroke="rgba(200,245,90,0.3)" stroke-width="1"/>`;
+    });
+  });
+
+  // Trend line (session maxes)
+  if(dates.length>1){
+    const pts=dates.map((d,i)=>`${xScale(i)},${yScale(d.max)}`).join(' ');
+    svg+=`<polyline points="${pts}" fill="none" stroke="#c8f55a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  }
+
+  // Session max dots
+  dates.forEach((d,i)=>{
+    const x=xScale(i);const y=yScale(d.max);
+    svg+=`<circle cx="${x}" cy="${y}" r="4" fill="#c8f55a" stroke="#111" stroke-width="1.5"/>`;
+  });
+
+  // X axis date labels (show ~4 evenly spaced)
+  const step=Math.max(1,Math.floor(dates.length/4));
+  dates.forEach((d,i)=>{
+    if(i%step!==0&&i!==dates.length-1)return;
+    const x=xScale(i);
+    const ld=new Date(d.date+'T00:00:00');
+    const label=ld.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+"'"+String(ld.getFullYear()).slice(2);
+    svg+=`<text x="${x}" y="${H-4}" text-anchor="middle" fill="#555" font-size="9" font-family="DM Mono,monospace">${label}</text>`;
+  });
+
+  svg+=`</svg>`;
+  el.innerHTML=`<div class="chart-wrap">${svg}</div>
+    <div class="chart-legend">
+      <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#c8f55a;"></div>Session max</div>
+      <div class="chart-legend-item"><div class="chart-legend-dot" style="background:rgba(200,245,90,0.3);"></div>Individual sets (each logged weight)</div>
+    </div>`;
+}
+
+function renderVolumeStats(db){
+  const el=document.getElementById('analytics-volume');if(!el)return;
+  const now=new Date();
+  const fourWeeksAgo=new Date(now-28*24*60*60*1000).toISOString().split('T')[0];
+  const eightWeeksAgo=new Date(now-56*24*60*60*1000).toISOString().split('T')[0];
+
+  const recent=db.entries.filter(e=>e.date>=fourWeeksAgo);
+  const prev=db.entries.filter(e=>e.date>=eightWeeksAgo&&e.date<fourWeeksAgo);
+
+  // Sessions per week (last 4 weeks)
+  const recentDates=new Set(recent.map(e=>e.date));
+  const sessionsPerWeek=Math.round(recentDates.size/4*10)/10;
+
+  // Volume trend
+  const recentVol=recent.filter(e=>e.weight).reduce((s,e)=>s+(e.weight*(e.sets||1)*(e.reps||1)),0);
+  const prevVol=prev.filter(e=>e.weight).reduce((s,e)=>s+(e.weight*(e.sets||1)*(e.reps||1)),0);
+  const volTrend=prevVol>0?Math.round((recentVol-prevVol)/prevVol*100):null;
+
+  // Most trained lift
+  const liftCounts={};
+  db.entries.forEach(e=>{liftCounts[e.base]=(liftCounts[e.base]||0)+1;});
+  const topLift=Object.entries(liftCounts).sort((a,b)=>b[1]-a[1])[0];
+
+  el.innerHTML=`
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">Sessions per week (last 4 wks)</span>
+      <span class="analytics-stat-val">${sessionsPerWeek||'--'}</span>
+    </div>
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">Volume trend vs prior 4 wks</span>
+      <span class="analytics-stat-val" style="color:${volTrend>0?'var(--accent)':volTrend<0?'var(--red)':'var(--text)'};">${volTrend!==null?(volTrend>0?'+':'')+volTrend+'%':'--'}</span>
+    </div>
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">Most trained lift</span>
+      <span class="analytics-stat-val" style="font-size:13px;">${topLift?topLift[0]:'--'}</span>
+    </div>
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">Total entries</span>
+      <span class="analytics-stat-val">${db.entries.length}</span>
+    </div>`;
+}
+
+function renderBWChart(){
+  const el=document.getElementById('analytics-bw-chart');if(!el)return;
+  const s=loadSettings();
+  const bwLog=(s.bwLog||[]).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  if(!bwLog.length){
+    el.innerHTML='<div style="padding:16px;text-align:center;color:var(--text3);font-size:12px;">No bodyweight data. Log weigh-ins in Settings or import Withings CSV.</div>';
+    return;
+  }
+
+  const W=Math.max(el.offsetWidth||320, 280);
+  const H=120;
+  const PAD={top:12,right:16,bottom:28,left:40};
+  const cW=W-PAD.left-PAD.right;
+  const cH=H-PAD.top-PAD.bottom;
+  const weights=bwLog.map(e=>e.weight);
+  const minW=Math.min(...weights)*0.99;
+  const maxW=Math.max(...weights)*1.01;
+  const xScale=(i)=>PAD.left+(i/Math.max(bwLog.length-1,1))*cW;
+  const yScale=(w)=>PAD.top+cH-((w-minW)/(maxW-minW||1))*cH;
+
+  let svg=`<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">`;
+  // Grid
+  [0,0.5,1].forEach(t=>{
+    const y=PAD.top+cH*t;
+    const val=(maxW-t*(maxW-minW)).toFixed(1);
+    svg+=`<line x1="${PAD.left}" y1="${y}" x2="${PAD.left+cW}" y2="${y}" stroke="#333" stroke-width="1"/>`;
+    svg+=`<text x="${PAD.left-4}" y="${y+4}" text-anchor="end" fill="#555" font-size="9" font-family="DM Mono,monospace">${val}</text>`;
+  });
+  // Area fill
+  if(bwLog.length>1){
+    const pts=bwLog.map((e,i)=>`${xScale(i)},${yScale(e.weight)}`).join(' ');
+    const areaBottom=`${xScale(bwLog.length-1)},${PAD.top+cH} ${xScale(0)},${PAD.top+cH}`;
+    svg+=`<polygon points="${pts} ${areaBottom}" fill="rgba(200,245,90,0.07)"/>`;
+    svg+=`<polyline points="${pts}" fill="none" stroke="#9ab83e" stroke-width="1.5"/>`;
+  }
+  // Dots
+  bwLog.forEach((e,i)=>{
+    svg+=`<circle cx="${xScale(i)}" cy="${yScale(e.weight)}" r="3" fill="#9ab83e"/>`;
+  });
+  // X labels
+  const step=Math.max(1,Math.floor(bwLog.length/4));
+  bwLog.forEach((e,i)=>{
+    if(i%step!==0&&i!==bwLog.length-1)return;
+    const bwD=new Date(e.date+'T00:00:00');
+    const label=bwD.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+"'"+String(bwD.getFullYear()).slice(2);
+    svg+=`<text x="${xScale(i)}" y="${H-4}" text-anchor="middle" fill="#555" font-size="9" font-family="DM Mono,monospace">${label}</text>`;
+  });
+  svg+=`</svg>`;
+
+  const current=bwLog[bwLog.length-1];
+  const first=bwLog[0];
+  const diff=Math.round((current.weight-first.weight)*10)/10;
+  el.innerHTML=`<div class="chart-wrap">${svg}</div>
+    <div style="padding:8px 14px;display:flex;gap:16px;font-size:11px;font-family:DM Mono,monospace;color:var(--text3);">
+      <span>Current: <strong style="color:var(--text);">${current.weight}kg</strong></span>
+      <span>Change: <strong style="color:${diff<0?'var(--accent)':diff>0?'var(--red)':'var(--text)'}">${diff>0?'+':''}${diff}kg</strong></span>
+    </div>`;
+}
+
+// ── WITHINGS CSV IMPORT ───────────────────────────────────────────────────────
+function importWithingsCSV(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const lines=e.target.result.split('\n');
+    const s=loadSettings();
+    if(!s.bwLog)s.bwLog=[];
+    let imported=0;
+    lines.forEach(line=>{
+      const cols=line.split(',');
+      if(cols.length<2)return;
+      // Withings format: Date,Weight,... (weight in kg)
+      const date=cols[0].trim().replace(/"/g,'');
+      const weight=parseFloat(cols[1]);
+      if(!date||isNaN(weight)||weight<20||weight>300)return;
+      // Normalise date to YYYY-MM-DD
+      let d=date;
+      if(date.includes('/')){
+        const parts=date.split('/');
+        if(parts.length===3){
+          // Could be MM/DD/YYYY or DD/MM/YYYY -- assume YYYY last
+          d=parts[2]+'-'+parts[0].padStart(2,'0')+'-'+parts[1].padStart(2,'0');
+        }
+      }
+      // Dedup check
+      const exists=s.bwLog.find(e=>e.date===d&&Math.abs(e.weight-weight)<0.1);
+      if(!exists){s.bwLog.push({date:d,weight:Math.round(weight*10)/10,note:'Withings'});imported++;}
+    });
+    s.bwLog.sort((a,b)=>b.date.localeCompare(a.date));
+    if(s.bwLog.length)s.athleteBW=s.bwLog[0].weight;
+    saveSettingsData(s);
+    renderBWChart();
+    renderBWLog();
+    showToast(imported+' weigh-ins imported from CSV','success');
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+
+// ============================================================
+// AI INSIGHTS
+// ============================================================
+async function generateInsights(){
+  const btn=document.getElementById('insights-btn');
+  const out=document.getElementById('insights-output');
+  btn.textContent='Thinking...';
+  btn.disabled=true;
+  out.innerHTML='<span style="color:var(--text3);">Analysing your training data...</span>';
+
+  const db=loadDB();
+  const s=loadSettings();
+  const meets=getMeets();
+  const meetPBs=getMeetPBs();
+  const {getPB}=getAllPBs();
+
+  const bw=s.athleteBW||(s.bwLog&&s.bwLog[0]&&s.bwLog[0].weight)||null;
+  const wc=bw?getWeightClass(bw):null;
+  const snatchPB=getPB('Snatch');
+  const cjPB=getPB('Clean and Jerk');
+  const compSnatch=meetPBs.snatch;
+  const compCJ=meetPBs.cj;
+
+  const cutoff=new Date();cutoff.setDate(cutoff.getDate()-56);
+  const cutoffStr=cutoff.toISOString().split('T')[0];
+  const recent=db.entries.filter(e=>e.date>=cutoffStr);
+  const recentDates=new Set(recent.map(e=>e.date));
+  const sessionTypes={};
+  recent.forEach(e=>{sessionTypes[e.session]=(sessionTypes[e.session]||0)+1;});
+  const liftCounts={};
+  recent.forEach(e=>{liftCounts[e.base]=(liftCounts[e.base]||0)+1;});
+  const withQuality=db.entries.filter(e=>e.quality&&e.date>=cutoffStr);
+  const avgQuality=withQuality.length?Math.round(withQuality.reduce((s,e)=>s+e.quality,0)/withQuality.length*10)/10:null;
+
+  const comp=s.comp||{};
+  let daysToComp=null;
+  if(comp.date){
+    const today=new Date();today.setHours(0,0,0,0);
+    daysToComp=Math.round((new Date(comp.date+'T00:00:00')-today)/(1000*60*60*24));
+  }
+
+  const snatchW=snatchPB?snatchPB.weight:null;
+  const cjW=cjPB?cjPB.weight:null;
+  const ratio=snatchW&&cjW?Math.round(snatchW/cjW*100):null;
+
+  const prompt=`You are an experienced Olympic weightlifting coach. Analyse this athlete's training data and give personalised, practical insights. Be direct, specific, and encouraging. Use the data -- not generic advice.
+
+ATHLETE DATA:
+- Bodyweight: ${bw?bw+'kg':'unknown'}${wc?' (IWF class: '+wc.iwf+')':''}
+- Competition best Snatch: ${compSnatch?compSnatch.weight+'kg ('+compSnatch.meet+')':'no competition data'}
+- Competition best C&J: ${compCJ?compCJ.weight+'kg ('+compCJ.meet+')':'no competition data'}
+- Training best Snatch: ${snatchW?snatchW+'kg':'no data'}
+- Training best C&J: ${cjW?cjW+'kg':'no data'}
+- Snatch:C&J ratio: ${ratio?ratio+'% (ideal 78-82%)':'unknown'}
+- Total log entries: ${db.entries.length}
+- Sessions last 8 weeks: ${recentDates.size} (${Math.round(recentDates.size/8*10)/10}/week)
+- Session breakdown: ${JSON.stringify(sessionTypes)}
+- Most trained lifts: ${JSON.stringify(Object.entries(liftCounts).sort((a,b)=>b[1]-a[1]).slice(0,5))}
+- Avg quality rating last 8 weeks: ${avgQuality?avgQuality+'/5':'no data'}
+- Days to next competition: ${daysToComp!==null?(daysToComp<=0?'passed':daysToComp+' days'):'none scheduled'}
+- Competition: ${comp.name||'none'}
+- Meets completed: ${meets.length}
+
+Give 3-5 specific, actionable insights. Consider lift ratio balance, training frequency, quality trends, competition prep if applicable. Max 250 words. Short paragraphs, no bullet points, no headers. Speak directly to the athlete.`;
+
+  try {
+    const response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:400,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await response.json();
+    const text=data.content?.[0]?.text||'No response received.';
+    const paras=text.split('\n\n').map(p=>p.replace(/\n/g,'<br>')).join('</p><p style="margin-top:10px;">');
+
+    out.innerHTML='<p>'+paras+'</p>';
+  } catch(err){
+    out.innerHTML='<span style="color:var(--red);">Could not generate insights. Check your connection and try again.</span>';
+  }
+  btn.textContent='Regenerate';
+  btn.disabled=false;
+}
+
+// ============================================================
+// AI INSIGHTS
+// ============================================================
+
+// ============================================================
+// INIT
+// ============================================================
+initDB();
+renderLog();
+renderPlannerBlocks();
+renderCountdown();
 
 // LIVE CLOCK
 function updateClock() {
