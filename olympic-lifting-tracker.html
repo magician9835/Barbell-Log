@@ -1032,8 +1032,6 @@ const SEED_PBS=[
 ];
 
 function initDB(){
-  const db=loadDB();
-  if(db.entries.length===0){db.entries=SEED_DATA;saveDB(db);}
   const settings=loadSettings();
   const existingPBs=settings.pbs||[];
   SEED_PBS.forEach(seed=>{
@@ -1115,9 +1113,9 @@ function setFilter(f,el){
 }
 
 function renderLog(){
-  const db=loadDB();
+  // entries live in sheet, not localStorage
   const container=document.getElementById('logList');
-  let entries=[...db.entries].sort((a,b)=>b.date.localeCompare(a.date));
+  let entries=[...getCachedEntries()].sort((a,b)=>b.date.localeCompare(a.date));
   if(activeFilter!=='all'){
     entries=entries.filter(e=>{
       if(activeFilter==='Row')return e.base==='Pendlay Row'||e.base==='Barbell Row';
@@ -1262,7 +1260,7 @@ function setQuality(val){
   document.querySelectorAll('.q-dot').forEach(d=>d.classList.toggle('selected',parseInt(d.textContent)===val));
 }
 
-function saveEntry(ov){
+async function saveEntry(ov){
   const entry=ov||{
     id:uid(),
     date:document.getElementById('m-date').value,
@@ -1280,13 +1278,12 @@ function saveEntry(ov){
   };
   if(!entry.base){showToast('Select a base lift','error');return false;}
   if(!entry.weight){showToast('Enter a weight','error');return false;}
-  const db=loadDB();db.entries.push(entry);saveDB(db);
+  // entry not stored in localStorage -- in sheet only
   updatePBs(entry);
   if(!ov)closeLogModal();
-  renderLog();
+  showToast('Saving...','');
+  await syncEntryToSheets(entry);
   showToast('Entry saved','success');
-  const s=loadSettings();
-  if(s.autoSync&&s.sheetsUrl)syncEntryToSheets(entry,s.sheetsUrl);
   return true;
 }
 
@@ -1301,25 +1298,7 @@ function updatePBs(entry){
   }
 
 function recalculatePBs(){
-  // Rebuild settings.pbs from scratch by scanning all log entries
-  // Called after deletion to ensure PBs stay accurate
-  const db=loadDB();
-  const s=loadSettings();
-  const pbMap={};
-  db.entries.forEach(e=>{
-    if(!e.base||!e.weight)return;
-    const ex=pbMap[e.base];
-    if(!ex||e.weight>ex.weight){
-      pbMap[e.base]={date:e.date,lift:e.base,weight:e.weight};
-    }
-  });
-  // Keep seeded PBs where no log entry beats them
-  (s.pbs||[]).forEach(seed=>{
-    const fromLog=pbMap[seed.lift];
-    if(!fromLog||seed.weight>fromLog.weight) pbMap[seed.lift]=seed;
-  });
-  s.pbs=Object.values(pbMap);
-  saveSettingsData(s);
+  rebuildPBsFromEntries(getCachedEntries());
 }
 
 }
@@ -1503,11 +1482,11 @@ function sinclair(total, bw){
 const PB_GROUPS={comp:['Snatch','Clean and Jerk'],strength:['Clean','Jerk']};
 
 function getAllPBs(){
-  const s=loadSettings();const pbs=s.pbs||[];const db=loadDB();
-  const allLifts=[...new Set(db.entries.map(e=>e.base))];
+  const s=loadSettings();const pbs=s.pbs||[];
+  const allLifts=[...new Set(getCachedEntries().map(e=>e.base))];
   const logPBs={};
   allLifts.forEach(lift=>{
-    const en=db.entries.filter(e=>e.base===lift&&e.weight);
+    const en=getCachedEntries().filter(e=>e.base===lift&&e.weight);
     if(!en.length)return;
     const max=Math.max(...en.map(e=>e.weight));
     const best=en.find(e=>e.weight===max);
@@ -1534,8 +1513,7 @@ function renderPBs(){
 
   // Get training bests from log (all sessions)
   function getTrainingBest(lift){
-    const db=loadDB();
-    const entries=db.entries.filter(e=>e.base===lift&&e.weight);
+    const entries=getCachedEntries().filter(e=>e.base===lift&&e.weight);
     if(!entries.length)return null;
     const max=Math.max(...entries.map(e=>e.weight));
     const best=entries.find(e=>e.weight===max);
@@ -1803,8 +1781,8 @@ function renderPlannerBlocks(){
 }
 
 function getPlannerRef(lift){
-  const db=loadDB();const s=loadSettings();const pct=parseFloat(lift.pct)/100;if(!pct)return{};
-  const direct=db.entries.filter(e=>{
+  const s=loadSettings();const pct=parseFloat(lift.pct)/100;if(!pct)return{};
+  const direct=getCachedEntries().filter(e=>{
     if(e.base!==lift.base||!e.weight)return false;
     return JSON.stringify((lift.position||[]).slice().sort())===JSON.stringify((e.position||[]).slice().sort())&&
       (lift.receiving||'')===(e.receiving||'')&&
@@ -1813,7 +1791,7 @@ function getPlannerRef(lift){
   if(direct.length){const r=Math.max(...direct.map(e=>e.weight));return{refWeight:r,targetWeight:roundWeight(r*pct)};}
   const corePB=(s.pbs||[]).find(p=>p.lift===lift.base);
   if(corePB){const c=getCoefficient(lift.position?.[0],lift.receiving,lift.technique);const r=roundWeight(corePB.weight*c);return{refWeight:r,targetWeight:roundWeight(r*pct)};}
-  const anyBase=db.entries.filter(e=>e.base===lift.base&&e.weight);
+  const anyBase=getCachedEntries().filter(e=>e.base===lift.base&&e.weight);
   if(anyBase.length){const max=Math.max(...anyBase.map(e=>e.weight));const c=getCoefficient(lift.position?.[0],lift.receiving,lift.technique);const r=roundWeight(max*c);return{refWeight:r,targetWeight:roundWeight(r*pct)};}
   return{};
 }
@@ -1986,7 +1964,7 @@ function setFinishQ(idx,val){
 }
 function closeFinishModal(){document.getElementById('finishModal').classList.remove('open');}
 
-function confirmFinishSession(){
+async function confirmFinishSession(){
   const today=new Date().toISOString().split('T')[0];
   let saved=0;
   plannerLifts.forEach((lift,i)=>{
@@ -2005,8 +1983,8 @@ function confirmFinishSession(){
       quality:parseInt(document.getElementById(`fqv-${i}`).value)||null,
       notes:[document.getElementById(`fpn-${i}`)?.value,document.getElementById(`fn-${i}`).value.trim()].filter(Boolean).join(' · '),
     };
-    const db=loadDB();db.entries.push(entry);saveDB(db);updatePBs(entry);saved++;
-    const s=loadSettings();if(s.autoSync&&s.sheetsUrl)syncEntryToSheets(entry,s.sheetsUrl);
+  updatePBs(entry);saved++;allEntries.push(entry);
+    const s2=loadSettings();if(s2.sheetsUrl)syncEntryToSheets(entry);
   });
   closeFinishModal();
 
@@ -2271,18 +2249,17 @@ function updateCompTotal() {
 function renderCompContext(projectedTotal) {
   const el = document.getElementById('compContext');
   if (!el) return;
-  const db = loadDB();
   const s = loadSettings();
   const pbs = s.pbs || [];
 
   // Competition entries only
-  const compEntries = db.entries.filter(e => e.session === 'Coached Class' || e.session === '1:1 Session' || e.session === 'Solo');
+  const compEntries = getCachedEntries().filter(e => e.session === 'Coached Class' || e.session === '1:1 Session' || e.session === 'Solo');
   // We treat comp PBs from the seeded PBs sheet as competition lifts
   // For now, classify "competition" as entries that have no modifiers (floor, squat full, no technique) -- closest to competition lift
   const isCompLift = e => (!e.position||e.position.length===0) && (!e.technique||e.technique.length===0) && (!e.receiving||e.receiving==='Squat (Full)'||e.receiving==='Split'||e.receiving==='');
 
   function getBestBySession(lift, sessionFilter) {
-    const entries = db.entries.filter(e => e.base === lift && e.weight && (sessionFilter ? sessionFilter(e) : true));
+    const entries = getCachedEntries().filter(e => e.base === lift && e.weight && (sessionFilter ? sessionFilter(e) : true));
     if (!entries.length) return null;
     const max = Math.max(...entries.map(e => e.weight));
     const best = entries.find(e => e.weight === max);
@@ -2701,9 +2678,9 @@ function resetCoefficients(){const s=loadSettings();s.coefficients=JSON.parse(JS
 function saveSheetsUrl(){const s=loadSettings();s.sheetsUrl=document.getElementById('sheetsUrl').value.trim();saveSettingsData(s);}
 function saveSettings(){const s=loadSettings();s.autoSync=document.getElementById('autoSync').checked;saveSettingsData(s);}
 function exportCSV(){
-  const db=loadDB();
+  
   const h=['date','session','base','position','receiving','grip','technique','weight','sets','reps','quality','notes','id'];
-  const rows=db.entries.map(e=>[e.date,e.session,e.base,(e.position||[]).join(' + '),e.receiving,(e.grip||[]).join(' + '),(e.technique||[]).join(' + '),e.weight,e.sets||'',e.reps||'',e.quality||'',(e.notes||'').replace(/,/g,''),e.id]);
+  const rows=getCachedEntries().map(e=>[e.date,e.session,e.base,(e.position||[]).join(' + '),e.receiving,(e.grip||[]).join(' + '),(e.technique||[]).join(' + '),e.weight,e.sets||'',e.reps||'',e.quality||'',(e.notes||'').replace(/,/g,''),e.id]);
   const csv=[h,...rows].map(r=>r.join(',')).join('\n');
   const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=`barbell-log-${new Date().toISOString().split('T')[0]}.csv`;a.click();
@@ -2712,95 +2689,139 @@ function exportCSV(){
 function clearAllData(){if(!confirm('Clear ALL data? Export first. Cannot be undone.'))return;localStorage.removeItem(DB_KEY);renderLog();showToast('Data cleared','error');}
 
 // ============================================================
-// SYNC
+// ENTRY CACHE + SHEET SYNC
 // ============================================================
-async function syncEntryToSheets(entry,url){await appendEntryToSheet(entry,url);}
-// ── SYNC -- Sheet is source of truth ────────────────────────────────────────
-// Pull: sheet wins. Push: append only. Never overwrite sheet rows.
+// Entries live ONLY in the sheet. Session cache avoids repeated fetches.
+// Every write (log/edit/delete) posts to sheet then refreshes cache.
 
-async function syncBoth(){
-  const s=loadSettings();if(!s.sheetsUrl){showToast('Add Sheets URL in Settings first','error');return;}
-  const btn=document.getElementById('syncBtn');btn.textContent='⇅ ...';btn.classList.add('syncing');
+let _entriesCache = [];
+let _fetchInProgress = false;
+
+function getCachedEntries(){ return _entriesCache; }
+function setCachedEntries(e){ _entriesCache = e||[]; }
+function clearEntryCache(){ _entriesCache = []; }
+
+async function fetchEntries(){
+  const s=loadSettings();
+  if(!s.sheetsUrl){ setCachedEntries([]); return []; }
+  if(_fetchInProgress) return getCachedEntries();
+  _fetchInProgress=true;
   try{
-    const pulled=await pullFromSheets(s.sheetsUrl);
-
-    // PULL ONLY -- sheet is source of truth, never append on sync
-    const db=loadDB();
-
-    // Build fingerprint map of local entries (date+base+weight -> entry)
-    // So we can match sheet rows that have no ID against existing local entries
-    const localByFP={};
-    db.entries.forEach(e=>{
-      const fp=(e.date||'')+'|'+(e.base||'')+'|'+(e.weight||'');
-      localByFP[fp]=e;
-    });
-
-    const byId={};
-    db.entries.forEach(e=>{byId[e.id]=e;});
-
-    if(pulled.entries&&pulled.entries.length){
-      pulled.entries.forEach(e=>{
-        if(!e.id){
-          // Try to match by fingerprint to reuse existing local ID
-          const fp=(e.date||'')+'|'+(e.base||'')+'|'+(e.weight||'');
-          const local=localByFP[fp];
-          e.id=local?local.id:uid();
-        }
-        byId[e.id]=e; // sheet wins
-      });
-    }
-    db.entries=Object.values(byId).sort((a,b)=>b.date.localeCompare(a.date));
-    saveDB(db);
-
-    // Merge meets -- sheet wins
-    if(pulled.meets&&pulled.meets.length){
-      const existing=s.meets||[];
-      const meetById={};
-      existing.forEach(m=>{meetById[m.id]=m;});
-      pulled.meets.forEach(m=>{if(m.id)meetById[m.id]=m;});
-      s.meets=Object.values(meetById).sort((a,b)=>b.date.localeCompare(a.date));
-    }
-
-    // Merge bodyweight -- sheet wins, dedup by date+weight
-    if(pulled.bw&&pulled.bw.length){
-      const existingBW=s.bwLog||[];
-      const allBW=[...pulled.bw,...existingBW];
-      const bwSeen=new Set();
-      s.bwLog=allBW.filter(e=>{const k=e.date+'_'+e.weight;if(bwSeen.has(k))return false;bwSeen.add(k);return true;})
-        .sort((a,b)=>b.date.localeCompare(a.date));
-      if(s.bwLog.length)s.athleteBW=s.bwLog[0].weight;
-    }
-    saveSettingsData(s);
-
-    renderLog();
-    if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
-    if(document.getElementById('pane-comp').classList.contains('active'))renderMeetList();
-    showToast('Synced','success');
-  }catch(e){console.error(e);showToast('Sync failed -- check URL','error');}
-  btn.textContent='⇅ SYNC';btn.classList.remove('syncing');
-}
-
-async function appendEntryToSheet(entry,url){
-  try{
-    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'log',entry})});
-  }catch(e){}
-}
-
-async function pullFromSheets(url){
-  try{
-    const r=await fetch(url+'?action=getAll');
+    const r=await fetch(s.sheetsUrl+'?action=getAll');
     const data=await r.json();
-    return{entries:data.entries||[],meets:data.meets||[],bw:data.bw||[]};
-  }catch(e){return{entries:[],meets:[],bw:[]};}
+    const entries=(data.entries||[]).sort((a,b)=>b.date.localeCompare(a.date));
+    setCachedEntries(entries);
+    // Update PBs from fresh entries (option 3 -- hybrid)
+    rebuildPBsFromEntries(entries);
+    // Merge meets and BW into settings
+    if(data.meets&&data.meets.length){
+      const s2=loadSettings();
+      const meetById={};
+      (s2.meets||[]).forEach(m=>{meetById[m.id]=m;});
+      data.meets.forEach(m=>{if(m.id)meetById[m.id]=m;});
+      s2.meets=Object.values(meetById).sort((a,b)=>b.date.localeCompare(a.date));
+      saveSettingsData(s2);
+    }
+    if(data.bw&&data.bw.length){
+      const s2=loadSettings();
+      const seen=new Set();
+      const merged=[...data.bw,...(s2.bwLog||[])].filter(e=>{
+        const k=e.date+'_'+e.weight;
+        if(seen.has(k))return false;seen.add(k);return true;
+      }).sort((a,b)=>b.date.localeCompare(a.date));
+      s2.bwLog=merged;
+      if(merged.length)s2.athleteBW=merged[0].weight;
+      saveSettingsData(s2);
+    }
+    return entries;
+  }catch(e){
+    console.error('Fetch failed:',e);
+    return getCachedEntries();
+  }finally{
+    _fetchInProgress=false;
+  }
 }
 
-async function pushEditToSheet(entry,url){
-  // Update a specific row in the sheet by ID
+function rebuildPBsFromEntries(entries){
+  // Rebuild settings.pbs from entries for planner/offline use
+  const s=loadSettings();
+  const pbMap={};
+  (entries||[]).forEach(e=>{
+    if(!e.base||!e.weight)return;
+    const ex=pbMap[e.base];
+    if(!ex||e.weight>ex.weight) pbMap[e.base]={date:e.date,lift:e.base,weight:e.weight};
+  });
+  // Keep manually seeded PBs that beat log entries
+  (s.pbs||[]).forEach(seed=>{
+    const fromLog=pbMap[seed.lift];
+    if(!fromLog||seed.weight>fromLog.weight) pbMap[seed.lift]=seed;
+  });
+  s.pbs=Object.values(pbMap);
+  saveSettingsData(s);
+}
+
+async function fetchAndRender(){
+  const container=document.getElementById('logList');
+  if(container)container.innerHTML='<div style="padding:24px 16px;text-align:center;color:var(--text3);font-size:12px;font-family:DM Mono,monospace;">Loading...</div>';
+  await fetchEntries();
+  renderLog();
+  if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
+}
+
+// ⇅ SYNC = pull only, refresh display
+async function syncBoth(){
+  const s=loadSettings();
+  if(!s.sheetsUrl){showToast('Add Sheets URL in Settings first','error');return;}
+  const btn=document.getElementById('syncBtn');
+  btn.textContent='⇅ ...';btn.classList.add('syncing');
+  clearEntryCache();
+  await fetchEntries();
+  renderLog();
+  if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
+  if(document.getElementById('log-pane-analytics')?.classList.contains('active'))renderAnalytics();
+  if(document.getElementById('pane-comp').classList.contains('active'))renderMeetList();
+  btn.textContent='⇅ SYNC';btn.classList.remove('syncing');
+  showToast('Refreshed','success');
+}
+
+// Write to sheet then refresh cache
+async function sheetPost(action,payload){
+  const s=loadSettings();
+  if(!s.sheetsUrl)return;
   try{
-    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'updateEntry',entry})});
-  }catch(e){}
+    await fetch(s.sheetsUrl,{method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action,...payload})});
+  }catch(e){ console.error('Sheet post failed:',e); }
+}
+
+async function syncEntryToSheets(entry){
+  await sheetPost('log',{entry});
+  clearEntryCache();
+  await fetchEntries();
+  renderLog();
+}
+
+async function pushEditToSheet(entry){
+  await sheetPost('updateEntry',{entry});
+  // Update cache in place without full refetch
+  const idx=_entriesCache.findIndex(e=>e.id===entry.id);
+  if(idx>=0) _entriesCache[idx]=entry;
+  renderLog();
+}
+
+async function pushDeleteToSheet(id){
+  await sheetPost('deleteEntry',{id});
+  _entriesCache=_entriesCache.filter(e=>e.id!==id);
+  renderLog();
+}
+
+// Legacy aliases
+async function appendEntryToSheet(entry){ await syncEntryToSheets(entry); }
+async function pullFromSheets(url){
+  try{const r=await fetch(url+'?action=getAll');const data=await r.json();
+    return{entries:data.entries||[],meets:data.meets||[],bw:data.bw||[]};}
+  catch(e){return{entries:[],meets:[],bw:[]};}
 }
 
 // ============================================================
@@ -2810,8 +2831,8 @@ let editEntryId = null;
 let editQuality = null;
 
 function openEditModal(id){
-  const db=loadDB();
-  const entry=db.entries.find(e=>e.id===id);
+  
+  const entry=getCachedEntries().find(e=>e.id===id);
   if(!entry)return;
   editEntryId=id;
   editQuality=entry.quality||null;
@@ -2891,10 +2912,9 @@ function closeEditModal(){
 async function deleteEditEntry(){
   if(!editEntryId)return;
   if(!confirm('Delete this entry? It will also be removed from the sheet.'))return;
-  const db=loadDB();
-  const entry=db.entries.find(e=>e.id===editEntryId);
-  db.entries=db.entries.filter(e=>e.id!==editEntryId);
-  saveDB(db);
+  
+  const entry=getCachedEntries().find(e=>e.id===editEntryId);
+  // local delete -- sheet delete handled by pushDeleteToSheet below
   recalculatePBs();
   const s=loadSettings();
   if(s.sheetsUrl&&entry){
@@ -2902,6 +2922,8 @@ async function deleteEditEntry(){
       await fetch(s.sheetsUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({action:'deleteEntry',id:editEntryId})});
     }catch(e){}
+    clearEntryCache();
+    await fetchEntries();
   }
   closeEditModal();
   renderLog();
@@ -2912,16 +2934,16 @@ async function deleteEditEntry(){
 
 async function saveEditEntry(){
   if(!editEntryId)return;
-  const db=loadDB();
-  const idx=db.entries.findIndex(e=>e.id===editEntryId);
+  
+  const idx=getCachedEntries().findIndex(e=>e.id===editEntryId);
   if(idx<0)return;
 
   const weight=parseFloat(document.getElementById('edit-weight').value)||null;
   const updated={
-    ...db.entries[idx],
-    date:document.getElementById('edit-date').value||db.entries[idx].date,
+    ...getCachedEntries().find(e=>e.id===editEntryId)||{},
+    date:document.getElementById('edit-date').value||getCachedEntries()[idx].date,
     session:document.getElementById('edit-session').value,
-    base:document.getElementById('edit-base').value||db.entries[idx].base,
+    base:document.getElementById('edit-base').value||getCachedEntries()[idx].base,
     position:getEditChips('edit-position'),
     receiving:getEditChips('edit-receiving')[0]||'',
     grip:getEditChips('edit-grip'),
@@ -2933,7 +2955,7 @@ async function saveEditEntry(){
     notes:document.getElementById('edit-notes').value.trim(),
   };
 
-  db.entries[idx]=updated;
+  getCachedEntries()[idx]=updated;
   saveDB(db);
   updatePBs(updated);
 
@@ -2964,9 +2986,10 @@ function showToast(msg,type){const t=document.getElementById('toast');t.textCont
 // INIT
 // ============================================================
 initDB();
-renderLog();
 renderPlannerBlocks();
 renderCountdown();
+// Fetch entries from sheet on load
+fetchAndRender();
 
 // ============================================================
 // LOG SUB-NAV
@@ -3073,9 +3096,8 @@ function getAnalyticsCutoff(){
 
 function renderAnalytics(){
   const lift=document.getElementById('analytics-lift')?.value||'Snatch';
-  const db=loadDB();
   const cutoff=getAnalyticsCutoff();
-  let entries=db.entries.filter(e=>e.base===lift&&e.weight&&e.date);
+  let entries=getCachedEntries().filter(e=>e.base===lift&&e.weight&&e.date);
 
   if(cutoff){
     if(typeof cutoff==='object'&&cutoff.from){
@@ -3096,7 +3118,7 @@ function renderAnalytics(){
   const dates=Object.values(byDate).sort((a,b)=>a.date.localeCompare(b.date));
 
   renderProgressChart(dates, lift);
-  renderVolumeStats(db);
+  renderVolumeStats();
   renderBWChart();
 }
 
@@ -3172,14 +3194,15 @@ function renderProgressChart(dates, lift){
     </div>`;
 }
 
-function renderVolumeStats(db){
+function renderVolumeStats(){
+  const db={entries:getCachedEntries()};
   const el=document.getElementById('analytics-volume');if(!el)return;
   const now=new Date();
   const fourWeeksAgo=new Date(now-28*24*60*60*1000).toISOString().split('T')[0];
   const eightWeeksAgo=new Date(now-56*24*60*60*1000).toISOString().split('T')[0];
 
-  const recent=db.entries.filter(e=>e.date>=fourWeeksAgo);
-  const prev=db.entries.filter(e=>e.date>=eightWeeksAgo&&e.date<fourWeeksAgo);
+  const recent=getCachedEntries().filter(e=>e.date>=fourWeeksAgo);
+  const prev=getCachedEntries().filter(e=>e.date>=eightWeeksAgo&&e.date<fourWeeksAgo);
 
   // Sessions per week (last 4 weeks)
   const recentDates=new Set(recent.map(e=>e.date));
@@ -3192,7 +3215,7 @@ function renderVolumeStats(db){
 
   // Most trained lift
   const liftCounts={};
-  db.entries.forEach(e=>{liftCounts[e.base]=(liftCounts[e.base]||0)+1;});
+  getCachedEntries().forEach(e=>{liftCounts[e.base]=(liftCounts[e.base]||0)+1;});
   const topLift=Object.entries(liftCounts).sort((a,b)=>b[1]-a[1])[0];
 
   el.innerHTML=`
@@ -3210,7 +3233,7 @@ function renderVolumeStats(db){
     </div>
     <div class="analytics-stat">
       <span class="analytics-stat-label">Total entries</span>
-      <span class="analytics-stat-val">${db.entries.length}</span>
+      <span class="analytics-stat-val">${getCachedEntries().length}</span>
     </div>`;
 }
 
@@ -3336,7 +3359,6 @@ async function generateInsights(){
   btn.disabled=true;
   out.innerHTML='<span style="color:var(--text3);">Analysing your training data...</span>';
 
-  const db=loadDB();
   const s=loadSettings();
   const meets=getMeets();
   const meetPBs=getMeetPBs();
@@ -3351,13 +3373,13 @@ async function generateInsights(){
 
   const cutoff=new Date();cutoff.setDate(cutoff.getDate()-56);
   const cutoffStr=cutoff.toISOString().split('T')[0];
-  const recent=db.entries.filter(e=>e.date>=cutoffStr);
+  const recent=getCachedEntries().filter(e=>e.date>=cutoffStr);
   const recentDates=new Set(recent.map(e=>e.date));
   const sessionTypes={};
   recent.forEach(e=>{sessionTypes[e.session]=(sessionTypes[e.session]||0)+1;});
   const liftCounts={};
   recent.forEach(e=>{liftCounts[e.base]=(liftCounts[e.base]||0)+1;});
-  const withQuality=db.entries.filter(e=>e.quality&&e.date>=cutoffStr);
+  const withQuality=getCachedEntries().filter(e=>e.quality&&e.date>=cutoffStr);
   const avgQuality=withQuality.length?Math.round(withQuality.reduce((s,e)=>s+e.quality,0)/withQuality.length*10)/10:null;
 
   const comp=s.comp||{};
@@ -3380,7 +3402,7 @@ ATHLETE DATA:
 - Training best Snatch: ${snatchW?snatchW+'kg':'no data'}
 - Training best C&J: ${cjW?cjW+'kg':'no data'}
 - Snatch:C&J ratio: ${ratio?ratio+'% (ideal 78-82%)':'unknown'}
-- Total log entries: ${db.entries.length}
+- Total log entries: ${getCachedEntries().length}
 - Sessions last 8 weeks: ${recentDates.size} (${Math.round(recentDates.size/8*10)/10}/week)
 - Session breakdown: ${JSON.stringify(sessionTypes)}
 - Most trained lifts: ${JSON.stringify(Object.entries(liftCounts).sort((a,b)=>b[1]-a[1]).slice(0,5))}
@@ -3421,9 +3443,10 @@ Give 3-5 specific, actionable insights. Consider lift ratio balance, training fr
 // INIT
 // ============================================================
 initDB();
-renderLog();
 renderPlannerBlocks();
 renderCountdown();
+// Fetch entries from sheet on load
+fetchAndRender();
 
 // LIVE CLOCK
 function updateClock() {
