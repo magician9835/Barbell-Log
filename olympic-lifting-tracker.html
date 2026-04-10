@@ -307,7 +307,7 @@
           <span class="days" id="header-badge-days"></span>
           <span class="label">days</span>
         </div>
-        <button class="sync-btn" id="syncBtn" onclick="syncBoth()">⇅ SYNC</button>
+        <button class="sync-btn" id="syncBtn" onclick="syncBoth()">⇅</button>
       </div>
     </div>
     <div id="header-row2">
@@ -416,11 +416,22 @@
           Finish Session
         </button>
       </div>
-      <div id="plannerBlocks"></div>
-      <div style="padding:0 16px 16px;">
-        <button class="btn btn-secondary" onclick="addPlannerLift()">+ Add Lift</button>
+      <div class="sub-nav">
+        <button class="sub-nav-btn active" id="planner-sub-session" onclick="switchPlannerSub('session')">Session</button>
+        <button class="sub-nav-btn" id="planner-sub-warmup" onclick="switchPlannerSub('warmup')">Warmup</button>
+      </div>
+      <div class="sub-pane active" id="planner-pane-session">
+        <div id="plannerBlocks"></div>
+        <div style="padding:0 16px 16px;">
+          <button class="btn btn-secondary" onclick="addPlannerLift()">+ Add Lift</button>
+        </div>
+      </div>
+      <div class="sub-pane" id="planner-pane-warmup">
+        <div id="session-warmup-output" style="padding-bottom:16px;"></div>
       </div>
       <div style="padding:0 16px 8px;">
+        <button class="btn btn-primary" id="finishBtn2" onclick="finishSession()"
+          style="width:100%;margin-bottom:12px;display:none;">Finish Session</button>
         <div class="section-label">Rest Timer</div>
         <div class="card">
           <div class="timer-display">
@@ -471,12 +482,13 @@
     <!-- COMP TAB -->
     <div class="tab-pane" id="pane-comp">
       <div class="sub-nav">
-        <button class="sub-nav-btn active" id="comp-sub-plan" onclick="switchCompSub('plan')">Plan</button>
-        <button class="sub-nav-btn" id="comp-sub-history" onclick="switchCompSub('history')">History</button>
+        <button class="sub-nav-btn active" id="comp-sub-history" onclick="switchCompSub('history')">History</button>
+        <button class="sub-nav-btn" id="comp-sub-plan" onclick="switchCompSub('plan')">Plan</button>
+        <button class="sub-nav-btn" id="comp-sub-warmup" onclick="switchCompSub('warmup')">Warmup</button>
       </div>
 
       <!-- PLAN SUB-PANE -->
-      <div class="sub-pane active" id="comp-pane-plan">
+      <div class="sub-pane" id="comp-pane-plan">
         <div id="comp-countdown" class="countdown-banner" style="display:none;"></div>
         <div class="section">
           <div class="section-label">Next Competition</div>
@@ -506,9 +518,53 @@
         </div>
       </div>
 
+      <!-- WARMUP SUB-PANE -->
+
+
+      <!-- WARMUP SUB-PANE -->
+      <div class="sub-pane" id="comp-pane-warmup">
+        <div class="section">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div class="section-label" style="margin:0;">Openers</div>
+            <button onclick="syncOpenersFromPlan()" style="background:none;border:1px solid var(--border);color:var(--text3);font-size:11px;font-family:DM Mono,monospace;padding:4px 12px;border-radius:20px;cursor:pointer;">↺ From Plan</button>
+          </div>
+          <div class="card">
+            <div class="field"><label>Snatch Opener (kg)</label><input type="number" id="wu-sn-opener" placeholder="e.g. 72" step="0.5" oninput="renderWarmup()"></div>
+            <div class="field"><label>C&amp;J Opener (kg)</label><input type="number" id="wu-cj-opener" placeholder="e.g. 90" step="0.5" oninput="renderWarmup()"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-label">Timing</div>
+          <div class="card">
+            <div class="field"><label>Session start time</label><input type="time" id="wu-start-time" oninput="renderWarmup()"></div>
+            <div class="field"><label>Total lifters in session</label><input type="number" id="wu-total-lifters" placeholder="e.g. 10" min="1" max="40" oninput="renderWarmup()"></div>
+            <div class="field"><label>Break after Snatch (min)</label><input type="number" id="wu-break" value="10" min="5" max="30" step="1" oninput="renderWarmup()"></div>
+            <div class="field"><label>Your position on Snatch</label><input type="number" id="wu-lifters-sn" placeholder="e.g. 4" min="0" max="30" oninput="renderWarmup()"></div>
+            <div class="field"><label>Your position on C&amp;J</label><input type="number" id="wu-lifters-cj" placeholder="e.g. 4" min="0" max="30" oninput="renderWarmup()"></div>
+            <div class="field"><label>Avg time per attempt (min)</label><input type="number" id="wu-pace" value="1.5" step="0.5" min="1" max="3" oninput="renderWarmup()"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div class="section-label" style="margin:0;">C&amp;J Start Override</div>
+            <button onclick="clearCJOverride()" style="background:none;border:1px solid var(--border);color:var(--text3);font-size:11px;font-family:DM Mono,monospace;padding:4px 12px;border-radius:20px;cursor:pointer;">Clear</button>
+          </div>
+          <div class="card">
+            <div class="field">
+              <label>Actual C&amp;J start time</label>
+              <input type="time" id="wu-cj-start-override" oninput="renderWarmup()"
+                style="font-size:22px;font-family:DM Mono,monospace;font-weight:700;color:var(--accent);">
+              <div style="font-size:11px;color:var(--text3);margin-top:4px;">When announced, enter the actual time here. Overrides the estimate.</div>
+            </div>
+          </div>
+        </div>
+        <div id="warmup-output"></div>
+      </div>
+
       <!-- HISTORY SUB-PANE -->
-      <div class="sub-pane" id="comp-pane-history">
-        <div style="padding:12px 16px 0;display:flex;justify-content:flex-end;">
+      <div class="sub-pane active" id="comp-pane-history">
+        <div style="padding:12px 16px 0;display:flex;justify-content:space-between;align-items:center;">
+          <button id="meetEditBtn" class="btn btn-secondary btn-sm" onclick="toggleMeetEditMode()">Edit</button>
           <button class="btn btn-primary btn-sm" onclick="openMeetModal()">+ Log a Meet</button>
         </div>
         <div id="meetList" style="padding:8px 0;"></div>
@@ -582,12 +638,9 @@
               style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:12px;font-family:DM Mono,monospace;padding:8px 10px;border-radius:8px;outline:none;"
               oninput="saveSheetsUrl()">
           </div>
-          <div class="settings-row">
-            <div><div class="settings-label">Auto-sync on save</div><div class="settings-sub">Push each entry immediately</div></div>
-            <input type="checkbox" id="autoSync" onchange="saveSettings()" style="width:20px;height:20px;accent-color:var(--accent);">
-          </div>
+
           <div class="settings-row" style="gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-secondary btn-sm" onclick="syncBoth()">⇅ Sync Now</button>
+            <button class="btn btn-secondary btn-sm" onclick="syncBoth()">⇅ Pull from Sheet</button>
             <button class="btn btn-secondary btn-sm" onclick="exportCSV()">Export CSV</button>
           </div>
         </div>
@@ -729,6 +782,15 @@
 </div>
 
 <div id="toast"></div>
+<div id="confirmOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:flex-end;justify-content:center;">
+  <div style="background:var(--surface2);border-radius:18px 18px 0 0;padding:24px 20px calc(24px + var(--safe-bottom,20px));width:100%;max-width:480px;border-top:1px solid var(--border);">
+    <div id="confirmMsg" style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;font-family:Syne,sans-serif;"></div>
+    <div id="confirmSub" style="font-size:13px;color:var(--text3);margin-bottom:24px;"></div>
+    <button id="confirmYes" style="width:100%;background:rgba(255,82,82,0.15);border:1px solid rgba(255,82,82,0.4);color:var(--red);font-size:15px;font-weight:700;font-family:Syne,sans-serif;padding:14px;border-radius:12px;cursor:pointer;margin-bottom:10px;"></button>
+    <button onclick="hideConfirm()" style="width:100%;background:var(--surface3);border:1px solid var(--border);color:var(--text2);font-size:15px;font-weight:700;font-family:Syne,sans-serif;padding:14px;border-radius:12px;cursor:pointer;">Cancel</button>
+  </div>
+</div>
+
 
 <!-- MEET MODAL -->
 <div class="modal-overlay" id="editModal" onclick="if(event.target===this)closeEditModal()">
@@ -1047,7 +1109,6 @@ function initDB(){
   }
   saveSettingsData(settings);
   if(settings.sheetsUrl)document.getElementById('sheetsUrl').value=settings.sheetsUrl;
-  if(settings.autoSync)document.getElementById('autoSync').checked=true;
   if(settings.comp){
     if(settings.comp.name)document.getElementById('comp-name').value=settings.comp.name;
     if(settings.comp.date)document.getElementById('comp-date').value=settings.comp.date;
@@ -1656,11 +1717,21 @@ function renderPBs(){
 // SESSION PLANNER
 // ============================================================
 let plannerLifts=[];
+const PLANNER_KEY='barbell_planner_v1';
+function savePlannerState(){try{localStorage.setItem(PLANNER_KEY,JSON.stringify(plannerLifts));}catch(e){}}
+function loadPlannerState(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(PLANNER_KEY));
+    if(Array.isArray(saved)&&saved.length)plannerLifts=saved;
+  }catch(e){}
+}
 
 function addPlannerLift(){
-  plannerLifts.push({id:uid(),base:'',position:[],receiving:'',grip:[],technique:[],pct:'',notes:'',collapsed:false});
-  renderPlannerBlocks();
+  plannerLifts.forEach(l=>l.collapsed=true);
+  plannerLifts.push({id:uid(),base:'',position:[],receiving:'',grip:[],technique:[],pct:'',targetWeight:'',notes:'',collapsed:false});
+  savePlannerState();renderPlannerBlocks();
   document.getElementById('finishBtn').style.display='inline-block';
+  document.getElementById('finishBtn2').style.display='block';
 }
 function removePlannerLift(id){
   plannerLifts=plannerLifts.filter(l=>l.id!==id);
@@ -1673,24 +1744,30 @@ function togglePlannerCollapse(id){
 }
 function plannerSetBase(id,val){
   const l=plannerLifts.find(x=>x.id===id);
-  if(l){l.base=val;l.position=[];l.receiving='';l.grip=[];l.technique=[];renderPlannerBlocks();}
+  if(l){l.base=val;l.position=[];l.receiving='';l.grip=[];l.technique=[];savePlannerState();renderPlannerBlocks();}
 }
-function plannerSetReceiving(id,val){const l=plannerLifts.find(x=>x.id===id);if(l){l.receiving=val;renderPlannerBlocks();}}
-function plannerSetPct(id,val){const l=plannerLifts.find(x=>x.id===id);if(l){l.pct=val;renderPlannerBlocks();}}
-function plannerSetNotes(id,val){const l=plannerLifts.find(x=>x.id===id);if(l)l.notes=val;}
+function plannerSetReceiving(id,val){const l=plannerLifts.find(x=>x.id===id);if(l){l.receiving=val;savePlannerState();renderPlannerBlocks();}}
+function plannerSetPct(id,val){const l=plannerLifts.find(x=>x.id===id);if(l){l.pct=val;if(val)l.targetWeight='';savePlannerState();renderPlannerBlocks();}}
+function plannerSetTargetWeight(id,val){const l=plannerLifts.find(x=>x.id===id);if(l){l.targetWeight=val;if(val)l.pct='';savePlannerState();renderPlannerBlocks();}}
+function plannerSetNotes(id,val){const l=plannerLifts.find(x=>x.id===id);if(l){l.notes=val;savePlannerState();}}
 function plannerToggleChip(id,group,val,single){
   const l=plannerLifts.find(x=>x.id===id);if(!l)return;
   if(single){
-    // Toggle off if already selected, otherwise set exclusively
-    l[group]=l[group]===val||( Array.isArray(l[group])&&l[group][0]===val&&l[group].length===1)?'':val;
-    // Normalise to string for single-select groups
-    if(group==='receiving')l[group]=l[group]||'';
+    // Single-select: toggle off if already selected, otherwise replace
+    const current=Array.isArray(l[group])?l[group][0]:l[group];
+    const newVal=current===val?null:val;
+    // receiving stays as string; everything else (incl technique/squat_type) as array
+    if(group==='receiving'){
+      l[group]=newVal||'';
+    } else {
+      l[group]=newVal?[newVal]:[];
+    }
   } else {
     if(!Array.isArray(l[group]))l[group]=[];
     const i=l[group].indexOf(val);
     i>=0?l[group].splice(i,1):l[group].push(val);
   }
-  renderPlannerBlocks();
+  savePlannerState();renderPlannerBlocks();
 }
 
 function renderPlannerBlocks(){
@@ -1740,9 +1817,11 @@ function renderPlannerBlocks(){
       <div class="planner-lift-header">
         <div style="cursor:pointer;flex:1;" onclick="togglePlannerCollapse('${lift.id}')">
           <div class="planner-lift-title">${ln}</div>
-          <div class="planner-lift-subtitle">${lift.pct?lift.pct+'%'+(ref.targetWeight?' · '+ref.targetWeight+'kg target':''):'Set lift and % below'}</div>
+          <div class="planner-lift-subtitle">${lift.targetWeight?lift.targetWeight+'kg target':lift.pct?lift.pct+'%'+(ref.targetWeight?' · '+ref.targetWeight+'kg target':''):'Set lift, % or fixed weight below'}</div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;">
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button onclick="movePlannerLift('${lift.id}',-1)" ${idx===0?'disabled':''} style="background:none;border:1px solid var(--border);color:var(--text3);font-size:14px;width:28px;height:28px;border-radius:8px;cursor:pointer;opacity:${idx===0?'0.3':'1'}">↑</button>
+          <button onclick="movePlannerLift('${lift.id}',1)" ${idx===plannerLifts.length-1?'disabled':''} style="background:none;border:1px solid var(--border);color:var(--text3);font-size:14px;width:28px;height:28px;border-radius:8px;cursor:pointer;opacity:${idx===plannerLifts.length-1?'0.3':'1'}">↓</button>
           <button onclick="togglePlannerCollapse('${lift.id}')" style="background:none;border:1px solid var(--border);color:var(--text2);font-size:16px;width:32px;height:32px;border-radius:8px;cursor:pointer;">${lift.collapsed?'↓':'↑'}</button>
           <button onclick="removePlannerLift('${lift.id}')" style="background:rgba(255,82,82,0.1);border:1px solid rgba(255,82,82,0.3);color:var(--red);font-size:14px;width:32px;height:32px;border-radius:8px;cursor:pointer;">✕</button>
         </div>
@@ -1761,11 +1840,23 @@ function renderPlannerBlocks(){
         ${cfg.technique&&cfg.technique.length?`<div class="field"><label>Technique</label><div class="chips">${techChips}</div></div>`:''}
         ${cfg.squat_types?`<div class="field"><label>Type</label><div class="chips">${cfg.squat_types.map(v=>`<div class="chip${lift.technique.includes(v)?' selected':''}" onclick="plannerToggleChip('${lift.id}','technique','${v}',true)">${v}</div>`).join('')}</div></div>`:''}
         <div class="field">
-          <label>Target %</label>
-          <input type="number" value="${lift.pct}" placeholder="e.g. 70" min="1" max="120"
-            onblur="plannerSetPct('${lift.id}',this.value)"
-            onkeydown="if(event.key==='Enter'){this.blur();}"
-            style="font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;width:100%;min-width:0;">
+          <div style="display:flex;gap:12px;align-items:flex-end;">
+            <div style="flex:1;">
+              <label style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">% of best</label>
+              <input type="number" value="${lift.pct}" placeholder="e.g. 70" min="1" max="120"
+                onblur="plannerSetPct('${lift.id}',this.value)"
+                onkeydown="if(event.key==='Enter'){this.blur();}"
+                style="font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:${lift.pct?'var(--accent)':'var(--text)'};outline:none;width:100%;min-width:0;">
+            </div>
+            <div style="flex-shrink:0;color:var(--text3);font-size:14px;padding-bottom:4px;">or</div>
+            <div style="flex:1;">
+              <label style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">Fixed kg</label>
+              <input type="number" value="${lift.targetWeight||''}" placeholder="e.g. 80" min="1" step="0.5"
+                onblur="plannerSetTargetWeight('${lift.id}',this.value)"
+                onkeydown="if(event.key==='Enter'){this.blur();}"
+                style="font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:${lift.targetWeight?'var(--accent)':'var(--text)'};outline:none;width:100%;min-width:0;">
+            </div>
+          </div>
         </div>
         <div class="field">
           <label>Coach Notes</label>
@@ -1781,7 +1872,17 @@ function renderPlannerBlocks(){
 }
 
 function getPlannerRef(lift){
-  const s=loadSettings();const pct=parseFloat(lift.pct)/100;if(!pct)return{};
+  const s=loadSettings();
+
+  // If a fixed target weight is set, use that directly
+  if(lift.targetWeight){
+    const tw=parseFloat(lift.targetWeight);
+    if(tw>0)return{refWeight:null,targetWeight:tw};
+  }
+
+  const pct=parseFloat(lift.pct)/100;if(!pct)return{};
+
+  // Find best reference weight from log entries matching this lift variant
   const direct=getCachedEntries().filter(e=>{
     if(e.base!==lift.base||!e.weight)return false;
     return JSON.stringify((lift.position||[]).slice().sort())===JSON.stringify((e.position||[]).slice().sort())&&
@@ -1789,10 +1890,19 @@ function getPlannerRef(lift){
       JSON.stringify((lift.technique||[]).slice().sort())===JSON.stringify((e.technique||[]).slice().sort());
   });
   if(direct.length){const r=Math.max(...direct.map(e=>e.weight));return{refWeight:r,targetWeight:roundWeight(r*pct)};}
-  const corePB=(s.pbs||[]).find(p=>p.lift===lift.base);
-  if(corePB){const c=getCoefficient(lift.position?.[0],lift.receiving,lift.technique);const r=roundWeight(corePB.weight*c);return{refWeight:r,targetWeight:roundWeight(r*pct)};}
+
+  // For Squat/Pull/Deadlift/Row/Bench -- no Oly coefficients, just use best logged weight directly
+  const noCoeffLifts=['Squat','Pull','Deadlift','Pendlay Row','Barbell Row','Bench Press'];
   const anyBase=getCachedEntries().filter(e=>e.base===lift.base&&e.weight);
-  if(anyBase.length){const max=Math.max(...anyBase.map(e=>e.weight));const c=getCoefficient(lift.position?.[0],lift.receiving,lift.technique);const r=roundWeight(max*c);return{refWeight:r,targetWeight:roundWeight(r*pct)};}
+  if(noCoeffLifts.includes(lift.base)){
+    if(anyBase.length){const max=Math.max(...anyBase.map(e=>e.weight));return{refWeight:max,targetWeight:roundWeight(max*pct)};}
+    return{};
+  }
+
+  // Oly lifts -- use PB with coefficient
+  const corePB=(s.pbs||[]).find(p=>p.lift===lift.base);
+  if(corePB){const coeff=getCoefficient(lift.position?.[0],lift.receiving,lift.technique);const r=roundWeight(corePB.weight*coeff);return{refWeight:r,targetWeight:roundWeight(r*pct)};}
+  if(anyBase.length){const max=Math.max(...anyBase.map(e=>e.weight));const coeff=getCoefficient(lift.position?.[0],lift.receiving,lift.technique);const r=roundWeight(max*coeff);return{refWeight:r,targetWeight:roundWeight(r*pct)};}
   return{};
 }
 
@@ -1967,6 +2077,7 @@ function closeFinishModal(){document.getElementById('finishModal').classList.rem
 async function confirmFinishSession(){
   const today=new Date().toISOString().split('T')[0];
   let saved=0;
+  const allEntries=[];
   plannerLifts.forEach((lift,i)=>{
     const weight=parseFloat(document.getElementById(`fw-${i}`).value);
     if(!weight)return;
@@ -1992,8 +2103,9 @@ async function confirmFinishSession(){
   const sessionEntries=allEntries;
   showSessionSummary(sessionEntries);
 
-  plannerLifts=[];renderPlannerBlocks();
+  plannerLifts=[];savePlannerState();renderPlannerBlocks();
   document.getElementById('finishBtn').style.display='none';
+  document.getElementById('finishBtn2').style.display='none';
   renderLog();
 }
 
@@ -2140,19 +2252,36 @@ function renderComp() {
     planLabel.textContent = labelParts.join(' · ');
   }
   const pcts = getCompPcts();
+  // Use competition best as primary PB source; fall back to training best
+  const meetPBsForPlan = getMeetPBs();
+  const compSnatchBest = meetPBsForPlan.snatch ? meetPBsForPlan.snatch.weight : null;
+  const compCJBest = meetPBsForPlan.cj ? meetPBsForPlan.cj.weight : null;
+  const trainSnatchBest = (pbs.find(p=>p.lift==='Snatch')||{}).weight || null;
+  const trainCJBest = (pbs.find(p=>p.lift==='Clean and Jerk')||{}).weight || null;
   const lifts = [
-    {key:'snatch', label:'Snatch', pb: pbs.find(p=>p.lift==='Snatch')},
-    {key:'cj', label:'Clean and Jerk', pb: pbs.find(p=>p.lift==='Clean and Jerk')}
+    {key:'snatch', label:'Snatch',
+      compBest: compSnatchBest,
+      trainBest: trainSnatchBest,
+      // Use the highest of comp and training for attempt calculations
+      pb: Math.max(compSnatchBest||0, trainSnatchBest||0) || null},
+    {key:'cj', label:'Clean and Jerk',
+      compBest: compCJBest,
+      trainBest: trainCJBest,
+      pb: Math.max(compCJBest||0, trainCJBest||0) || null}
   ];
   document.getElementById('compAttempts').innerHTML = lifts.map((lift, li) => {
-    const pb = lift.pb ? lift.pb.weight : null;
+    const pb = lift.pb || null;
     const liftPcts = pcts[lift.key] || [...DEFAULT_COMP_PCTS];
     const saved = comp[lift.key] || [null, null, null];
-    // Calculate weight from pct if not manually overridden
     const attempts = saved.map((v, i) => v !== null ? v : (pb ? roundWeight(pb * liftPcts[i] / 100) : null));
+    // Build label showing both values when both exist
+    const parts = [];
+    if(lift.compBest) parts.push(lift.compBest+'kg comp');
+    if(lift.trainBest) parts.push(lift.trainBest+'kg training');
+    const pbLabel = parts.length ? parts.join(' · ') : 'Not set';
     return `<div class="comp-lift-row"${li > 0 ? ' style="border-top:1px solid var(--border)"' : ''}>
       <div class="comp-lift-name" style="display:flex;justify-content:space-between;align-items:center;">
-        <span>${lift.label} · PB: ${pb ? pb + 'kg' : 'Not set'}</span>
+        <span>${lift.label} · Best: ${pbLabel}</span>
       </div>
       <div class="comp-attempts" style="margin-top:10px;">
         ${[0,1,2].map(i => {
@@ -2225,7 +2354,7 @@ function saveCompMeta() {
 }
 
 function resetComp() {
-  if (!confirm('Reset all attempts to defaults based on your PBs?')) return;
+
   const s = loadSettings();
   if (!s.comp) s.comp = {};
   s.comp.snatch = [null, null, null];
@@ -2267,8 +2396,14 @@ function renderCompContext(projectedTotal) {
   }
 
   // PB competition (seeded from PBs sheet -- these are actual competition results)
-  const snatchCompPB = pbs.find(p => p.lift === 'Snatch');
-  const cjCompPB = pbs.find(p => p.lift === 'Clean and Jerk');
+  // Use meet PBs for competition context, fall back to training PBs
+  const meetPBsCtx = getMeetPBs();
+  const snatchCompPB = meetPBsCtx.snatch
+    ? {weight: meetPBsCtx.snatch.weight, date: meetPBsCtx.snatch.date}
+    : pbs.find(p => p.lift === 'Snatch');
+  const cjCompPB = meetPBsCtx.cj
+    ? {weight: meetPBsCtx.cj.weight, date: meetPBsCtx.cj.date}
+    : pbs.find(p => p.lift === 'Clean and Jerk');
 
   // PB non-competition (best from log, any session)
   const snatchLogBest = getBestBySession('Snatch', null);
@@ -2349,9 +2484,12 @@ function renderCompContext(projectedTotal) {
 // ============================================================
 function switchCompSub(name){
   document.getElementById('comp-pane-plan').className='sub-pane'+(name==='plan'?' active':'');
+  document.getElementById('comp-pane-warmup').className='sub-pane'+(name==='warmup'?' active':'');
   document.getElementById('comp-pane-history').className='sub-pane'+(name==='history'?' active':'');
   document.getElementById('comp-sub-plan').className='sub-nav-btn'+(name==='plan'?' active':'');
+  document.getElementById('comp-sub-warmup').className='sub-nav-btn'+(name==='warmup'?' active':'');
   document.getElementById('comp-sub-history').className='sub-nav-btn'+(name==='history'?' active':'');
+  if(name==='warmup')populateWarmupFromPlan();
   if(name==='history')renderMeetList();
 }
 
@@ -2457,8 +2595,40 @@ function saveMeet(){
   saveSettingsData(s);
   closeMeetModal();
   renderMeetList();
-  renderPBs(); // update PBs with competition data
+  renderPBs();
+  // Push meet to sheet
+  const s2=loadSettings();
+  if(s2.sheetsUrl) sheetPost('saveMeet',{meet});
   showToast('Meet saved','success');
+}
+
+let _meetEditMode=false;
+function toggleMeetEditMode(){
+  _meetEditMode=!_meetEditMode;
+  const btn=document.getElementById('meetEditBtn');
+  if(btn){
+    btn.textContent=_meetEditMode?'Done':'Edit';
+    btn.style.color=_meetEditMode?'var(--red)':'';
+    btn.style.borderColor=_meetEditMode?'var(--red)':'';
+  }
+  renderMeetList();
+}
+
+
+
+function deleteMeet(id){
+  const s=loadSettings();
+  const meet=s.meets&&s.meets.find(m=>m.id===id);
+  const name=meet?meet.name:'this meet';
+  showConfirm('Delete '+name+'?','This cannot be undone.','Yes, delete meet',function(){
+    const s2=loadSettings();
+    s2.meets=(s2.meets||[]).filter(m=>m.id!==id);
+    saveSettingsData(s2);
+    if(!s2.meets.length)_meetEditMode=false;
+    renderMeetList();
+    renderPBs();
+    showToast('Meet deleted','success');
+  });
 }
 
 function getMeetPBs(){
@@ -2479,6 +2649,15 @@ function renderMeetList(){
     el.innerHTML='<div class="empty" style="padding:32px;"><div class="empty-icon">🏅</div><p>No meets logged yet.</p></div>';
     return;
   }
+  // Delegated click handler for delete buttons (avoids quote-escaping issues)
+  el.onclick=function(ev){
+    const btn=ev.target.closest('.meet-delete-btn');
+    if(btn) deleteMeet(btn.dataset.id);
+  };
+  el.onclick=function(ev){
+    const btn=ev.target.closest('.meet-delete-btn');
+    if(btn) deleteMeet(btn.dataset.id);
+  };
   el.innerHTML=meets.map(m=>{
     const bestSn=m.snatch.filter(a=>a.made&&a.weight).reduce((mx,a)=>a.weight>mx?a.weight:mx,0)||null;
     const bestCJ=m.cj.filter(a=>a.made&&a.weight).reduce((mx,a)=>a.weight>mx?a.weight:mx,0)||null;
@@ -2494,9 +2673,11 @@ function renderMeetList(){
     </div>`:'').join('');
     return `<div class="meet-card">
       <div class="meet-card-header">
-        <div class="meet-card-name">${m.name}</div>
-        <div class="meet-card-date">${formatDate(m.date)}</div>
-        ${m.bw?`<div class="meet-card-bw">${m.bw}kg bodyweight</div>`:''}
+        <div style="flex:1;">
+          <div class="meet-card-name">${buildCompTitle(m.name,m.date,m.location)}</div>
+          ${m.bw?`<div class="meet-card-bw">${m.bw}kg bodyweight</div>`:''}
+        </div>
+        ${_meetEditMode?'<button class="meet-delete-btn" data-id="'+m.id+'" style="background:rgba(255,82,82,0.12);border:1px solid rgba(255,82,82,0.4);color:var(--red);font-size:12px;font-weight:700;cursor:pointer;padding:5px 10px;border-radius:8px;flex-shrink:0;">Delete</button>':''}
       </div>
       <div class="meet-attempts">
         <div class="meet-lift-section">
@@ -2676,7 +2857,7 @@ function saveCoefficients(){
 }
 function resetCoefficients(){const s=loadSettings();s.coefficients=JSON.parse(JSON.stringify(DEFAULT_COEFFICIENTS));saveSettingsData(s);renderCoeffSettings();showToast('Reset to defaults','success');}
 function saveSheetsUrl(){const s=loadSettings();s.sheetsUrl=document.getElementById('sheetsUrl').value.trim();saveSettingsData(s);}
-function saveSettings(){const s=loadSettings();s.autoSync=document.getElementById('autoSync').checked;saveSettingsData(s);}
+function saveSettings(){const s=loadSettings();saveSettingsData(s);}
 function exportCSV(){
   
   const h=['date','session','base','position','receiving','grip','technique','weight','sets','reps','quality','notes','id'];
@@ -2686,7 +2867,7 @@ function exportCSV(){
   const a=document.createElement('a');a.href=url;a.download=`barbell-log-${new Date().toISOString().split('T')[0]}.csv`;a.click();
   showToast('CSV exported','success');
 }
-function clearAllData(){if(!confirm('Clear ALL data? Export first. Cannot be undone.'))return;localStorage.removeItem(DB_KEY);renderLog();showToast('Data cleared','error');}
+function clearAllData(){showConfirm('Clear all local data?','This cannot be undone. Export first if needed.','Yes, clear data',function(){localStorage.removeItem(DB_KEY);clearEntryCache();renderLog();showToast('Data cleared','error');});}
 
 // ============================================================
 // ENTRY CACHE + SHEET SYNC
@@ -2714,10 +2895,10 @@ async function fetchEntries(){
   _fetchInProgress=true;
   try{
     const r=await fetch(s.sheetsUrl+'?action=getAll');
+    if(!r.ok) throw new Error('HTTP '+r.status);
     const data=await r.json();
     const entries=(data.entries||[]).sort((a,b)=>b.date.localeCompare(a.date));
     setCachedEntries(entries);
-    // Update PBs from fresh entries (option 3 -- hybrid)
     rebuildPBsFromEntries(entries);
     // Merge meets and BW into settings
     if(data.meets&&data.meets.length){
@@ -2742,6 +2923,9 @@ async function fetchEntries(){
     return entries;
   }catch(e){
     console.error('Fetch failed:',e);
+    const container=document.getElementById('logList');
+    if(container&&container.innerHTML.includes('Loading'))
+      container.innerHTML='<div class="empty"><div class="empty-icon">📡</div><p>Could not load entries.<br><span style="font-size:12px;color:var(--text3);">Check your Sheets URL in Settings, then tap ⇅ SYNC.</span></p></div>';
     return getCachedEntries();
   }finally{
     _fetchInProgress=false;
@@ -2779,14 +2963,14 @@ async function syncBoth(){
   const s=loadSettings();
   if(!s.sheetsUrl){showToast('Add Sheets URL in Settings first','error');return;}
   const btn=document.getElementById('syncBtn');
-  btn.textContent='⇅ ...';btn.classList.add('syncing');
+  btn.textContent='⇅ Pulling...';btn.classList.add('syncing');
   clearEntryCache();
   await fetchEntries();
   renderLog();
   if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
   if(document.getElementById('log-pane-analytics')?.classList.contains('active'))renderAnalytics();
   if(document.getElementById('pane-comp').classList.contains('active'))renderMeetList();
-  btn.textContent='⇅ SYNC';btn.classList.remove('syncing');
+  btn.textContent='⇅ Pull from Sheet';btn.classList.remove('syncing');
   showToast('Refreshed','success');
 }
 
@@ -2917,7 +3101,7 @@ function closeEditModal(){
 
 async function deleteEditEntry(){
   if(!editEntryId)return;
-  if(!confirm('Delete this entry? It will also be removed from the sheet.'))return;
+  // confirm replaced by showConfirm wrapper
   
   closeEditModal();
   showToast('Deleting...','');
@@ -2968,6 +3152,390 @@ async function saveEditEntry(){
 // EDIT ENTRY MODAL
 // ============================================================
 
+// ============================================================
+// IN-APP CONFIRM (replaces browser confirm() -- blocked in iOS PWA)
+// ============================================================
+function showConfirm(msg,sub,yesLabel,onYes){
+  const overlay=document.getElementById('confirmOverlay');
+  document.getElementById('confirmMsg').textContent=msg;
+  document.getElementById('confirmSub').textContent=sub||'';
+  const yesBtn=document.getElementById('confirmYes');
+  yesBtn.textContent=yesLabel||'Confirm';
+  yesBtn.onclick=function(){hideConfirm();onYes();};
+  overlay.style.display='flex';
+}
+function hideConfirm(){
+  document.getElementById('confirmOverlay').style.display='none';
+}
+
+
+// ============================================================
+// COMPETITION WARMUP PLANNER
+// ============================================================
+
+function adjustPosition(id, delta){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const current=parseInt(el.value)||0;
+  const next=Math.max(0,current+delta);
+  el.value=next;
+  renderWarmup();
+}
+function clearCJOverride(){
+  const el=document.getElementById('wu-cj-start-override');
+  if(el)el.value='';
+  renderWarmup();
+}
+
+function populateWarmupFromPlan(){
+  const s=loadSettings();const comp=s.comp||{};
+  const pbs=s.pbs||[];
+  const pcts=getCompPcts();
+  // comp.snatch/cj are arrays of plain numbers (or null = use pct calc)
+  function getOpener(key,pbLift){
+    const saved=comp[key]&&comp[key][0];
+    if(saved!=null)return saved;
+    // Fall back to pct of PB
+    const pb=(pbs.find(p=>p.lift===pbLift)||{}).weight;
+    const pct=(pcts[key]&&pcts[key][0])||93;
+    return pb?roundWeight(pb*pct/100):null;
+  }
+  const sn=getOpener('snatch','Snatch');
+  const cj=getOpener('cj','Clean and Jerk');
+  const snEl=document.getElementById('wu-sn-opener');
+  const cjEl=document.getElementById('wu-cj-opener');
+  // Auto-fill only if field is empty or matches the last plan value
+  if(sn&&(!snEl.value||parseFloat(snEl.dataset.planVal)===parseFloat(snEl.value))){
+    snEl.value=sn;snEl.dataset.planVal=sn;
+  }
+  if(cj&&(!cjEl.value||parseFloat(cjEl.dataset.planVal)===parseFloat(cjEl.value))){
+    cjEl.value=cj;cjEl.dataset.planVal=cj;
+  }
+  renderWarmup();
+}
+
+function syncOpenersFromPlan(){
+  const s=loadSettings();const comp=s.comp||{};
+  const pbs=s.pbs||[];
+  const pcts=getCompPcts();
+  function getOpener(key,pbLift){
+    const saved=comp[key]&&comp[key][0];
+    if(saved!=null)return saved;
+    const pb=(pbs.find(p=>p.lift===pbLift)||{}).weight;
+    const pct=(pcts[key]&&pcts[key][0])||93;
+    return pb?roundWeight(pb*pct/100):null;
+  }
+  const sn=getOpener('snatch','Snatch');
+  const cj=getOpener('cj','Clean and Jerk');
+  const snEl=document.getElementById('wu-sn-opener');
+  const cjEl=document.getElementById('wu-cj-opener');
+  if(sn){snEl.value=sn;snEl.dataset.planVal=sn;}
+  if(cj){cjEl.value=cj;cjEl.dataset.planVal=cj;}
+  if(!sn&&!cj)showToast('No openers set in Plan tab','error');
+  else showToast('Openers updated from Plan','success');
+  renderWarmup();
+}
+
+function buildWarmupLadder(opener){
+  const pcts=[0,0.50,0.65,0.75,0.83,0.90,0.95];
+  return pcts.map((p,i)=>({attempt:i+1,kg:i===0?20:Math.round(opener*p*4)/4,pct:i===0?null:Math.round(p*100)}));
+}
+
+function addMinutes(timeStr,mins){
+  if(!timeStr)return null;
+  const [h,m]=timeStr.split(':').map(Number);
+  const total=h*60+m+mins;
+  const nh=Math.floor(total/60)%24,nm=Math.round(total%60);
+  return String(nh).padStart(2,'0')+':'+String(nm).padStart(2,'0');
+}
+
+function renderWarmup(){
+  const out=document.getElementById('warmup-output');if(!out)return;
+  const snOpener=parseFloat(document.getElementById('wu-sn-opener').value)||null;
+  const cjOpener=parseFloat(document.getElementById('wu-cj-opener').value)||null;
+  const startTime=document.getElementById('wu-start-time').value||null;
+  const totalLiftersEl=document.getElementById('wu-total-lifters');
+  const totalLifters=totalLiftersEl&&totalLiftersEl.value!==''?parseInt(totalLiftersEl.value):null;
+  const breakEl=document.getElementById('wu-break');
+  const breakMins=breakEl?parseFloat(breakEl.value)||10:10;
+  const liftersSn=document.getElementById('wu-lifters-sn').value!==''?parseInt(document.getElementById('wu-lifters-sn').value):null;
+  const liftersCj=document.getElementById('wu-lifters-cj').value!==''?parseInt(document.getElementById('wu-lifters-cj').value):null;
+  const pace=parseFloat(document.getElementById('wu-pace').value)||1.5;
+  if(!snOpener&&!cjOpener){out.innerHTML='<div class="empty" style="padding:24px 16px;"><p style="color:var(--text3);font-size:13px;text-align:center;">Enter your openers above to generate your warmup plan.</p></div>';return;}
+
+  // C&J start: use manual override if set, otherwise calculate from Snatch duration + break
+  const cjOverrideEl=document.getElementById('wu-cj-start-override');
+  const cjOverride=cjOverrideEl&&cjOverrideEl.value?cjOverrideEl.value:null;
+  const snatchDuration=totalLifters!==null?totalLifters*3*pace:null;
+  const cjStartOffset=snatchDuration!==null?snatchDuration+breakMins:null;
+  const cjStartCalculated=cjStartOffset!==null&&startTime?addMinutes(startTime,cjStartOffset):null;
+  const cjStartTime=cjOverride||cjStartCalculated;
+  const usingOverride=!!cjOverride;
+
+  const REST_BEFORE_LIFT=2.5,BETWEEN_ATTEMPTS=2.0,PHYSICAL_PREP=35;
+
+  // For Snatch: mins from snatch start. For C&J: mins from C&J start (which we offset)
+  function timings(minsTillLift,ladder){
+    if(minsTillLift===null)return ladder.map(()=>null);
+    const lastAt=minsTillLift-REST_BEFORE_LIFT;
+    return ladder.map((_,i)=>lastAt-((ladder.length-1-i)*BETWEEN_ATTEMPTS));
+  }
+
+  function fmtTime(mins, refTime){
+    if(mins===null)return'';
+    // Only use clock if refTime explicitly provided -- never fall back to startTime
+    // (avoids C&J times using Snatch start as wrong reference)
+    const clock=refTime?addMinutes(refTime,mins):null;
+    const absMins=Math.round(Math.abs(mins));
+    const rel=mins<0?(absMins+'min before start'):(mins===0?'At start':'T+'+absMins+'min');
+    return clock?clock+' ('+rel+')':rel;
+  }
+
+  // Display C&J start info note
+  let cjStartNote='';
+  if(cjStartTime){
+    if(usingOverride){
+      cjStartNote='<div style="background:rgba(200,245,90,0.1);border:1px solid rgba(200,245,90,0.35);border-radius:10px;padding:10px 14px;margin:0 16px 8px;font-size:12px;color:var(--text2);line-height:1.7;">'+
+        '<strong style="color:var(--accent);">C&J start overridden: '+cjStartTime+'</strong>'+
+        '<br>All C&J warmup times are based on this start time.'+
+        '</div>';
+    } else if(cjStartOffset!==null){
+      cjStartNote='<div style="background:rgba(200,245,90,0.06);border:1px solid rgba(200,245,90,0.15);border-radius:10px;padding:10px 14px;margin:0 16px 8px;font-size:12px;color:var(--text2);line-height:1.7;">'+
+        '<strong style="color:var(--accent);">Est. C&J start: '+cjStartTime+'</strong>'+
+        ' (~'+Math.round(cjStartOffset)+'min after Snatch)'+
+        '<br>Enter actual start time in C&J Start Override above when announced.'+
+        '</div>';
+    }
+  }
+
+  function section(label,opener,ladder,tArr,refTime){
+    const rows=ladder.map((a,i)=>{
+      const isLast=i===ladder.length-1;
+      return '<tr style="border-top:1px solid var(--border);">'+
+        '<td style="padding:9px 12px;font-size:13px;font-family:DM Mono,monospace;color:var(--text3);">'+a.attempt+'</td>'+
+        '<td style="padding:9px 12px;font-size:16px;font-weight:700;font-family:DM Mono,monospace;color:'+(isLast?'var(--accent)':'var(--text)')+';">'+a.kg+'<span style="font-size:11px;color:var(--text3);font-weight:400;">kg</span></td>'+
+        '<td style="padding:9px 12px;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">'+( a.pct?a.pct+'%':'Bar')+'</td>'+
+        '<td style="padding:9px 12px;font-size:11px;color:var(--text2);font-family:DM Mono,monospace;">'+fmtTime(tArr[i],refTime)+'</td>'+
+        '</tr>';
+    }).join('');
+    let callouts='';
+    if(tArr[0]!==null){
+      const liftAt=tArr[tArr.length-1]+REST_BEFORE_LIFT;
+      const physPrepAt=liftAt-PHYSICAL_PREP;
+      callouts='<div style="display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--border);">'+
+        '<div style="flex:1;min-width:120px;background:var(--surface);border-radius:8px;padding:10px 12px;">'+
+        '<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Physical prep</div>'+
+        '<div style="font-size:14px;font-weight:700;color:var(--text2);font-family:DM Mono,monospace;">'+fmtTime(physPrepAt,refTime)+'</div>'+
+        '<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px;">Mobility · DROM · empty bar</div></div>'+
+        '<div style="flex:1;min-width:120px;background:var(--surface);border-radius:8px;padding:10px 12px;">'+
+        '<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Start barbell warmup</div>'+
+        '<div style="font-size:14px;font-weight:700;color:var(--accent);font-family:DM Mono,monospace;">'+fmtTime(tArr[0],refTime)+'</div></div>'+
+        '<div style="flex:1;min-width:120px;background:var(--surface);border-radius:8px;padding:10px 12px;">'+
+        '<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Last warmup done</div>'+
+        '<div style="font-size:14px;font-weight:700;color:#ffd700;font-family:DM Mono,monospace;">'+fmtTime(liftAt-REST_BEFORE_LIFT,refTime)+'</div></div>'+
+        '<div style="flex:1;min-width:120px;background:var(--surface);border-radius:8px;padding:10px 12px;">'+
+        '<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">You lift ~</div>'+
+        '<div style="font-size:14px;font-weight:700;color:#ff9a3c;font-family:DM Mono,monospace;">'+fmtTime(liftAt,refTime)+'</div></div>'+
+        '</div>';
+    }
+    return '<div class="section">'+
+      '<div class="section-label">'+label+' — Opener '+opener+'kg</div>'+
+      '<div class="card" style="padding:0;overflow:hidden;">'+
+      '<table style="width:100%;border-collapse:collapse;">'+
+      '<thead><tr style="background:var(--surface2);">'+
+      '<th style="padding:8px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">#</th>'+
+      '<th style="padding:8px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">WEIGHT</th>'+
+      '<th style="padding:8px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">%</th>'+
+      '<th style="padding:8px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">TIME</th>'+
+      '</thead><tbody>'+rows+'</tbody></table>'+callouts+'<div style="padding:10px 14px;font-size:11px;color:var(--text3);border-top:1px solid var(--border);line-height:1.6;">Barbell warmup only · Physical prep (mobility + DROM) should begin ~35min before your lift · Based on Takano/Catalyst Athletics competition protocols</div>'+'</div></div>';
+  }
+
+  let html='';
+  if(snOpener){
+    const l=buildWarmupLadder(snOpener);
+    html+=section('Snatch',snOpener,l,timings(liftersSn!==null?Math.round(liftersSn*pace*10)/10:null,l),startTime);
+  }
+  if(cjOpener){
+    // C&J timing is relative to cjStartTime (calculated from Snatch end + break)
+    const cjMins=liftersCj!==null?Math.round(liftersCj*pace*10)/10:null;
+    html+=cjStartNote;
+    html+=section('Clean & Jerk',cjOpener,buildWarmupLadder(cjOpener),timings(cjMins,buildWarmupLadder(cjOpener)),cjStartTime);
+  }
+  out.innerHTML=html;
+}
+
+
+// ============================================================
+// SESSION PLANNER -- SUB-TABS + REORDER + WARMUP GENERATOR
+// ============================================================
+
+function switchPlannerSub(name){
+  document.getElementById('planner-pane-session').className='sub-pane'+(name==='session'?' active':'');
+  document.getElementById('planner-pane-warmup').className='sub-pane'+(name==='warmup'?' active':'');
+  document.getElementById('planner-sub-session').className='sub-nav-btn'+(name==='session'?' active':'');
+  document.getElementById('planner-sub-warmup').className='sub-nav-btn'+(name==='warmup'?' active':'');
+  if(name==='warmup') renderSessionWarmup();
+}
+
+function movePlannerLift(id,dir){
+  const idx=plannerLifts.findIndex(l=>l.id===id);
+  const newIdx=idx+dir;
+  if(newIdx<0||newIdx>=plannerLifts.length)return;
+  const tmp=plannerLifts[idx];
+  plannerLifts[idx]=plannerLifts[newIdx];
+  plannerLifts[newIdx]=tmp;
+  savePlannerState();renderPlannerBlocks();
+}
+
+const MOBILITY_BY_FAMILY={
+  snatch:['Thoracic spine -- foam roll or banded, 60 sec','Overhead squat with PVC -- 10 reps, focus depth and lockout','Hip flexor stretch -- 45 sec each side','Ankle dorsiflexion -- wall drill, 10 reps each side','Cossack squat -- 8 slow reps each side'],
+  clean:['Hip opener -- deep squat hold 60 sec','Hip flexor stretch -- 45 sec each side','Thoracic rotation -- seated or quadruped, 10 reps each side','Hamstring -- standing toe touch or banded, 30 sec','Wrist flexor stretch -- 30 sec each side (front rack)'],
+  jerk:['Ankle dorsiflexion -- wall drill, 10 reps each side','Hip flexor + split position hold -- 45 sec each side','Thoracic extension -- foam roll or band, 60 sec','Shoulder overhead mobility -- band assisted, 10 reps'],
+  squat:['Hip flexor -- kneeling lunge stretch, 60 sec each side','Thoracic extension -- foam roll, 60 sec','Ankle dorsiflexion -- wall drill, 10 reps each side','Glute activation -- banded clamshell or bridge, 15 reps each','Deep squat hold -- 60 sec'],
+  pull:['Hamstring -- standing toe touch or banded, 45 sec','Hip hinge with empty bar -- 10 reps (Romanian DL style)','Thoracic extension -- foam roll, 60 sec','Hip flexor stretch -- 45 sec each side'],
+  horizontal:['Shoulder IR/ER -- 15 reps each direction','Thoracic extension -- foam roll, 60 sec','Pec stretch -- band or doorframe, 45 sec each side'],
+};
+
+function getLiftFamily(base){
+  if(!base)return null;
+  if(['Snatch','Snatch Balance'].includes(base))return 'snatch';
+  if(['Clean','Clean and Jerk'].includes(base))return 'clean';
+  if(['Jerk'].includes(base))return 'jerk';
+  if(['Squat'].includes(base))return 'squat';
+  if(['Pull','Deadlift'].includes(base))return 'pull';
+  if(['Pendlay Row','Barbell Row','Bench Press'].includes(base))return 'horizontal';
+  return 'other';
+}
+
+function calcWarmupSets(targetKg,family,isFirst,prevFamily){
+  const r=w=>Math.round(w*4)/4;
+  const olyFamilies=['snatch','clean','jerk'];
+  const strengthFamilies=['squat','pull','horizontal'];
+
+  let sets;
+  if(olyFamilies.includes(family)){
+    sets=[
+      {pct:0,   kg:20,                reps:5, note:'Bar'},
+      {pct:50,  kg:r(targetKg*0.50), reps:3, note:''},
+      {pct:65,  kg:r(targetKg*0.65), reps:2, note:''},
+      {pct:75,  kg:r(targetKg*0.75), reps:1, note:''},
+      {pct:83,  kg:r(targetKg*0.83), reps:1, note:''},
+      {pct:90,  kg:r(targetKg*0.90), reps:1, note:''},
+      {pct:95,  kg:r(targetKg*0.95), reps:1, note:'Last warmup'},
+      {pct:100, kg:targetKg,          reps:null,note:'Working weight'},
+    ];
+    if(!isFirst&&olyFamilies.includes(prevFamily))
+      sets=sets.filter(s=>s.pct>=65||s.pct===100);
+    else if(!isFirst&&strengthFamilies.includes(prevFamily))
+      sets=sets.filter(s=>s.pct>=50||s.pct===100);
+  } else {
+    sets=[
+      {pct:0,   kg:20,                reps:10, note:'Bar'},
+      {pct:40,  kg:r(targetKg*0.40), reps:8,  note:''},
+      {pct:55,  kg:r(targetKg*0.55), reps:5,  note:''},
+      {pct:70,  kg:r(targetKg*0.70), reps:3,  note:''},
+      {pct:82,  kg:r(targetKg*0.82), reps:2,  note:''},
+      {pct:90,  kg:r(targetKg*0.90), reps:1,  note:''},
+      {pct:100, kg:targetKg,          reps:null,note:'Working weight'},
+    ];
+    if(!isFirst&&olyFamilies.includes(prevFamily))
+      sets=sets.filter(s=>s.pct>=55||s.pct===100);
+    else if(!isFirst&&prevFamily===family)
+      sets=sets.filter(s=>s.pct>=70||s.pct===100);
+  }
+  return sets;
+}
+
+function warmupSection(title,sub,groups){
+  let h=`<div class="section"><div style="padding:0 0 8px;"><div class="section-label" style="margin-bottom:2px;">${title}</div>`;
+  if(sub&&sub.trim())h+=`<div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">${sub}</div>`;
+  h+=`</div><div class="card" style="padding:0;overflow:hidden;">`;
+  groups.forEach((g,gi)=>{
+    h+=`<div style="${gi>0?'border-top:1px solid var(--border);':''}padding:10px 14px;">`;
+    h+=`<div style="font-size:10px;font-weight:700;color:var(--text2);font-family:DM Mono,monospace;letter-spacing:0.5px;margin-bottom:6px;text-transform:uppercase;">${g.label}</div>`;
+    h+=g.items.map(item=>`<div style="font-size:13px;color:var(--text);line-height:1.7;padding:1px 0;">· ${item}</div>`).join('');
+    h+=`</div>`;
+  });
+  h+=`</div></div>`;
+  return h;
+}
+
+function renderSessionWarmup(){
+  const out=document.getElementById('session-warmup-output');
+  if(!out)return;
+  const lifts=plannerLifts.filter(l=>l.base);
+  if(!lifts.length){
+    out.innerHTML='<div class="empty" style="padding:32px 16px;"><div class="empty-icon">🏋️</div><p>Add lifts in the Session tab first.</p></div>';
+    return;
+  }
+
+  const u=unitLabel();
+  let html='';
+
+  // Phase 1 -- General
+  html+=warmupSection('Phase 1 · General Warm-up','~5 min -- always',[
+    {label:'Cardio',items:['Row or bike -- 5 min easy']},
+    {label:'Joint mobility',items:['Wrist circles -- 10 each direction','Elbow circles -- 10 each direction','Arm circles -- forward + backward, 10 each','Trunk rotations -- 10 each side','Hip circles -- 10 each direction','Leg swings -- front/back + lateral, 10 each','Ankle circles -- 10 each direction']},
+  ]);
+
+  // Phase 2 -- Shoulder band (always -- Brian rehab)
+  html+=warmupSection('Phase 2 · Shoulder Band Protocol','Always included',[
+    {label:'Band pull-aparts',items:['2 × 15 -- medium band, retract scapula fully']},
+    {label:'Band dislocates',items:['2 × 10 -- light band, arms straight throughout']},
+    {label:'Band external rotation',items:['2 × 12 each side -- elbow at 90°, rotate outward against band']},
+    {label:'Band face pulls',items:['2 × 15 -- pull to forehead, elbows high']},
+  ]);
+
+  // Phase 3 -- Session-specific mobility
+  const families=[...new Set(lifts.map(l=>getLiftFamily(l.base)).filter(Boolean))];
+  const seen=new Set();const mobilityItems=[];
+  families.forEach(fam=>(MOBILITY_BY_FAMILY[fam]||[]).forEach(item=>{if(!seen.has(item)){seen.add(item);mobilityItems.push(item);}}));
+  if(mobilityItems.length){
+    html+=warmupSection('Phase 3 · Session Mobility','Based on: '+families.join(', '),[
+      {label:'Work through these before touching the bar',items:mobilityItems},
+    ]);
+  }
+
+  // Phase 4 -- Barbell progression per lift
+  html+='<div style="padding:16px 16px 4px;"><div class="section-label">Phase 4 · Barbell Progression</div></div>';
+  let prevFamily=null;
+  lifts.forEach((lift,idx)=>{
+    const family=getLiftFamily(lift.base);
+    const ref=getPlannerRef(lift);
+    const targetKg=ref.targetWeight||(lift.targetWeight?parseFloat(lift.targetWeight):null);
+    const liftName=buildLiftName({base:lift.base,position:lift.position,receiving:lift.receiving,grip:lift.grip,technique:lift.technique});
+    html+='<div class="card" style="margin:0 16px 8px;padding:0;overflow:hidden;">';
+    html+=`<div style="padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--border);"><div style="font-size:14px;font-weight:700;color:var(--text);">${liftName}</div>`;
+    if(targetKg)html+=`<div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px;">Target: ${targetKg}${u}</div>`;
+    html+='</div>';
+    if(!targetKg){
+      html+='<div style="padding:12px 14px;font-size:12px;color:var(--text3);">Set a target weight or % in Session tab to generate ladder.</div>';
+    } else {
+      const sets=calcWarmupSets(targetKg,family||'other',idx===0,prevFamily);
+      if(idx>0&&prevFamily){
+        html+=`<div style="padding:6px 14px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border);background:rgba(200,245,90,0.04);">↺ Carryover from ${lifts[idx-1].base} -- ladder condensed</div>`;
+      }
+      html+='<table style="width:100%;border-collapse:collapse;">';
+      html+='<thead><tr style="background:var(--surface3);"><th style="padding:6px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">SET</th><th style="padding:6px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">WEIGHT</th><th style="padding:6px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">REPS</th><th style="padding:6px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">%</th></tr></thead><tbody>';
+      sets.forEach((s,si)=>{
+        const isWorking=s.pct===100;
+        const repsDisp=isWorking?(lift.sets&&lift.reps?lift.sets+'×'+lift.reps:(lift.reps?lift.reps+' reps':'Work sets')):s.reps+'×';
+        html+=`<tr style="border-top:1px solid var(--border);${isWorking?'background:rgba(200,245,90,0.06);':''}>`;
+        html+=`<td style="padding:9px 12px;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">${isWorking?'Working':`Set ${si+1}`}${s.note?' · '+s.note:''}</td>`;
+        html+=`<td style="padding:9px 12px;font-size:16px;font-weight:700;font-family:DM Mono,monospace;color:${isWorking?'var(--accent)':'var(--text)'};">${s.kg}<span style="font-size:11px;color:var(--text3);font-weight:400;">${u}</span></td>`;
+        html+=`<td style="padding:9px 12px;font-size:13px;font-family:DM Mono,monospace;color:${isWorking?'var(--accent)':'var(--text)'};">${repsDisp}</td>`;
+        html+=`<td style="padding:9px 12px;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">${s.pct?s.pct+'%':'Bar'}</td>`;
+        html+='</tr>';
+      });
+      html+='</tbody></table>';
+    }
+    html+='</div>';
+    prevFamily=family;
+  });
+
+  out.innerHTML=html;
+}
+
 // TOAST
 // ============================================================
 let toastTimeout;
@@ -2977,6 +3545,7 @@ function showToast(msg,type){const t=document.getElementById('toast');t.textCont
 // INIT
 // ============================================================
 initDB();
+loadPlannerState();
 renderPlannerBlocks();
 renderCountdown();
 // Fetch entries from sheet on load
