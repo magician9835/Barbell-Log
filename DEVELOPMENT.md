@@ -95,3 +95,11 @@ and safe-area padding protect the app title. Native system blur requires a real
 iPhone check. Settings → Phone layout details exposes local geometry and a copy
 button, with no remote telemetry. `scripts/iphone-layout-check.py` exercises
 402×874 with simulated 62px/34px safe areas and keyboard resize recovery.
+
+## Page zoom preference
+
+Release 2026-10-30.11 follows the owner's explicit preference for fixed page
+scale in the installed app. Viewport limits, Safari gesture cancellation and
+pan-only touch action prevent page zoom; form controls use at least 16px text
+to avoid iPhone focus zoom. Normal vertical/horizontal scrolling remains
+available. Revisit this trade-off if an accessibility zoom option is requested.
