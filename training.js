@@ -74,7 +74,7 @@
   function resetPlan(plan){const w=C.clone(plan);w.id=C.id();w.date=C.localDate();w.phase='setup';w.done={};w.skipped=[];w.restEnd=0;w.accessoriesDone=false;localStorage.setItem(key,JSON.stringify(w));workout=w;render();topOfWorkout();}
   function updatePreviews(){workout.blocks.forEach((b,i)=>{const card=root().querySelector('[data-block="'+b.id+'"]');if(!card)return;const temp=document.createElement('div');temp.innerHTML=blockHTML(b,i);card.querySelector('.train-preview').innerHTML=temp.querySelector('.train-preview').innerHTML;});}
   function selectMovement(b,title){
-    b.title=title;b.complex=title==='Snatch pull + hang snatch';b.position=title.startsWith('Hang ')||b.complex?'Hang Above Knee':'';b.squatType=title==='Front squat'?'Front':title==='Back squat'?'Back':'';
+    b.title=title;b.complex=title==='Snatch pull + hang snatch';b.position=title.startsWith('Hang ')||b.complex?'Hang (unspecified)':'';b.squatType=title==='Front squat'?'Front':title==='Back squat'?'Back':'';
     b.base=b.squatType?'Squat':title.toLowerCase().includes('snatch')?'Snatch':title==='Hang clean'?'Clean':title;
     b.referenceLift=b.squatType?title:b.base;b.components=['Snatch pull','Hang snatch'];
     b.prescription=b.complex?'3 x 1+2 @ 70':'3 x 2 @ 70';const ref=C.findReference(b.referenceLift,getCachedEntries(),loadSettings().pbs||[]);b.reference=ref.weight||'';b.referenceSource=ref.source;
@@ -127,7 +127,7 @@
     document.addEventListener('visibilitychange',()=>{updateClock();if(document.visibilityState==='visible'&&awakeWanted)setAwake(true);});
     window.addEventListener('pendingliftschange',updateSync);
     document.querySelector('#tabs .tab:nth-child(2) span').textContent='Train';
-    const restore=document.createElement('div');restore.className='train-backup';restore.innerHTML='<button class="train-secondary" id="backup-app">Back up all app data</button><label class="train-secondary">Restore backup<input type="file" id="restore-app" accept="application/json,.json" hidden></label><small>Includes settings, plans and pending lifts. Keep your backup private.</small><p>Version 2026-10-30.7 · <button class="quiet" id="check-app-update">Check for updates</button></p>';
+    const restore=document.createElement('div');restore.className='train-backup';restore.innerHTML='<button class="train-secondary" id="backup-app">Back up all app data</button><label class="train-secondary">Restore backup<input type="file" id="restore-app" accept="application/json,.json" hidden></label><small>Includes settings, plans and pending lifts. Keep your backup private.</small><p>Version 2026-10-30.8 · <button class="quiet" id="check-app-update">Check for updates</button></p>';
     document.getElementById('pane-settings').appendChild(restore);document.getElementById('backup-app').onclick=backup;
     document.getElementById('restore-app').onchange=restoreBackup;
     document.getElementById('check-app-update').onclick=()=>{window.dispatchEvent(new Event('pageshow'));showToast('Checking for an update…','');};

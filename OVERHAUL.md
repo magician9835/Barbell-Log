@@ -1,4 +1,4 @@
-# Training overhaul — release 2026-10-30.7
+# Training overhaul — release 2026-10-30.8
 
 ## Main workflow
 

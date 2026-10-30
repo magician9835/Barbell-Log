@@ -293,7 +293,7 @@
   .warmup-progress { position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
   .warmup-progress.done { background:var(--accent); }
 </style>
-<link rel="stylesheet" href="training.css?v=2026-10-30.7">
+<link rel="stylesheet" href="training.css?v=2026-10-30.8">
 </head>
 <body>
 <div id="app">
@@ -946,22 +946,22 @@
   </div>
 </div>
 
-<script src="training-core.js?v=2026-10-30.7"></script>
-<script src="pending-lifts.js?v=2026-10-30.7"></script>
-<script src="app-updates.js?v=2026-10-30.7" data-version="2026-10-30.7"></script>
+<script src="training-core.js?v=2026-10-30.8"></script>
+<script src="pending-lifts.js?v=2026-10-30.8"></script>
+<script src="app-updates.js?v=2026-10-30.8" data-version="2026-10-30.8"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
 // ============================================================
 const LIFT_CONFIG = {
   'Snatch': {
-    positions: ['Floor','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
+    positions: ['Floor','Hang (unspecified)','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
     receiving: ['Squat (Full)','Power','Muscle'],
     grip: [],
     technique: ['Pause','Balance','Complex'],
   },
   'Clean': {
-    positions: ['Floor','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
+    positions: ['Floor','Hang (unspecified)','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
     receiving: ['Squat (Full)','Power','Muscle'],
     grip: [],
     technique: ['Pause','Complex'],
@@ -986,7 +986,7 @@ const LIFT_CONFIG = {
     squat_types: ['Back','Front','Overhead','Zercher'],
   },
   'Pull': {
-    positions: ['Floor','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
+    positions: ['Floor','Hang (unspecified)','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
     receiving: [],
     grip: ['Snatch Grip','Clean Grip','Overhand','Underhand'],
     technique: ['High Pull','Pause','Complex'],
@@ -4089,6 +4089,6 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="training.js?v=2026-10-30.7"></script>
+<script src="training.js?v=2026-10-30.8"></script>
 </body>
 </html>
