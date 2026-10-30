@@ -80,3 +80,18 @@ app-version.json, all versioned asset URLs, the updater data-version attribute
 and the Settings version label together. Browser integration is optional locally
 when Playwright and Chromium are installed; required Node checks remain
 independent of external packages and Google.
+
+## iPhone viewport layout (2026-10-30.10)
+
+`phone-layout.css` owns installed-app chrome spacing. `phone-layout.js` gives the
+shell an explicit measured height instead of asking WebKit to resolve both
+fixed edges inside its installed-app insets. Header and navigation consume safe
+areas exactly once; neither reduces the shell height. The keyboard can reduce
+the shell to the visible viewport while a field is focused. No screen-model
+height or user-agent-specific pixel offset is hardcoded.
+
+The status bar requests full-bleed black-translucent mode; opaque header colour
+and safe-area padding protect the app title. Native system blur requires a real
+iPhone check. Settings → Phone layout details exposes local geometry and a copy
+button, with no remote telemetry. `scripts/iphone-layout-check.py` exercises
+402×874 with simulated 62px/34px safe areas and keyboard resize recovery.
