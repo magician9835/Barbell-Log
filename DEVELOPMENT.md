@@ -56,3 +56,15 @@ The automated checks use fake sheets and never contact Google.
 append/retry/read/edit/delete, legacy log reading, and meet history round trips
 against fake sheets. It does not verify Safari behaviour, real Apps Script
 permissions, browser CORS, deployment or network/offline recovery.
+
+## Delivering fresh versions to the phone
+
+For each website release, change `app-version.json` and both version values in
+its `app-updates.js` script tag in the HTML to the same new release string.
+The app checks for a new version on startup and when returning to the foreground
+(with a 15-second cooldown). A timestamp in the small version-file URL avoids a
+cached response. An **Update app** button reloads the existing page with a new
+version query parameter. Saved settings stay on the same origin. No automatic
+reload interrupts a workout. Initial installation of this updater still requires
+loading the updated HTML once. Updates become available after Pages deployment
+finishes; this does not eliminate build/deployment time.
