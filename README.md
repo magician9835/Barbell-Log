@@ -32,7 +32,7 @@ Dark theme. `#111111` background. Accent `#c8f55a` (yellow-green). Surfaces `#1a
 
 **Log** — sub-views: Log | Analytics
 
-Filter bar: All, Snatch, C&J, Clean, Jerk, Squat, Pull, Row, Deadlift, Bench. Entries grouped by date, newest first. Session colour left borders: blue=Coached Class, orange=1:1, green=Solo, gold=Competition. COMP LIFT gold badge on pure Snatch/C&J (no modifiers). 🏆 PB badge on entries that are best ever for base + position[0] + receiving. Tap any entry to open full Edit modal.
+Filter bar: All, Snatch, C&J, Clean, Jerk, Squat, Pull, Row, Deadlift, Bench. Entries grouped by date, newest first. Session colour left borders: blue=Coached Class, orange=1:1, green=Solo, gold=Competition. COMP LIFT gold badge only on Competition-session Snatch/C&J entries on a recorded meet date (no modifiers). 🏆 PB badge on entries that are best ever for base + position[0] + receiving. Tap any entry to open full Edit modal.
 
 Analytics: lift selector, period filter (All time / YTD / Last Year / 12m / 6m / 3m), progress chart (session max line + individual set dots), AI Insights (Generate → Claude API), Volume & Frequency stats, Bodyweight Trend chart.
 
@@ -72,7 +72,7 @@ Name order: Base · Receiving · Grip · Technique · Position (base first, posi
 | Bench Press | Flat/Incline/Decline | — | Overhand/Close Grip/Wide Grip | Pause/Tempo/Banded/Pin/Dumbbell |
 | Other | — | — | — | — |
 
-COMP LIFT badge: Snatch or C&J, position empty or Floor only, technique empty, receiving Squat Full/Split/empty.
+COMP LIFT badge: session is Competition and date matches a recorded meet, with Snatch or C&J, position empty or Floor only, technique empty, receiving Squat Full/Split/empty.
 
 PB badge (🏆): best weight ever for base + position[0] + receiving combination.
 

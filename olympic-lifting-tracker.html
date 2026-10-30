@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
@@ -20,12 +20,8 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; -webkit-text-size-adjust: 100%; }
-  @supports (padding: max(0px)) {
-    #header { padding-top: max(8px, env(safe-area-inset-top)); }
-    #tabs { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
-  }
   #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
-  #header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0 16px; flex-shrink: 0; display: flex; flex-direction: column; }
+  #header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 8px 16px 0; padding-top: max(8px, env(safe-area-inset-top, 0px)); flex-shrink: 0; display: flex; flex-direction: column; }
   #header-row1 { display: flex; align-items: center; justify-content: space-between; height: 44px; }
   #header-row2 { display: flex; align-items: center; justify-content: center; padding-bottom: 6px; }
   #header h1 { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; color: var(--accent); flex-shrink: 0; }
@@ -34,7 +30,7 @@
   #content { flex: 1; overflow: hidden; position: relative; }
   .tab-pane { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--tab-h) + var(--safe-bottom, 20px) + 16px); display: none; }
   .tab-pane.active { display: block; }
-  #tabs { height: auto; min-height: var(--tab-h); background: var(--surface); border-top: 1px solid var(--border); display: flex; flex-shrink: 0; align-items: flex-start; }
+  #tabs { padding-bottom: max(16px, env(safe-area-inset-bottom, 0px)); height: auto; min-height: var(--tab-h); background: var(--surface); border-top: 1px solid var(--border); display: flex; flex-shrink: 0; align-items: flex-start; }
   .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: var(--text3); transition: color 0.15s; border: none; background: none; padding: 0; }
   .tab.active { color: var(--accent); }
   .tab svg { width: 22px; height: 22px; }
@@ -1207,7 +1203,8 @@ function renderLog(){
       const sr=[e.sets?`${e.sets}×`:'',e.reps?`${e.reps} reps`:''].filter(Boolean).join(' ');
       const qb=e.quality?`<div class="quality-bar">${[1,2,3,4,5].map(n=>`<div class="qb${n<=e.quality?' filled':''}"></div>`).join('')}</div>`:'';
       const borderClass=e.session==='Coached Class'?'border-coached':e.session==='Solo'?'border-solo':e.session==='Competition'?'border-comp':'border-one';
-      const isCompLift=(e.base==='Snatch'||e.base==='Clean and Jerk')&&
+      // Lift form alone does not make a training set a competition result.
+      const isCompLift=e.session==='Competition'&&getMeets().some(m=>m.date===e.date)&&(e.base==='Snatch'||e.base==='Clean and Jerk')&&
         (!e.position||e.position.length===0||(e.position.length===1&&e.position[0]==='Floor'))&&
         (!e.technique||e.technique.length===0)&&
         (!e.receiving||e.receiving==='Squat (Full)'||e.receiving==='Split'||e.receiving==='');
