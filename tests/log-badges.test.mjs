@@ -13,7 +13,8 @@ function render(entry, meets) {
     buildLiftName: e => e.base, formatDate: d => d,
     dispW: w => w, unitLabel: () => 'kg',
   });
-  vm.runInContext(renderSource + '\nrenderLog();', context);
+  const labelSource=html.match(/function sessionLabel\(session\)\{[\s\S]*?\n\}/)[0];
+  vm.runInContext(labelSource + '\n' + renderSource + '\nrenderLog();', context);
   return container.innerHTML;
 }
 const entry = { id: 'fixture', date: '2026-10-25', base: 'Clean and Jerk',
