@@ -111,3 +111,10 @@ lift across its variations, excluding Competition sessions. It retains and
 renders the exact source entry's movement modifiers, date and session. Tied
 weights select the most recent date. This display rule is separate from the
 workout percentage reference, which still defaults to the full movement.
+
+## Record source context (2026-10-30.13)
+
+All-record summaries retain the originating entry's session, ID and modifiers.
+An equally weighted seeded PB no longer overrides the known log source.
+Historical records with no recoverable session display Session not recorded;
+they are never guessed as Class, Solo or 1:1.

@@ -6,8 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-30.12">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-30.12">
+<link rel="apple-touch-icon" href="icon.png?v=2026-10-30.13">
+<link rel="icon" type="image/png" href="icon.png?v=2026-10-30.13">
 <meta name="theme-color" content="#0c0d0f">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -294,7 +294,7 @@
   .warmup-progress.done { background:var(--accent); }
 </style>
 <link rel="stylesheet" href="training.css?v=2026-10-30.8">
-<link rel="stylesheet" href="phone-layout.css?v=2026-10-30.12">
+<link rel="stylesheet" href="phone-layout.css?v=2026-10-30.13">
 </head>
 <body>
 <div id="app">
@@ -949,7 +949,7 @@
 
 <script src="training-core.js?v=2026-10-30.8"></script>
 <script src="pending-lifts.js?v=2026-10-30.8"></script>
-<script src="app-updates.js?v=2026-10-30.12" data-version="2026-10-30.12"></script>
+<script src="app-updates.js?v=2026-10-30.13" data-version="2026-10-30.13"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -1574,13 +1574,14 @@ function getAllPBs(){
     const en=getCachedEntries().filter(e=>e.base===lift&&e.weight);
     if(!en.length)return;
     const max=Math.max(...en.map(e=>e.weight));
-    const best=en.find(e=>e.weight===max);
-    if(best)logPBs[lift]={weight:max,date:best.date};
+    const best=en.filter(e=>Number(e.weight)===Number(max)).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')))[0];
+    if(best)logPBs[lift]={...best,lift};
   });
   function getPB(lift){
     const m=pbs.find(p=>p.lift===lift),fl=logPBs[lift];
-    if(m&&fl)return m.weight>=fl.weight?m:{weight:fl.weight,date:fl.date};
-    return m||(fl?{weight:fl.weight,date:fl.date}:null);
+    // Prefer an actual logged source on equal weight so its session is retained.
+    if(fl&&(!m||Number(fl.weight)>=Number(m.weight)))return fl;
+    return m||null;
   }
   return {getPB, allLifts, pbs, logPBs};
 }
@@ -1722,7 +1723,7 @@ function renderPBs(){
       }
       function _sClass(s){return s==='Coached Class'?'session-coached':s==='Solo'?'session-solo':s==='Competition'?'session-comp':'session-one';}
       function _sLabel(s){return sessionLabel(s);}
-      const sessionTag=pb&&pb.session?('<span class="tag '+_sClass(pb.session)+'" style="margin-top:4px;display:inline-block;">'+_sLabel(pb.session)+'</span>'):'';
+      const sessionTag=!pb?'':pb.session?('<span class="tag '+_sClass(pb.session)+'" style="margin-top:6px;display:inline-block;">'+escapeText(_sLabel(pb.session))+'</span>'):'<span style="display:block;margin-top:6px;font-size:11px;color:var(--text3);">Session not recorded</span>';
       return`<div class="pb-card pb-strength"${i>0?' style="border-top:1px solid var(--border)"':''}>
         <div style="flex:1;">
           <div class="pb-lift">${lift}${lift==='Jerk'&&pb&&pb.lift==='Clean and Jerk (used)'?' <span style="font-size:9px;color:var(--text3);">(from C&J)</span>':''}</div>
@@ -4089,8 +4090,8 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="training.js?v=2026-10-30.12"></script>
-<script src="phone-layout.js?v=2026-10-30.12"></script>
-<script src="app-interactions.js?v=2026-10-30.12"></script>
+<script src="training.js?v=2026-10-30.13"></script>
+<script src="phone-layout.js?v=2026-10-30.13"></script>
+<script src="app-interactions.js?v=2026-10-30.13"></script>
 </body>
 </html>
