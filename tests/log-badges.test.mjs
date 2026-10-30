@@ -14,7 +14,9 @@ function render(entry, meets) {
     dispW: w => w, unitLabel: () => 'kg',
   });
   const labelSource=html.match(/function sessionLabel\(session\)\{[\s\S]*?\n\}/)[0];
-  vm.runInContext(labelSource + '\n' + renderSource + '\nrenderLog();', context);
+  const identitySource=html.match(/function liftIdentity\(e\)\{[^\n]+/)[0];
+  const escapeSource=html.match(/function escapeText\(value\)\{[^\n]+/)[0];
+  vm.runInContext(identitySource+'\n'+escapeSource+'\n'+labelSource + '\n' + renderSource + '\nrenderLog();', context);
   return container.innerHTML;
 }
 const entry = { id: 'fixture', date: '2026-10-25', base: 'Clean and Jerk',

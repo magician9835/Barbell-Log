@@ -68,3 +68,15 @@ version query parameter. Saved settings stay on the same origin. No automatic
 reload interrupts a workout. Initial installation of this updater still requires
 loading the updated HTML once. Updates become available after Pages deployment
 finishes; this does not eliminate build/deployment time.
+
+## Release 2026-10-30.7
+
+Read OVERHAUL.md for the current class training workflow and data guarantees.
+`training-core.js` owns program expansion and reference calculations;
+`training.js` owns the runner and local plans; `pending-lifts.js` owns confirmed
+writes. `training.css` overrides the original app presentation. The public HTML
+path and existing Apps Script actions remain compatible. Change the version in
+app-version.json, all versioned asset URLs, the updater data-version attribute
+and the Settings version label together. Browser integration is optional locally
+when Playwright and Chromium are installed; required Node checks remain
+independent of external packages and Google.

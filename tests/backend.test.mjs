@@ -80,3 +80,14 @@ test('meet history preserves made and missed attempts and derives total', () => 
   const meets = sheet([plain(vm.runInContext('HEADERS.MEETS', api)), row]);
   assert.deepEqual(plain(api.getAllMeets({ getSheetByName: () => meets })), [meet]);
 });
+
+test('ID-based upserts preserve distinct same-weight sets on the existing backend', () => {
+  const api = backend();
+  const log = sheet([plain(vm.runInContext('HEADERS.LOG', api))]);
+  const ss = { getSheetByName: () => log };
+  api.updateEntry(ss, lift);
+  api.updateEntry(ss, { ...lift, id: 'second-set' });
+  api.updateEntry(ss, lift);
+  assert.equal(api.getAllLogEntries(ss).length, 2);
+  assert.deepEqual(plain(api.getAllLogEntries(ss)).map(e => e.id), [lift.id, 'second-set']);
+});
