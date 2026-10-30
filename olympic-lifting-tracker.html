@@ -2,18 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
+<meta name="theme-color" content="#0c0d0f">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #111111; --surface: #1a1a1a; --surface2: #222222; --surface3: #2a2a2a;
-    --border: #333333; --accent: #c8f55a; --accent-dim: #9ab83e; --accent-bg: rgba(200,245,90,0.08);
+    --border: #333333; --accent: #ff8792; --accent-dim: #f6a6ae; --accent-bg: rgba(230,45,66,0.08);
     --text: #f0f0f0; --text2: #aaaaaa; --text3: #777777;
     --red: #ff5252; --orange: #ff9a3c; --blue: #5ab4ff;
     --radius: 12px; --radius-sm: 8px; --tab-h: 64px; --header-h: 56px; --safe-bottom: max(20px, env(safe-area-inset-bottom));
@@ -71,7 +72,7 @@
   .log-entry-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
   .tag { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: var(--surface3); color: var(--text2); font-family: 'DM Mono', monospace; }
   .tag.session-coached { background: rgba(90,180,255,0.15); color: var(--blue); }
-  .tag.session-solo { background: rgba(200,245,90,0.1); color: var(--accent-dim); }
+  .tag.session-solo { background: rgba(230,45,66,0.1); color: var(--accent-dim); }
   .tag.session-one { background: rgba(255,154,60,0.15); color: var(--orange); }
   .quality-bar { display: flex; gap: 3px; margin-top: 6px; }
   .qb { width: 16px; height: 3px; border-radius: 2px; background: var(--border); }
@@ -252,7 +253,7 @@
   /* BARBELL VISUALISER */
   .warmup-row { cursor: pointer; transition: background 0.1s; }
   .warmup-row:active { background: var(--surface3); }
-  .warmup-row.selected { background: rgba(200,245,90,0.15) !important; }
+  .warmup-row.selected { background: rgba(230,45,66,0.15) !important; }
   .warmup-row.selected .warmup-weight { color: var(--accent) !important; }
   .warmup-row.selected .warmup-set { color: var(--accent-dim) !important; }
   .plate-label { font-size: 7px; font-family: 'DM Mono', monospace; font-weight: 700; }
@@ -284,7 +285,7 @@
   .countdown-days-label { font-size:9px; color:var(--text3); font-family:DM Mono,monospace; text-align:right; margin-top:2px; }
 
   /* PULSE ANIMATION for new PB */
-  @keyframes pbPulse { 0%{box-shadow:0 0 0 0 rgba(200,245,90,0.4)} 70%{box-shadow:0 0 0 12px rgba(200,245,90,0)} 100%{box-shadow:0 0 0 0 rgba(200,245,90,0)} }
+  @keyframes pbPulse { 0%{box-shadow:0 0 0 0 rgba(230,45,66,0.4)} 70%{box-shadow:0 0 0 12px rgba(230,45,66,0)} 100%{box-shadow:0 0 0 0 rgba(230,45,66,0)} }
   .pb-new { animation: pbPulse 0.8s ease-out; }
 
   /* WARMUP PROGRESS LINE */
@@ -292,6 +293,7 @@
   .warmup-progress { position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
   .warmup-progress.done { background:var(--accent); }
 </style>
+<link rel="stylesheet" href="training.css?v=2026-10-30.7">
 </head>
 <body>
 <div id="app">
@@ -320,7 +322,7 @@
       </div>
       <!-- ENTRIES SUB-PANE -->
       <div class="sub-pane active" id="log-pane-entries">
-        <div id="log-countdown-banner" style="display:none;margin:10px 16px 0;background:linear-gradient(135deg,rgba(200,245,90,0.08),rgba(200,245,90,0.04));border:1px solid var(--accent);border-radius:var(--radius);padding:10px 14px;display:none;cursor:pointer;" onclick="switchTab('comp',document.querySelector('.tab:nth-child(4)'))">
+        <div id="log-countdown-banner" style="display:none;margin:10px 16px 0;background:linear-gradient(135deg,rgba(230,45,66,0.08),rgba(230,45,66,0.04));border:1px solid var(--accent);border-radius:var(--radius);padding:10px 14px;display:none;cursor:pointer;" onclick="switchTab('comp',document.querySelector('.tab:nth-child(4)'))">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <div>
               <div style="font-size:9px;color:var(--accent-dim);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;">Next Competition</div>
@@ -560,7 +562,7 @@
       <!-- HISTORY SUB-PANE -->
       <div class="sub-pane active" id="comp-pane-history">
         <div style="padding:12px 16px 0;display:flex;justify-content:space-between;align-items:center;">
-          <button id="meetEditBtn" class="btn btn-secondary btn-sm" onclick="toggleMeetEditMode()">Edit</button>
+          <button id="meetEditBtn" hidden class="btn btn-secondary btn-sm" onclick="toggleMeetEditMode()">Edit</button>
           <button class="btn btn-primary btn-sm" onclick="openMeetModal()">+ Log a Meet</button>
         </div>
         <div id="meetList" style="padding:8px 0;"></div>
@@ -844,7 +846,7 @@
       </div>
       <div class="field"><label>Notes</label><textarea id="edit-notes" placeholder="Notes..."></textarea></div>
     </div>
-    <button class="btn btn-primary" onclick="saveEditEntry()" style="margin-bottom:8px;">Save &amp; Push to Sheet</button>
+    <button class="btn btn-primary" onclick="saveEditEntry()" style="margin-bottom:8px;">Save changes</button>
     <button class="btn btn-secondary" onclick="closeEditModal()" style="margin-bottom:8px;">Cancel</button>
     <button class="btn" onclick="deleteEditEntry()"
       style="background:rgba(255,82,82,0.1);border:1px solid rgba(255,82,82,0.3);color:var(--red);font-weight:700;">
@@ -944,7 +946,9 @@
   </div>
 </div>
 
-<script src="app-updates.js?v=2026-10-30.6" data-version="2026-10-30.6"></script>
+<script src="training-core.js?v=2026-10-30.7"></script>
+<script src="pending-lifts.js?v=2026-10-30.7"></script>
+<script src="app-updates.js?v=2026-10-30.7" data-version="2026-10-30.7"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -1020,6 +1024,8 @@ const LIFT_CONFIG = {
 };
 
 const SEP = ' · ';
+function liftIdentity(e){return JSON.stringify([e.base,...['position','grip','technique'].map(k=>[...(e[k]||[])].sort()),e.receiving||'']);}
+function escapeText(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 function sessionLabel(session){
   return {'Coached Class':'Class','1:1 Session':'1:1',Solo:'Solo',Competition:'Competition'}[session]||session||'Solo';
@@ -1133,7 +1139,7 @@ function initDB(){
   renderBWLog();
   // BW date default
   const bwDateEl=document.getElementById('bw-date');
-  if(bwDateEl)bwDateEl.value=new Date().toISOString().split('T')[0];
+  if(bwDateEl)bwDateEl.value=TrainingCore.localDate();
 }
 
 // ============================================================
@@ -1194,7 +1200,7 @@ function renderLog(){
   const pbMap={};
   entries.forEach(e=>{
     if(!e.weight)return;
-    const key=e.base+'|'+(e.position&&e.position[0]?e.position[0]:'')+' |'+(e.receiving||'');
+    const key=liftIdentity(e);
     if(!pbMap[key]||e.weight>pbMap[key])pbMap[key]=e.weight;
   });
 
@@ -1204,7 +1210,7 @@ function renderLog(){
     groups[date].forEach((e,i)=>{
       const sc=e.session==='Coached Class'?'session-coached':e.session==='Solo'?'session-solo':e.session==='Competition'?'session-comp':'session-one';
       const ss=sessionLabel(e.session);
-      const ln=buildLiftName(e);
+      const ln=escapeText(buildLiftName(e));
       const sr=[e.sets?`${e.sets}×`:'',e.reps?`${e.reps} reps`:''].filter(Boolean).join(' ');
       const qb=e.quality?`<div class="quality-bar">${[1,2,3,4,5].map(n=>`<div class="qb${n<=e.quality?' filled':''}"></div>`).join('')}</div>`:'';
       const borderClass=e.session==='Coached Class'?'border-coached':e.session==='Solo'?'border-solo':e.session==='Competition'?'border-comp':'border-one';
@@ -1214,15 +1220,15 @@ function renderLog(){
         (!e.technique||e.technique.length===0)&&
         (!e.receiving||e.receiving==='Squat (Full)'||e.receiving==='Split'||e.receiving==='');
       const compLiftBadge=isCompLift?'<span style="font-size:9px;font-weight:700;font-family:DM Mono,monospace;letter-spacing:0.5px;background:rgba(255,215,0,0.15);color:#ffd700;border:1px solid rgba(255,215,0,0.3);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:middle;">COMP LIFT</span>':'';
-      const pbKey=e.base+'|'+(e.position&&e.position[0]?e.position[0]:'')+' |'+(e.receiving||'');
+      const pbKey=liftIdentity(e);
       const isPBEntry=e.weight&&pbMap[pbKey]&&e.weight>=pbMap[pbKey];
       const pbBadge=isPBEntry?'<span style="font-size:11px;margin-left:5px;vertical-align:middle;" title="PB for this lift">🏆</span>':'';
-      html+=`<div class="log-entry ${borderClass}" onclick="openEditModal('${e.id}')"${i>0?' style="border-top:1px solid var(--border)"':''}>
+      html+=`<div class="log-entry ${borderClass}" role="button" tabindex="0" data-entry-id="${escapeText(e.id)}"${i>0?' style="border-top:1px solid var(--border)"':''}>
         <div class="log-entry-header">
           <div class="log-entry-lift">${ln}${compLiftBadge}${pbBadge}</div>
           <div class="log-entry-weight">${e.weight?dispW(e.weight)+'<span style="font-size:12px;color:var(--text3)">'+unitLabel()+'</span>':'--'}</div>
         </div>
-        <div class="log-entry-meta">${[sr,e.notes].filter(Boolean).join(' · ')}</div>
+        <div class="log-entry-meta">${[sr,escapeText(e.notes)].filter(Boolean).join(' · ')}</div>
         <div class="log-entry-tags"><span class="tag ${sc}">${ss}</span></div>
         ${qb}
       </div>`;
@@ -1230,6 +1236,8 @@ function renderLog(){
     html+='</div><div style="height:8px;"></div>';
   });
   container.innerHTML=html;
+  container.onclick=event=>{const row=event.target.closest('[data-entry-id]');if(row)openEditModal(row.dataset.entryId);};
+  container.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){const row=event.target.closest('[data-entry-id]');if(row){event.preventDefault();openEditModal(row.dataset.entryId);}}};
 }
 
 function formatDate(d){
@@ -1244,7 +1252,7 @@ let selectedQuality=null;
 let modalChips={position:[],receiving:[],grip:[],technique:[]};
 
 function openLogModal(){
-  document.getElementById('m-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('m-date').value=TrainingCore.localDate();
   selectedQuality=null;
   modalChips={position:[],receiving:[],grip:[],technique:[]};
   document.querySelectorAll('.q-dot').forEach(d=>d.classList.remove('selected'));
@@ -1323,7 +1331,9 @@ function setQuality(val){
   document.querySelectorAll('.q-dot').forEach(d=>d.classList.toggle('selected',parseInt(d.textContent)===val));
 }
 
+let _savingEntry=false;
 async function saveEntry(ov){
+  if(_savingEntry)return false;
   const entry=ov||{
     id:uid(),
     date:document.getElementById('m-date').value,
@@ -1341,13 +1351,17 @@ async function saveEntry(ov){
   };
   if(!entry.base){showToast('Select a base lift','error');return false;}
   if(!entry.weight){showToast('Enter a weight','error');return false;}
-  // entry not stored in localStorage -- in sheet only
-  updatePBs(entry);
-  if(!ov)closeLogModal();
-  showToast('Saving...','');
-  await syncEntryToSheets(entry);
-  showToast('Entry saved','success');
-  return true;
+  _savingEntry=true;
+  try{
+    showToast('Saving...','');
+    const result=await syncEntryToSheets(entry);
+    if(!result.queued)return false;
+    updatePBs(entry);
+    if(!ov)closeLogModal();
+    showToast(result.saved?'Entry saved to spreadsheet':'Saved on phone — waiting for spreadsheet',result.saved?'success':'');
+    return true;
+  }finally{_savingEntry=false;}
+
 }
 
 function updatePBs(entry){
@@ -1359,12 +1373,12 @@ function updatePBs(entry){
     if(idx>=0)s.pbs[idx]=pb;else s.pbs.push(pb);
     saveSettingsData(s);
   }
+}
 
 function recalculatePBs(){
   rebuildPBsFromEntries(getCachedEntries());
 }
 
-}
 // ============================================================
 // PBs TAB
 // ============================================================
@@ -1423,10 +1437,16 @@ function saveAthleteSettings(){
   renderWeightClass(bw);
 }
 
+function queueBodyweight(entry){
+  try{PendingLifts.queue('logBW',{...entry,id:'bw-'+crypto.randomUUID()},loadSettings().sheetsUrl);}
+  catch(error){showToast('Could not save on this phone. Please try again.','error');return false;}
+  PendingLifts.drain(loadSettings().sheetsUrl).then(()=>renderPendingLifts()).catch(()=>{});return true;
+}
 function logBWFromField(){
   const bw=parseFloat(document.getElementById('setting-bw').value)||null;
   if(!bw){showToast('Enter a bodyweight first','error');return;}
-  const today=new Date().toISOString().split('T')[0];
+  const today=TrainingCore.localDate();
+  if(!queueBodyweight({date:today,weight:bw,note:''}))return;
   const s=loadSettings();
   if(!s.bwLog)s.bwLog=[];
   // Avoid duplicate for today
@@ -1438,7 +1458,7 @@ function logBWFromField(){
   saveSettingsData(s);
   renderBWLog();
   renderWeightClass(bw);
-  showToast(bw+'kg logged for today','success');
+  showToast(bw+'kg recorded on phone — syncing','');
 }
 
 function renderWeightClass(bw){
@@ -1480,8 +1500,9 @@ function renderWeightClass(bw){
 // ── BODYWEIGHT LOG ───────────────────────────────────────────────────────────
 function logBodyweight(){
   const val=parseFloat(document.getElementById('bw-entry').value);
-  const date=document.getElementById('bw-date').value||new Date().toISOString().split('T')[0];
-  if(!val){showToast('Enter a weight','error');return;}
+  const date=document.getElementById('bw-date').value||TrainingCore.localDate();
+  if(!val||val<=0){showToast('Enter a positive weight','error');return;}
+  if(!queueBodyweight({date,weight:val,note:''}))return;
   const s=loadSettings();
   if(!s.bwLog)s.bwLog=[];
   s.bwLog.push({date,weight:val});
@@ -1493,7 +1514,7 @@ function logBodyweight(){
   renderBWLog();
   renderWeightClass(s.athleteBW);
   document.getElementById('setting-bw').value=s.athleteBW;
-  showToast('Bodyweight logged','success');
+  showToast('Bodyweight recorded on phone — syncing','');
 }
 
 let bwLogExpanded = false;
@@ -1576,7 +1597,7 @@ function renderPBs(){
 
   // Get training bests from log (all sessions)
   function getTrainingBest(lift){
-    const entries=getCachedEntries().filter(e=>e.base===lift&&e.weight);
+    const entries=getCachedEntries().filter(e=>e.base===lift&&e.weight&&e.session!=='Competition'&&!(e.position||[]).some(p=>p!=='Floor')&&!(e.technique||[]).length&&!['Power','Muscle'].includes(e.receiving));
     if(!entries.length)return null;
     const max=Math.max(...entries.map(e=>e.weight));
     const best=entries.find(e=>e.weight===max);
@@ -1586,7 +1607,9 @@ function renderPBs(){
   const trainCJ=getTrainingBest('Clean and Jerk');
 
   // Totals
-  const compTotal=compSnatch&&compCJ?compSnatch.weight+compCJ.weight:null;
+  const meetResults=getMeets().map(m=>{const sn=Math.max(0,...m.snatch.filter(a=>a.made).map(a=>Number(a.weight)||0));const cj=Math.max(0,...m.cj.filter(a=>a.made).map(a=>Number(a.weight)||0));return{...m,total:sn&&cj?sn+cj:null};});
+  const bestTotalMeet=meetResults.filter(m=>m.total).sort((a,b)=>b.total-a.total)[0];
+  const compTotal=bestTotalMeet?.total||null;
   const trainTotal=trainSnatch&&trainCJ?trainSnatch.weight+trainCJ.weight:null;
 
   // Sinclair -- use bodyweight closest to date of each best
@@ -1614,7 +1637,8 @@ function renderPBs(){
   const trainSnatchBWDate=trainSnatch?.date||null;
   const trainCJBWDate=trainCJ?.date||null;
   const trainBWForSinclair=trainTotal?(bwAtDate(trainSnatchBWDate)||bwAtDate(trainCJBWDate)||bw):bw;
-  const scComp=sinclair(compTotal,compBWForSinclair);
+  const bestSinclairMeet=meetResults.map(m=>({...m,score:sinclair(m.total,m.bw)})).filter(m=>m.score).sort((a,b)=>b.score-a.score)[0];
+  const scComp=bestSinclairMeet?.score||null;
   const scTrain=sinclair(trainTotal,trainBWForSinclair);
 
   // Helper: render one weight cell
@@ -1630,14 +1654,14 @@ function renderPBs(){
     // Column cell helpers
     const compCell=(w,date,sub)=>w?`<div style="font-size:24px;font-weight:800;color:#ffd700;font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(w)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div><div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${formatDate(date)}</div>${sub?`<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-top:1px;">${sub}</div>`:''}`:
       '<div style="font-size:22px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>';
-    const trainCell=(w,date,sub)=>w?`<div style="font-size:24px;font-weight:800;color:#c8f55a;font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(w)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div><div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${formatDate(date)}</div>${sub?`<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-top:1px;">${sub}</div>`:''}`:
+    const trainCell=(w,date,sub)=>w?`<div style="font-size:24px;font-weight:800;color:#ff8792;font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(w)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div><div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${formatDate(date)}</div>${sub?`<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-top:1px;">${sub}</div>`:''}`:
       '<div style="font-size:22px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>';
 
     mainEl.innerHTML=`
     <!-- Column headers -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border);">
       <div style="padding:8px 12px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#ffd700;font-family:DM Mono,monospace;border-right:1px solid var(--border);background:rgba(255,215,0,0.06);">🏅 Competition</div>
-      <div style="padding:8px 12px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#c8f55a;font-family:DM Mono,monospace;background:rgba(200,245,90,0.06);">🏋️ Training</div>
+      <div style="padding:8px 12px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#ff8792;font-family:DM Mono,monospace;background:rgba(230,45,66,0.06);">🏋️ Training</div>
     </div>
     <!-- Snatch row -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border);">
@@ -1645,8 +1669,8 @@ function renderPBs(){
         <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,215,0,0.5);font-family:DM Mono,monospace;margin-bottom:6px;">Snatch</div>
         ${compCell(compSnatch?.weight,compSnatch?.date,compSnatch?.meet)}
       </div>
-      <div style="padding:12px;background:rgba(200,245,90,0.06);">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(200,245,90,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Snatch</div>
+      <div style="padding:12px;background:rgba(230,45,66,0.06);">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(230,45,66,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Snatch</div>
         ${trainCell(trainSnatch?.weight,trainSnatch?.date,sessionLabel(trainSnatch?.session))}
       </div>
     </div>
@@ -1656,8 +1680,8 @@ function renderPBs(){
         <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,215,0,0.5);font-family:DM Mono,monospace;margin-bottom:6px;">Clean &amp; Jerk</div>
         ${compCell(compCJ?.weight,compCJ?.date,compCJ?.meet)}
       </div>
-      <div style="padding:12px;background:rgba(200,245,90,0.06);">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(200,245,90,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Clean &amp; Jerk</div>
+      <div style="padding:12px;background:rgba(230,45,66,0.06);">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(230,45,66,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Clean &amp; Jerk</div>
         ${trainCell(trainCJ?.weight,trainCJ?.date,sessionLabel(trainCJ?.session))}
       </div>
     </div>
@@ -1665,22 +1689,22 @@ function renderPBs(){
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border);">
       <div style="padding:12px;border-right:1px solid var(--border);background:rgba(255,215,0,0.06);">
         <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,215,0,0.5);font-family:DM Mono,monospace;margin-bottom:6px;">Total</div>
-        ${compTotal?`<div style="font-size:26px;font-weight:800;color:#ffd700;font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(compTotal)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div><div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${dispW(compSnatch.weight)} + ${dispW(compCJ.weight)}</div>`:'<div style="font-size:20px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
+        ${compTotal?`<div style="font-size:26px;font-weight:800;color:#ffd700;font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(compTotal)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div><div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${escapeText(bestTotalMeet?.name||'Same-meet total')}</div>`:'<div style="font-size:20px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
       </div>
-      <div style="padding:12px;background:rgba(200,245,90,0.06);">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(200,245,90,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Total</div>
-        ${trainTotal?`<div style="font-size:26px;font-weight:800;color:#c8f55a;font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(trainTotal)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div><div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${dispW(trainSnatch.weight)} + ${dispW(trainCJ.weight)}</div>`:'<div style="font-size:20px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
+      <div style="padding:12px;background:rgba(230,45,66,0.06);">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(230,45,66,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Total</div>
+        ${trainTotal?`<div style="font-size:26px;font-weight:800;color:#ff8792;font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(trainTotal)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div><div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${dispW(trainSnatch.weight)} + ${dispW(trainCJ.weight)}</div>`:'<div style="font-size:20px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
       </div>
     </div>
     <!-- Sinclair row -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
       <div style="padding:12px;border-right:1px solid var(--border);background:rgba(255,215,0,0.06);">
         <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,215,0,0.5);font-family:DM Mono,monospace;margin-bottom:6px;">Sinclair</div>
-        ${scComp?`<div style="font-size:24px;font-weight:800;color:#ffd700;font-family:DM Mono,monospace;line-height:1;">${scComp}</div>${compBWForSinclair||bw?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">at ${compBWForSinclair||bw}kg</div>`:''}`:'<div style="font-size:18px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
+        ${scComp?`<div style="font-size:24px;font-weight:800;color:#ffd700;font-family:DM Mono,monospace;line-height:1;">${scComp}</div>${compBWForSinclair||bw?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">at ${bestSinclairMeet?.bw||compBWForSinclair||bw}kg</div>`:''}`:'<div style="font-size:18px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
       </div>
-      <div style="padding:12px;background:rgba(200,245,90,0.06);">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(200,245,90,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Sinclair</div>
-        ${scTrain?`<div style="font-size:24px;font-weight:800;color:#c8f55a;font-family:DM Mono,monospace;line-height:1;">${scTrain}</div>${bw?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">at ${bw}kg</div>`:''}`:'<div style="font-size:18px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
+      <div style="padding:12px;background:rgba(230,45,66,0.06);">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(230,45,66,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Sinclair</div>
+        ${scTrain?`<div style="font-size:24px;font-weight:800;color:#ff8792;font-family:DM Mono,monospace;line-height:1;">${scTrain}</div>${bw?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">at ${bw}kg</div>`:''}`:'<div style="font-size:18px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
       </div>
     </div>`;
   }
@@ -2077,7 +2101,7 @@ function setFinishQ(idx,val){
 function closeFinishModal(){document.getElementById('finishModal').classList.remove('open');}
 
 async function confirmFinishSession(){
-  const today=new Date().toISOString().split('T')[0];
+  const today=TrainingCore.localDate();
   let saved=0;
   const allEntries=[];
   plannerLifts.forEach((lift,i)=>{
@@ -2096,9 +2120,13 @@ async function confirmFinishSession(){
       quality:parseInt(document.getElementById(`fqv-${i}`).value)||null,
       notes:[document.getElementById(`fpn-${i}`)?.value,document.getElementById(`fn-${i}`).value.trim()].filter(Boolean).join(' · '),
     };
-  updatePBs(entry);saved++;allEntries.push(entry);
-    const s2=loadSettings();if(s2.sheetsUrl)syncEntryToSheets(entry);
+    saved++;allEntries.push(entry);
   });
+  try{PendingLifts.queueMany(allEntries.map(entry=>({action:'updateEntry',entry})),loadSettings().sheetsUrl);}
+  catch(error){showToast('Phone storage unavailable. Keep the planner open and try again.','error');return;}
+  allEntries.forEach(updatePBs);
+  renderPendingLifts();
+  PendingLifts.drain(loadSettings().sheetsUrl).then(()=>fetchAndRender()).catch(()=>showToast('Pending lifts remain on this phone','error'));
   closeFinishModal();
 
   // Build session summary
@@ -2402,10 +2430,10 @@ function renderCompContext(projectedTotal) {
   const meetPBsCtx = getMeetPBs();
   const snatchCompPB = meetPBsCtx.snatch
     ? {weight: meetPBsCtx.snatch.weight, date: meetPBsCtx.snatch.date}
-    : pbs.find(p => p.lift === 'Snatch');
+    : null;
   const cjCompPB = meetPBsCtx.cj
     ? {weight: meetPBsCtx.cj.weight, date: meetPBsCtx.cj.date}
-    : pbs.find(p => p.lift === 'Clean and Jerk');
+    : null;
 
   // PB non-competition (best from log, any session)
   const snatchLogBest = getBestBySession('Snatch', null);
@@ -2413,21 +2441,8 @@ function renderCompContext(projectedTotal) {
 
   // Best competition total (from PBs sheet -- use best snatch comp PB + best CJ comp PB on same comp date or just best individual)
   // Find matching dates in PBs
-  const allPBs = pbs;
-  let bestCompTotal = null, bestCompDate = null;
-  // Group by date and find pairs
-  const pbsByDate = {};
-  allPBs.forEach(p => {
-    if (!pbsByDate[p.date]) pbsByDate[p.date] = {};
-    pbsByDate[p.date][p.lift] = p.weight;
-  });
-  Object.entries(pbsByDate).forEach(([date, lifts]) => {
-    if (lifts['Snatch'] && (lifts['Clean and Jerk'] || lifts['Clean and jerk'])) {
-      const cj = lifts['Clean and Jerk'] || lifts['Clean and jerk'];
-      const total = lifts['Snatch'] + cj;
-      if (!bestCompTotal || total > bestCompTotal) { bestCompTotal = total; bestCompDate = date; }
-    }
-  });
+  let bestCompTotal=null,bestCompDate=null;
+  getMeets().forEach(m=>{const sn=Math.max(0,...m.snatch.filter(a=>a.made).map(a=>Number(a.weight)||0));const cj=Math.max(0,...m.cj.filter(a=>a.made).map(a=>Number(a.weight)||0));if(sn&&cj&&(!bestCompTotal||sn+cj>bestCompTotal)){bestCompTotal=sn+cj;bestCompDate=m.date;}});
 
   // Best theoretical total -- highest of comp or training for each lift
   const bestSnatchComp = snatchCompPB ? snatchCompPB.weight : null;
@@ -2542,7 +2557,7 @@ let meetResults={sn:{},cj:{}};
 function openMeetModal(){
   meetResults={sn:{1:null,2:null,3:null},cj:{1:null,2:null,3:null}};
   document.getElementById('mm-name').value='';
-  document.getElementById('mm-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('mm-date').value=TrainingCore.localDate();
   document.getElementById('mm-location').value='';
   document.getElementById('mm-bw').value='';
   document.getElementById('mm-notes').value='';
@@ -2569,7 +2584,7 @@ function setMeetResult(lift,idx,made){
   meetResults[lift][idx]=made;
   const good=document.getElementById('mm-'+lift+'-r'+idx+'-good');
   const miss=document.getElementById('mm-'+lift+'-r'+idx+'-miss');
-  if(good){good.style.background=made?'rgba(200,245,90,0.2)':'none';good.style.borderColor=made?'var(--accent)':'var(--border)';}
+  if(good){good.style.background=made?'rgba(230,45,66,0.2)':'none';good.style.borderColor=made?'var(--accent)':'var(--border)';}
   if(miss){miss.style.background=!made?'rgba(255,82,82,0.2)':'none';miss.style.borderColor=!made?'var(--red)':'var(--border)';}
 }
 
@@ -2590,6 +2605,7 @@ function saveMeet(){
   }));
   const location=document.getElementById('mm-location').value.trim();
   const meet={id:uid(),name,date,location,bw,snatch,cj,notes:document.getElementById('mm-notes').value.trim()};
+  try{PendingLifts.queue('saveMeet',meet,loadSettings().sheetsUrl);}catch(error){showToast('Could not save on this phone. Keep this form open.','error');return;}
   const s=loadSettings();
   if(!s.meets)s.meets=[];
   s.meets.push(meet);
@@ -2600,8 +2616,8 @@ function saveMeet(){
   renderPBs();
   // Push meet to sheet
   const s2=loadSettings();
-  if(s2.sheetsUrl) sheetPost('saveMeet',{meet});
-  showToast('Meet saved','success');
+  PendingLifts.drain(s2.sheetsUrl).then(()=>renderPendingLifts()).catch(()=>{});
+  showToast('Meet recorded on phone — syncing','');
 }
 
 let _meetEditMode=false;
@@ -2619,18 +2635,7 @@ function toggleMeetEditMode(){
 
 
 function deleteMeet(id){
-  const s=loadSettings();
-  const meet=s.meets&&s.meets.find(m=>m.id===id);
-  const name=meet?meet.name:'this meet';
-  showConfirm('Delete '+name+'?','This cannot be undone.','Yes, delete meet',function(){
-    const s2=loadSettings();
-    s2.meets=(s2.meets||[]).filter(m=>m.id!==id);
-    saveSettingsData(s2);
-    if(!s2.meets.length)_meetEditMode=false;
-    renderMeetList();
-    renderPBs();
-    showToast('Meet deleted','success');
-  });
+  showToast('Meet deletion is not available yet. Your meet has been kept.','');
 }
 
 function getMeetPBs(){
@@ -2676,7 +2681,7 @@ function renderMeetList(){
     return `<div class="meet-card">
       <div class="meet-card-header">
         <div style="flex:1;">
-          <div class="meet-card-name">${buildCompTitle(m.name,m.date,m.location)}</div>
+          <div class="meet-card-name">${escapeText(buildCompTitle(m.name,m.date,m.location))}</div>
           ${m.bw?`<div class="meet-card-bw">${m.bw}kg bodyweight</div>`:''}
         </div>
         ${_meetEditMode?'<button class="meet-delete-btn" data-id="'+m.id+'" style="background:rgba(255,82,82,0.12);border:1px solid rgba(255,82,82,0.4);color:var(--red);font-size:12px;font-weight:700;cursor:pointer;padding:5px 10px;border-radius:8px;flex-shrink:0;">Delete</button>':''}
@@ -2705,7 +2710,7 @@ function renderMeetList(){
           <div class="meet-total-sub">${m.bw?'at '+m.bw+'kg':''}</div>
         </div>
       </div>
-      ${m.notes?`<div style="padding:10px 14px;font-size:12px;color:var(--text3);border-top:1px solid var(--border);">${m.notes}</div>`:''}
+      ${m.notes?`<div style="padding:10px 14px;font-size:12px;color:var(--text3);border-top:1px solid var(--border);">${escapeText(m.notes)}</div>`:''}
     </div>`;
   }).join('');
 }
@@ -2792,7 +2797,7 @@ function renderGoals(){
             <span class="goal-target${achieved?' achieved':''}">${target}kg</span>
           </div>
         </div>
-        <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${Math.min(pct,100)}%;background:${pct>=100?'#c8f55a':pct>=70?'#e8e840':pct>=40?'#ff9a3c':'#ff5252'};"></div></div>
+        <div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${Math.min(pct,100)}%;background:${pct>=100?'#ff8792':pct>=70?'#e8e840':pct>=40?'#ff9a3c':'#ff5252'};"></div></div>
         <div class="goal-pct">${pb?pct+'% of target':'No PB logged'}</div>
       </div>`;
     });
@@ -2863,10 +2868,10 @@ function saveSettings(){const s=loadSettings();saveSettingsData(s);}
 function exportCSV(){
   
   const h=['date','session','base','position','receiving','grip','technique','weight','sets','reps','quality','notes','id'];
-  const rows=getCachedEntries().map(e=>[e.date,e.session,e.base,(e.position||[]).join(' + '),e.receiving,(e.grip||[]).join(' + '),(e.technique||[]).join(' + '),e.weight,e.sets||'',e.reps||'',e.quality||'',(e.notes||'').replace(/,/g,''),e.id]);
-  const csv=[h,...rows].map(r=>r.join(',')).join('\n');
+  const rows=getCachedEntries().map(e=>[e.date,e.session,e.base,(e.position||[]).join(' + '),e.receiving,(e.grip||[]).join(' + '),(e.technique||[]).join(' + '),e.weight,e.sets||'',e.reps||'',e.quality||'',e.notes||'',e.id]);
+  const csv=[h,...rows].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
   const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=`barbell-log-${new Date().toISOString().split('T')[0]}.csv`;a.click();
+  const a=document.createElement('a');a.href=url;a.download=`barbell-log-${TrainingCore.localDate()}.csv`;a.click();
   showToast('CSV exported','success');
 }
 function clearAllData(){showConfirm('Clear all local data?','This cannot be undone. Export first if needed.','Yes, clear data',function(){localStorage.removeItem(DB_KEY);clearEntryCache();renderLog();showToast('Data cleared','error');});}
@@ -2878,10 +2883,12 @@ function clearAllData(){showConfirm('Clear all local data?','This cannot be undo
 // Every write (log/edit/delete) posts to sheet then refreshes cache.
 
 let _entriesCache = [];
+try{_entriesCache=JSON.parse(localStorage.getItem('barbell_last_entries_v1')||'[]');if(!Array.isArray(_entriesCache))_entriesCache=[];}catch{}
 let _fetchInProgress = false;
+let _lastFetchError=false;
 
-function getCachedEntries(){ return _entriesCache; }
-function setCachedEntries(e){ _entriesCache = e||[]; }
+function getCachedEntries(){ return PendingLifts.overlay(_entriesCache,loadSettings().sheetsUrl); }
+function setCachedEntries(e){ _entriesCache = e||[];try{localStorage.setItem('barbell_last_entries_v1',JSON.stringify(_entriesCache));}catch(error){console.warn('Offline cache unavailable');} }
 function clearEntryCache(){ _entriesCache = []; }
 
 async function fetchEntries(){
@@ -2895,11 +2902,13 @@ async function fetchEntries(){
   }
   if(_fetchInProgress) return getCachedEntries();
   _fetchInProgress=true;
+  _lastFetchError=false;
   try{
-    const r=await fetch(s.sheetsUrl+'?action=getAll');
+    const r=await fetch(s.sheetsUrl+'?action=getAll&_check='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(12000)});
     if(!r.ok) throw new Error('HTTP '+r.status);
     const data=await r.json();
-    const entries=(data.entries||[]).sort((a,b)=>b.date.localeCompare(a.date));
+    if(data.error||!Array.isArray(data.entries))throw new Error(data.error||'Invalid sheet response');
+    const entries=data.entries.sort((a,b)=>b.date.localeCompare(a.date));
     setCachedEntries(entries);
     rebuildPBsFromEntries(entries);
     // Merge meets and BW into settings
@@ -2924,6 +2933,7 @@ async function fetchEntries(){
     }
     return entries;
   }catch(e){
+    _lastFetchError=true;
     console.error('Fetch failed:',e);
     const container=document.getElementById('logList');
     if(container&&container.innerHTML.includes('Loading'))
@@ -2966,14 +2976,15 @@ async function syncBoth(){
   if(!s.sheetsUrl){showToast('Add Sheets URL in Settings first','error');return;}
   const btn=document.getElementById('syncBtn');
   btn.textContent='⇅ Pulling...';btn.classList.add('syncing');
-  clearEntryCache();
+  await PendingLifts.drain(s.sheetsUrl);
   await fetchEntries();
   renderLog();
   if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
   if(document.getElementById('log-pane-analytics')?.classList.contains('active'))renderAnalytics();
   if(document.getElementById('pane-comp').classList.contains('active'))renderMeetList();
   btn.textContent='⇅ Pull from Sheet';btn.classList.remove('syncing');
-  showToast('Refreshed','success');
+  renderPendingLifts();
+  showToast(_lastFetchError?'Could not refresh — your pending changes are kept on this phone':PendingLifts.list().length?'Some changes are still waiting for confirmation':'Refreshed',_lastFetchError?'error':'success');
 }
 
 // Write to sheet then refresh cache
@@ -2987,26 +2998,34 @@ async function sheetPost(action,payload){
   }catch(e){ console.error('Sheet post failed:',e); }
 }
 
-async function syncEntryToSheets(entry){
-  await sheetPost('log',{entry});
-  clearEntryCache();
-  await fetchEntries();
-  renderLog();
+function renderPendingLifts(){
+  const count=PendingLifts.list().length;
+  let button=document.getElementById('pending-lifts-button');
+  if(!button){
+    button=document.createElement('button');button.id='pending-lifts-button';button.type='button';
+    button.style.cssText='margin:4px 0 8px;padding:10px;border:1px solid var(--orange);border-radius:8px;background:var(--surface);color:var(--orange);font:700 12px sans-serif;';
+    button.onclick=()=>syncBoth();document.getElementById('header').appendChild(button);
+  }
+  button.hidden=!count;
+  button.textContent=count+' change'+(count===1?'':'s')+' saved on phone — tap to retry';
 }
+window.addEventListener('pendingliftschange',()=>{renderPendingLifts();renderLog();});
 
-async function pushEditToSheet(entry){
-  await sheetPost('updateEntry',{entry});
-  // Update cache in place without full refetch
-  const idx=_entriesCache.findIndex(e=>e.id===entry.id);
-  if(idx>=0) _entriesCache[idx]=entry;
-  renderLog();
+async function saveLiftChange(action,entry){
+  const endpoint=loadSettings().sheetsUrl;
+  let token;
+  try{token=PendingLifts.queue(action,entry,endpoint);}
+  catch(error){showToast('Phone storage unavailable. Keep this form open and try again.','error');return{queued:false,saved:false};}
+  try{await PendingLifts.drain(endpoint);}catch(error){console.error(error);}
+  const id=typeof entry==='string'?entry:entry.id;
+  const saved=!PendingLifts.list().some(i=>i.id===id&&(!i.endpoint||i.endpoint===endpoint));
+  if(saved)await fetchEntries();
+  renderPendingLifts();renderLog();
+  return{queued:true,saved};
 }
-
-async function pushDeleteToSheet(id){
-  await sheetPost('deleteEntry',{id});
-  _entriesCache=_entriesCache.filter(e=>e.id!==id);
-  renderLog();
-}
+async function syncEntryToSheets(entry){return saveLiftChange('updateEntry',entry);}
+async function pushEditToSheet(entry){return saveLiftChange('updateEntry',entry);}
+async function pushDeleteToSheet(id){return saveLiftChange('deleteEntry',id);}
 
 // Legacy aliases
 async function appendEntryToSheet(entry){ await syncEntryToSheets(entry); }
@@ -3032,7 +3051,8 @@ function openEditModal(id){
   document.getElementById('edit-date').value=entry.date||'';
   document.getElementById('edit-session').value=entry.session||'Coached Class';
   document.getElementById('edit-base').value=entry.base||'';
-  document.getElementById('edit-weight').value=entry.weight||'';
+  document.getElementById('edit-weight').value=entry.weight?dispW(entry.weight):'';
+  document.getElementById('edit-weight-label').textContent='Weight ('+unitLabel()+')';
   document.getElementById('edit-sets').value=entry.sets||'';
   document.getElementById('edit-reps').value=entry.reps||'';
   document.getElementById('edit-notes').value=entry.notes||'';
@@ -3105,12 +3125,14 @@ async function deleteEditEntry(){
   if(!editEntryId)return;
   // confirm replaced by showConfirm wrapper
   
-  closeEditModal();
+  const id=editEntryId; // closeEditModal clears this ID.
   showToast('Deleting...','');
-  await pushDeleteToSheet(editEntryId);
+  const result=await pushDeleteToSheet(id);
+  if(!result.queued)return;
+  closeEditModal();
   recalculatePBs();
   if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
-  showToast('Entry deleted','success');
+  showToast(result.saved?'Entry deleted from spreadsheet':'Deletion saved on phone — waiting for spreadsheet',result.saved?'success':'');
 }
 
 
@@ -3120,7 +3142,8 @@ async function saveEditEntry(){
   const idx=getCachedEntries().findIndex(e=>e.id===editEntryId);
   if(idx<0)return;
 
-  const weight=parseFloat(document.getElementById('edit-weight').value)||null;
+  const weight=toKg(parseFloat(document.getElementById('edit-weight').value))||null;
+  if(!weight||weight<=0){showToast('Enter a positive weight','error');return;}
   const updated={
     ...getCachedEntries().find(e=>e.id===editEntryId)||{},
     date:document.getElementById('edit-date').value||getCachedEntries()[idx].date,
@@ -3137,16 +3160,17 @@ async function saveEditEntry(){
     notes:document.getElementById('edit-notes').value.trim(),
   };
 
-  getCachedEntries()[idx]=updated;
-  updatePBs(updated);
+
 
   // Push edit to sheet
   showToast('Saving...','');
-  await pushEditToSheet(updated);
+  const result=await pushEditToSheet(updated);
+  if(!result.queued)return;
+  updatePBs(updated);
   recalculatePBs();
   closeEditModal();
   if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
-  showToast('Entry updated','success');
+  showToast(result.saved?'Entry updated in spreadsheet':'Edit saved on phone — waiting for spreadsheet',result.saved?'success':'');
 }
 
 
@@ -3297,12 +3321,12 @@ function renderWarmup(){
   let cjStartNote='';
   if(cjStartTime){
     if(usingOverride){
-      cjStartNote='<div style="background:rgba(200,245,90,0.1);border:1px solid rgba(200,245,90,0.35);border-radius:10px;padding:10px 14px;margin:0 16px 8px;font-size:12px;color:var(--text2);line-height:1.7;">'+
+      cjStartNote='<div style="background:rgba(230,45,66,0.1);border:1px solid rgba(230,45,66,0.35);border-radius:10px;padding:10px 14px;margin:0 16px 8px;font-size:12px;color:var(--text2);line-height:1.7;">'+
         '<strong style="color:var(--accent);">C&J start overridden: '+cjStartTime+'</strong>'+
         '<br>All C&J warmup times are based on this start time.'+
         '</div>';
     } else if(cjStartOffset!==null){
-      cjStartNote='<div style="background:rgba(200,245,90,0.06);border:1px solid rgba(200,245,90,0.15);border-radius:10px;padding:10px 14px;margin:0 16px 8px;font-size:12px;color:var(--text2);line-height:1.7;">'+
+      cjStartNote='<div style="background:rgba(230,45,66,0.06);border:1px solid rgba(230,45,66,0.15);border-radius:10px;padding:10px 14px;margin:0 16px 8px;font-size:12px;color:var(--text2);line-height:1.7;">'+
         '<strong style="color:var(--accent);">Est. C&J start: '+cjStartTime+'</strong>'+
         ' (~'+Math.round(cjStartOffset)+'min after Snatch)'+
         '<br>Enter actual start time in C&J Start Override above when announced.'+
@@ -3515,14 +3539,14 @@ function renderSessionWarmup(){
     } else {
       const sets=calcWarmupSets(targetKg,family||'other',idx===0,prevFamily);
       if(idx>0&&prevFamily){
-        html+=`<div style="padding:6px 14px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border);background:rgba(200,245,90,0.04);">↺ Carryover from ${lifts[idx-1].base} -- ladder condensed</div>`;
+        html+=`<div style="padding:6px 14px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border);background:rgba(230,45,66,0.04);">↺ Carryover from ${lifts[idx-1].base} -- ladder condensed</div>`;
       }
       html+='<table style="width:100%;border-collapse:collapse;">';
       html+='<thead><tr style="background:var(--surface3);"><th style="padding:6px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">SET</th><th style="padding:6px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">WEIGHT</th><th style="padding:6px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">REPS</th><th style="padding:6px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">%</th></tr></thead><tbody>';
       sets.forEach((s,si)=>{
         const isWorking=s.pct===100;
         const repsDisp=isWorking?(lift.sets&&lift.reps?lift.sets+'×'+lift.reps:(lift.reps?lift.reps+' reps':'Work sets')):s.reps+'×';
-        html+=`<tr style="border-top:1px solid var(--border);${isWorking?'background:rgba(200,245,90,0.06);':''}>`;
+        html+=`<tr style="border-top:1px solid var(--border);${isWorking?'background:rgba(230,45,66,0.06);':''}>`;
         html+=`<td style="padding:9px 12px;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">${isWorking?'Working':`Set ${si+1}`}${s.note?' · '+s.note:''}</td>`;
         html+=`<td style="padding:9px 12px;font-size:16px;font-weight:700;font-family:DM Mono,monospace;color:${isWorking?'var(--accent)':'var(--text)'};">${s.kg}<span style="font-size:11px;color:var(--text3);font-weight:400;">${u}</span></td>`;
         html+=`<td style="padding:9px 12px;font-size:13px;font-family:DM Mono,monospace;color:${isWorking?'var(--accent)':'var(--text)'};">${repsDisp}</td>`;
@@ -3551,6 +3575,7 @@ loadPlannerState();
 renderPlannerBlocks();
 renderCountdown();
 // Fetch entries from sheet on load
+renderPendingLifts();
 fetchAndRender();
 
 // ============================================================
@@ -3722,20 +3747,20 @@ function renderProgressChart(dates, lift){
     const x=xScale(i);
     d.all.forEach(w=>{
       const y=yScale(w);
-      svg+=`<circle cx="${x}" cy="${y}" r="3" fill="rgba(200,245,90,0.2)" stroke="rgba(200,245,90,0.3)" stroke-width="1"/>`;
+      svg+=`<circle cx="${x}" cy="${y}" r="3" fill="rgba(230,45,66,0.2)" stroke="rgba(230,45,66,0.3)" stroke-width="1"/>`;
     });
   });
 
   // Trend line (session maxes)
   if(dates.length>1){
     const pts=dates.map((d,i)=>`${xScale(i)},${yScale(d.max)}`).join(' ');
-    svg+=`<polyline points="${pts}" fill="none" stroke="#c8f55a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    svg+=`<polyline points="${pts}" fill="none" stroke="#ff8792" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
   }
 
   // Session max dots
   dates.forEach((d,i)=>{
     const x=xScale(i);const y=yScale(d.max);
-    svg+=`<circle cx="${x}" cy="${y}" r="4" fill="#c8f55a" stroke="#111" stroke-width="1.5"/>`;
+    svg+=`<circle cx="${x}" cy="${y}" r="4" fill="#ff8792" stroke="#111" stroke-width="1.5"/>`;
   });
 
   // X axis date labels (show ~4 evenly spaced)
@@ -3751,8 +3776,8 @@ function renderProgressChart(dates, lift){
   svg+=`</svg>`;
   el.innerHTML=`<div class="chart-wrap">${svg}</div>
     <div class="chart-legend">
-      <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#c8f55a;"></div>Session max</div>
-      <div class="chart-legend-item"><div class="chart-legend-dot" style="background:rgba(200,245,90,0.3);"></div>Individual sets (each logged weight)</div>
+      <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#ff8792;"></div>Session max</div>
+      <div class="chart-legend-item"><div class="chart-legend-dot" style="background:rgba(230,45,66,0.3);"></div>Individual sets (each logged weight)</div>
     </div>`;
 }
 
@@ -3831,12 +3856,12 @@ function renderBWChart(){
   if(bwLog.length>1){
     const pts=bwLog.map((e,i)=>`${xScale(i)},${yScale(e.weight)}`).join(' ');
     const areaBottom=`${xScale(bwLog.length-1)},${PAD.top+cH} ${xScale(0)},${PAD.top+cH}`;
-    svg+=`<polygon points="${pts} ${areaBottom}" fill="rgba(200,245,90,0.07)"/>`;
-    svg+=`<polyline points="${pts}" fill="none" stroke="#9ab83e" stroke-width="1.5"/>`;
+    svg+=`<polygon points="${pts} ${areaBottom}" fill="rgba(230,45,66,0.07)"/>`;
+    svg+=`<polyline points="${pts}" fill="none" stroke="#f6a6ae" stroke-width="1.5"/>`;
   }
   // Dots
   bwLog.forEach((e,i)=>{
-    svg+=`<circle cx="${xScale(i)}" cy="${yScale(e.weight)}" r="3" fill="#9ab83e"/>`;
+    svg+=`<circle cx="${xScale(i)}" cy="${yScale(e.weight)}" r="3" fill="#f6a6ae"/>`;
   });
   // X labels
   const step=Math.max(1,Math.floor(bwLog.length/4));
@@ -4064,5 +4089,6 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
+<script src="training.js?v=2026-10-30.7"></script>
 </body>
 </html>

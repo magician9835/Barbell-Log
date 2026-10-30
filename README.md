@@ -1,5 +1,8 @@
 # Barbell Log
 
+**Current workflow:** [Training overhaul](OVERHAUL.md) — class programs, editable session references, set progression, confirmed tracking and the red/black design.
+
+
 Olympic lifting tracker. Single HTML file, iPhone Safari optimised, Google Sheets sync.
 
 **Live app:** https://magician9835.github.io/Barbell-Log/olympic-lifting-tracker.html  
