@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-30.9">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-30.9">
+<link rel="apple-touch-icon" href="icon.png?v=2026-10-30.10">
+<link rel="icon" type="image/png" href="icon.png?v=2026-10-30.10">
 <meta name="theme-color" content="#0c0d0f">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -294,6 +294,7 @@
   .warmup-progress.done { background:var(--accent); }
 </style>
 <link rel="stylesheet" href="training.css?v=2026-10-30.8">
+<link rel="stylesheet" href="phone-layout.css?v=2026-10-30.10">
 </head>
 <body>
 <div id="app">
@@ -948,7 +949,7 @@
 
 <script src="training-core.js?v=2026-10-30.8"></script>
 <script src="pending-lifts.js?v=2026-10-30.8"></script>
-<script src="app-updates.js?v=2026-10-30.9" data-version="2026-10-30.9"></script>
+<script src="app-updates.js?v=2026-10-30.10" data-version="2026-10-30.10"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -2964,7 +2965,8 @@ function rebuildPBsFromEntries(entries){
 
 async function fetchAndRender(){
   const container=document.getElementById('logList');
-  if(container)container.innerHTML='<div style="padding:24px 16px;text-align:center;color:var(--text3);font-size:12px;font-family:DM Mono,monospace;">Loading...</div>';
+  if(getCachedEntries().length)renderLog();
+  else if(container)container.innerHTML='<div style="padding:24px 16px;text-align:center;color:var(--text3);font-size:12px;font-family:DM Mono,monospace;">Loading...</div>';
   await fetchEntries();
   renderLog();
   if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
@@ -4089,6 +4091,7 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="training.js?v=2026-10-30.9"></script>
+<script src="training.js?v=2026-10-30.10"></script>
+<script src="phone-layout.js?v=2026-10-30.10"></script>
 </body>
 </html>

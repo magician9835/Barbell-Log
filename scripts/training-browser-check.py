@@ -70,6 +70,7 @@ with sync_playwright() as p:
         page.screenshot(path=str(artifacts/(name+'.png')))
     for width,height in [(320,667),(393,852),(430,932)]:
         page.set_viewport_size({'width':width,'height':height})
+        page.wait_for_timeout(50)
         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
         tabs=page.locator('#tabs').bounding_box();assert abs(tabs['y']+tabs['height']-height)<1
     assert not errors,errors
