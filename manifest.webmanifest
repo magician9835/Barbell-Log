@@ -1,0 +1,13 @@
+{
+  "id": "/Barbell-Log/olympic-lifting-tracker.html",
+  "name": "Barbell Log",
+  "short_name": "Barbell Log",
+  "start_url": "/Barbell-Log/olympic-lifting-tracker.html",
+  "scope": "/Barbell-Log/",
+  "display": "standalone",
+  "background_color": "#0c0d0f",
+  "theme_color": "#0c0d0f",
+  "icons": [
+    {"src": "icon.png?v=2026-10-30.15", "type": "image/png"}
+  ]
+}

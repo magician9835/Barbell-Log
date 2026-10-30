@@ -127,7 +127,7 @@
     document.addEventListener('visibilitychange',()=>{updateClock();if(document.visibilityState==='visible'&&awakeWanted)setAwake(true);});
     window.addEventListener('pendingliftschange',updateSync);
     document.querySelector('#tabs .tab:nth-child(2) span').textContent='Train';
-    const restore=document.createElement('div');restore.className='train-backup';restore.innerHTML='<button class="train-secondary" id="backup-app">Back up all app data</button><label class="train-secondary">Restore backup<input type="file" id="restore-app" accept="application/json,.json" hidden></label><small>Includes settings, plans and pending lifts. Keep your backup private.</small><p>Version 2026-10-30.14 · <button class="quiet" id="check-app-update">Check for updates</button></p>';
+    const restore=document.createElement('div');restore.className='train-backup';restore.innerHTML='<button class="train-secondary" id="backup-app">Back up all app data</button><label class="train-secondary">Restore backup<input type="file" id="restore-app" accept="application/json,.json" hidden></label><small>Includes settings, plans and pending lifts. Keep your backup private.</small><p>Version 2026-10-30.15 · <button class="quiet" id="check-app-update">Check for updates</button></p>';
     document.getElementById('pane-settings').appendChild(restore);document.getElementById('backup-app').onclick=backup;
     document.getElementById('restore-app').onchange=restoreBackup;
     document.getElementById('check-app-update').onclick=()=>{window.dispatchEvent(new Event('pageshow'));showToast('Checking for an update…','');};
