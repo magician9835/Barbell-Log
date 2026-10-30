@@ -36,9 +36,8 @@ The automated checks use fake sheets and never contact Google.
 
 ## Reliability work identified during review
 
-- The browser uses `no-cors` POST requests: it cannot read the backend response.
-  It currently announces success even when a write fails. A robust save flow
-  needs durable pending changes, confirmation by reading back, and retry handling.
+- Lift changes now use a durable phone outbox and readback confirmation. Meet and
+  bodyweight flows still need the same treatment; they are outside this release.
 - `appendLogEntry` deduplicates by date + base + weight as well as ID. This can
   discard a legitimate second set at the same weight or a different variation.
 - Older rows without IDs receive a different temporary ID on each read, which
@@ -68,3 +67,25 @@ version query parameter. Saved settings stay on the same origin. No automatic
 reload interrupts a workout. Initial installation of this updater still requires
 loading the updated HTML once. Updates become available after Pages deployment
 finishes; this does not eliminate build/deployment time.
+
+## Lift saves and pending changes
+
+New lifts, edits, deletions and completed planner sessions are saved to a local
+outbox before sending. A new lift uses the existing backend's ID-based
+`updateEntry` upsert to preserve distinct same-weight sets. A fresh `getAll` read
+must match the intended fields (or confirm a deletion) before removing the pending
+record. An opaque POST response alone is never treated as success.
+
+The header shows pending changes and offers a manual retry via sync. Pending
+lifts stay visible after reopening, even offline. Failed refreshes preserve the
+session cache. Existing endpoint-bound pending changes never move automatically
+to a different endpoint. Locally queued lifts created without an endpoint attach
+to the endpoint selected when syncing. Changing endpoints with pending changes
+requires restoring the original endpoint to complete those writes.
+
+This uses the backend already deployed; no Apps Script publishing is required.
+The outbox is local to this browser/device, not an additional cloud backup.
+Clearing browser website data removes it. Concurrency across multiple devices
+still requires backend locking. Meet saves and bodyweight syncing are follow-up
+work. Validate real Apps Script connectivity on the phone after publishing;
+automated tests do not write to the live spreadsheet.

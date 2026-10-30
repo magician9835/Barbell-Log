@@ -20,11 +20,20 @@
       button.textContent = 'Update app';
       button.title = 'A new version is ready. Finish any edits before updating.';
       button.style.cssText = 'display:block;margin:4px 0 8px;padding:10px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);font:700 12px sans-serif;';
-      button.onclick = () => {
-        if (document.querySelector('.modal-overlay.open') && !confirm('Updating closes any unfinished edits. Update now?')) return;
+      const applyUpdate = () => {
         const url = new URL(location.href);
         url.searchParams.set('appVersion', version);
         location.replace(url.href);
+      };
+      button.onclick = () => {
+        if (document.querySelector('.modal-overlay.open')) {
+          if (typeof window.showConfirm === 'function') {
+            window.showConfirm('Update app?', 'Updating closes unfinished edits. Finish them first if needed.', 'Update now', applyUpdate);
+            return;
+          }
+          if (!confirm('Updating closes any unfinished edits. Update now?')) return;
+        }
+        applyUpdate();
       };
       document.getElementById('header').appendChild(button);
     } catch {

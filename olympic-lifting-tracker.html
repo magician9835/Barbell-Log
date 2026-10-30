@@ -944,7 +944,8 @@
   </div>
 </div>
 
-<script src="app-updates.js?v=2026-10-30.2" data-version="2026-10-30.2"></script>
+<script src="pending-lifts.js?v=2026-10-30.3"></script>
+<script src="app-updates.js?v=2026-10-30.3" data-version="2026-10-30.3"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -1215,7 +1216,7 @@ function renderLog(){
       const pbBadge=isPBEntry?'<span style="font-size:11px;margin-left:5px;vertical-align:middle;" title="PB for this lift">🏆</span>':'';
       html+=`<div class="log-entry ${borderClass}" onclick="openEditModal('${e.id}')"${i>0?' style="border-top:1px solid var(--border)"':''}>
         <div class="log-entry-header">
-          <div class="log-entry-lift">${ln}${compLiftBadge}${pbBadge}</div>
+          <div class="log-entry-lift">${ln}${compLiftBadge}${pbBadge}${e.pending?'<span style="display:block;font:10px monospace;color:var(--orange);margin-top:4px;">Waiting for spreadsheet</span>':''}</div>
           <div class="log-entry-weight">${e.weight?dispW(e.weight)+'<span style="font-size:12px;color:var(--text3)">'+unitLabel()+'</span>':'--'}</div>
         </div>
         <div class="log-entry-meta">${[sr,e.notes].filter(Boolean).join(' · ')}</div>
@@ -1319,7 +1320,9 @@ function setQuality(val){
   document.querySelectorAll('.q-dot').forEach(d=>d.classList.toggle('selected',parseInt(d.textContent)===val));
 }
 
+let _savingEntry=false;
 async function saveEntry(ov){
+  if(_savingEntry)return false;
   const entry=ov||{
     id:uid(),
     date:document.getElementById('m-date').value,
@@ -1337,13 +1340,17 @@ async function saveEntry(ov){
   };
   if(!entry.base){showToast('Select a base lift','error');return false;}
   if(!entry.weight){showToast('Enter a weight','error');return false;}
-  // entry not stored in localStorage -- in sheet only
-  updatePBs(entry);
-  if(!ov)closeLogModal();
-  showToast('Saving...','');
-  await syncEntryToSheets(entry);
-  showToast('Entry saved','success');
-  return true;
+  _savingEntry=true;
+  try{
+    showToast('Saving...','');
+    const result=await syncEntryToSheets(entry);
+    if(!result.queued)return false;
+    updatePBs(entry);
+    if(!ov)closeLogModal();
+    showToast(result.saved?'Entry saved to spreadsheet':'Saved on phone — waiting for spreadsheet',result.saved?'success':'');
+    return true;
+  }finally{_savingEntry=false;}
+
 }
 
 function updatePBs(entry){
@@ -2092,9 +2099,13 @@ async function confirmFinishSession(){
       quality:parseInt(document.getElementById(`fqv-${i}`).value)||null,
       notes:[document.getElementById(`fpn-${i}`)?.value,document.getElementById(`fn-${i}`).value.trim()].filter(Boolean).join(' · '),
     };
-  updatePBs(entry);saved++;allEntries.push(entry);
-    const s2=loadSettings();if(s2.sheetsUrl)syncEntryToSheets(entry);
+    saved++;allEntries.push(entry);
   });
+  try{PendingLifts.queueMany(allEntries.map(entry=>({action:'updateEntry',entry})),loadSettings().sheetsUrl);}
+  catch(error){showToast('Phone storage unavailable. Keep the planner open and try again.','error');return;}
+  allEntries.forEach(updatePBs);
+  renderPendingLifts();
+  PendingLifts.drain(loadSettings().sheetsUrl).then(()=>fetchAndRender()).catch(()=>showToast('Pending lifts remain on this phone','error'));
   closeFinishModal();
 
   // Build session summary
@@ -2875,8 +2886,9 @@ function clearAllData(){showConfirm('Clear all local data?','This cannot be undo
 
 let _entriesCache = [];
 let _fetchInProgress = false;
+let _lastFetchError=false;
 
-function getCachedEntries(){ return _entriesCache; }
+function getCachedEntries(){ return PendingLifts.overlay(_entriesCache,loadSettings().sheetsUrl); }
 function setCachedEntries(e){ _entriesCache = e||[]; }
 function clearEntryCache(){ _entriesCache = []; }
 
@@ -2891,11 +2903,13 @@ async function fetchEntries(){
   }
   if(_fetchInProgress) return getCachedEntries();
   _fetchInProgress=true;
+  _lastFetchError=false;
   try{
-    const r=await fetch(s.sheetsUrl+'?action=getAll');
+    const r=await fetch(s.sheetsUrl+'?action=getAll&_check='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(12000)});
     if(!r.ok) throw new Error('HTTP '+r.status);
     const data=await r.json();
-    const entries=(data.entries||[]).sort((a,b)=>b.date.localeCompare(a.date));
+    if(data.error||!Array.isArray(data.entries))throw new Error(data.error||'Invalid sheet response');
+    const entries=data.entries.sort((a,b)=>b.date.localeCompare(a.date));
     setCachedEntries(entries);
     rebuildPBsFromEntries(entries);
     // Merge meets and BW into settings
@@ -2920,6 +2934,7 @@ async function fetchEntries(){
     }
     return entries;
   }catch(e){
+    _lastFetchError=true;
     console.error('Fetch failed:',e);
     const container=document.getElementById('logList');
     if(container&&container.innerHTML.includes('Loading'))
@@ -2962,14 +2977,15 @@ async function syncBoth(){
   if(!s.sheetsUrl){showToast('Add Sheets URL in Settings first','error');return;}
   const btn=document.getElementById('syncBtn');
   btn.textContent='⇅ Pulling...';btn.classList.add('syncing');
-  clearEntryCache();
+  await PendingLifts.drain(s.sheetsUrl);
   await fetchEntries();
   renderLog();
   if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
   if(document.getElementById('log-pane-analytics')?.classList.contains('active'))renderAnalytics();
   if(document.getElementById('pane-comp').classList.contains('active'))renderMeetList();
   btn.textContent='⇅ Pull from Sheet';btn.classList.remove('syncing');
-  showToast('Refreshed','success');
+  renderPendingLifts();
+  showToast(_lastFetchError?'Could not refresh — your pending changes are kept on this phone':PendingLifts.list().length?'Some changes are still waiting for confirmation':'Refreshed',_lastFetchError?'error':'success');
 }
 
 // Write to sheet then refresh cache
@@ -2983,26 +2999,34 @@ async function sheetPost(action,payload){
   }catch(e){ console.error('Sheet post failed:',e); }
 }
 
-async function syncEntryToSheets(entry){
-  await sheetPost('log',{entry});
-  clearEntryCache();
-  await fetchEntries();
-  renderLog();
+function renderPendingLifts(){
+  const count=PendingLifts.list().length;
+  let button=document.getElementById('pending-lifts-button');
+  if(!button){
+    button=document.createElement('button');button.id='pending-lifts-button';button.type='button';
+    button.style.cssText='margin:4px 0 8px;padding:10px;border:1px solid var(--orange);border-radius:8px;background:var(--surface);color:var(--orange);font:700 12px sans-serif;';
+    button.onclick=()=>syncBoth();document.getElementById('header').appendChild(button);
+  }
+  button.hidden=!count;
+  button.textContent=count+' change'+(count===1?'':'s')+' saved on phone — tap to retry';
 }
+window.addEventListener('pendingliftschange',()=>{renderPendingLifts();renderLog();});
 
-async function pushEditToSheet(entry){
-  await sheetPost('updateEntry',{entry});
-  // Update cache in place without full refetch
-  const idx=_entriesCache.findIndex(e=>e.id===entry.id);
-  if(idx>=0) _entriesCache[idx]=entry;
-  renderLog();
+async function saveLiftChange(action,entry){
+  const endpoint=loadSettings().sheetsUrl;
+  let token;
+  try{token=PendingLifts.queue(action,entry,endpoint);}
+  catch(error){showToast('Phone storage unavailable. Keep this form open and try again.','error');return{queued:false,saved:false};}
+  try{await PendingLifts.drain(endpoint);}catch(error){console.error(error);}
+  const id=typeof entry==='string'?entry:entry.id;
+  const saved=!PendingLifts.list().some(i=>i.id===id&&(!i.endpoint||i.endpoint===endpoint));
+  if(saved)await fetchEntries();
+  renderPendingLifts();renderLog();
+  return{queued:true,saved};
 }
-
-async function pushDeleteToSheet(id){
-  await sheetPost('deleteEntry',{id});
-  _entriesCache=_entriesCache.filter(e=>e.id!==id);
-  renderLog();
-}
+async function syncEntryToSheets(entry){return saveLiftChange('updateEntry',entry);}
+async function pushEditToSheet(entry){return saveLiftChange('updateEntry',entry);}
+async function pushDeleteToSheet(id){return saveLiftChange('deleteEntry',id);}
 
 // Legacy aliases
 async function appendEntryToSheet(entry){ await syncEntryToSheets(entry); }
@@ -3101,12 +3125,14 @@ async function deleteEditEntry(){
   if(!editEntryId)return;
   // confirm replaced by showConfirm wrapper
   
-  closeEditModal();
+  const id=editEntryId; // closeEditModal clears this ID.
   showToast('Deleting...','');
-  await pushDeleteToSheet(editEntryId);
+  const result=await pushDeleteToSheet(id);
+  if(!result.queued)return;
+  closeEditModal();
   recalculatePBs();
   if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
-  showToast('Entry deleted','success');
+  showToast(result.saved?'Entry deleted from spreadsheet':'Deletion saved on phone — waiting for spreadsheet',result.saved?'success':'');
 }
 
 
@@ -3133,16 +3159,17 @@ async function saveEditEntry(){
     notes:document.getElementById('edit-notes').value.trim(),
   };
 
-  getCachedEntries()[idx]=updated;
-  updatePBs(updated);
+
 
   // Push edit to sheet
   showToast('Saving...','');
-  await pushEditToSheet(updated);
+  const result=await pushEditToSheet(updated);
+  if(!result.queued)return;
+  updatePBs(updated);
   recalculatePBs();
   closeEditModal();
   if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
-  showToast('Entry updated','success');
+  showToast(result.saved?'Entry updated in spreadsheet':'Edit saved on phone — waiting for spreadsheet',result.saved?'success':'');
 }
 
 
@@ -3547,6 +3574,7 @@ loadPlannerState();
 renderPlannerBlocks();
 renderCountdown();
 // Fetch entries from sheet on load
+renderPendingLifts();
 fetchAndRender();
 
 // ============================================================

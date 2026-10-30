@@ -106,8 +106,8 @@ Competition NOT in Log a Set modal — use Meets tab.
 The sheet is the source of truth for lift entries. The current backend still has
 bulk replacement actions; see DEVELOPMENT.md before using them.
 
-- **⇅ SYNC** — pulls entries from the sheet; does not push local-only entries
-- **Log a Set** — appends new row to sheet on save
+- **⇅ SYNC** — retries pending lift changes, then pulls entries from the sheet
+- **Log a Set** — saves to a local outbox, then upserts by ID and confirms by reading the sheet
 - **Edit entry** — updates specific row by ID (`updateEntry` action)
 - **Delete entry** — deletes specific row by ID (`deleteEntry` action)
 
