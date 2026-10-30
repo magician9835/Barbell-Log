@@ -27,7 +27,7 @@
     id:id(),date:localDate(),session:'Coached Class',title:'Class workout',phase:'setup',notes:'',done:{},skipped:[],restEnd:0,
     accessories:'3 rounds · lateral raises × 10 · loaded alternating movement × 10 (check with coach)',accessoriesDone:false,
     blocks:[
-      block('Snatch','Snatch','1 x 1+2 @ 70\n1 x 1+2 @ 75\n1 x 1+2 @ 80\n3 x 1+1 @ 85',{complex:true,title:'Snatch pull + hang snatch',position:'Hang Above Knee',components:['Snatch pull','Hang snatch']}),
+      block('Snatch','Snatch','1 x 1+2 @ 70\n1 x 1+2 @ 75\n1 x 1+2 @ 80\n3 x 1+1 @ 85',{complex:true,title:'Snatch pull + hang snatch',position:'Hang (unspecified)',components:['Snatch pull','Hang snatch']}),
       block('Clean','Clean','1 x 2 @ 70\n1 x 2 @ 75\n2 x 2 @ 80\n2 x 1 @ 85',{title:'Clean'}),
       block('Squat','Front squat','1 x 5 @ 70\n1 x 3 @ 80\n1 x 2 @ 85\n2 x 1 @ 90',{title:'Front squat',squatType:'Front',minutes:12})
     ]};}

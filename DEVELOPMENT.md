@@ -69,7 +69,7 @@ reload interrupts a workout. Initial installation of this updater still requires
 loading the updated HTML once. Updates become available after Pages deployment
 finishes; this does not eliminate build/deployment time.
 
-## Release 2026-10-30.7
+## Release 2026-10-30.8
 
 Read OVERHAUL.md for the current class training workflow and data guarantees.
 `training-core.js` owns program expansion and reference calculations;

@@ -11,6 +11,7 @@ const plain=v=>JSON.parse(JSON.stringify(v));
 test('whiteboard expands into 17 working sets with complex reps intact',()=>{
   const w=C.classTemplate();w.blocks.forEach(b=>b.reference=100);
   assert.equal(C.validate(w),true);
+  assert.equal(w.blocks[0].position,'Hang (unspecified)');
   assert.deepEqual(plain(w.blocks.map(b=>C.expand(b).length)),[6,6,5]);
   assert.deepEqual(plain(C.expand(w.blocks[0])[0].reps),[1,2]);
   assert.equal(C.expand(w.blocks[0])[5].weight,85);
