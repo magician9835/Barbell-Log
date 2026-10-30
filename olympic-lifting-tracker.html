@@ -20,18 +20,18 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; -webkit-text-size-adjust: 100%; }
-  #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+  #app { position: fixed; inset: 0; display: flex; flex-direction: column; min-height: 0; }
   #header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 8px 16px 0; padding-top: max(8px, env(safe-area-inset-top, 0px)); flex-shrink: 0; display: flex; flex-direction: column; }
   #header-row1 { display: flex; align-items: center; justify-content: space-between; height: 44px; }
   #header-row2 { display: flex; align-items: center; justify-content: center; padding-bottom: 6px; }
   #header h1 { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; color: var(--accent); flex-shrink: 0; }
   #header .sync-btn { background: none; border: 1px solid var(--border); color: var(--text2); font-size: 11px; font-family: DM Mono,monospace; padding: 4px 10px; border-radius: 20px; cursor: pointer; white-space:nowrap; flex-shrink:0; }
   #header .sync-btn.syncing { color: var(--accent); border-color: var(--accent); }
-  #content { flex: 1; overflow: hidden; position: relative; }
-  .tab-pane { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--tab-h) + var(--safe-bottom, 20px) + 16px); display: none; }
+  #content { min-height: 0; flex: 1; overflow: hidden; position: relative; }
+  .tab-pane { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 16px; display: none; }
   .tab-pane.active { display: block; }
-  #tabs { padding-bottom: max(16px, env(safe-area-inset-bottom, 0px)); height: auto; min-height: var(--tab-h); background: var(--surface); border-top: 1px solid var(--border); display: flex; flex-shrink: 0; align-items: flex-start; }
-  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: var(--text3); transition: color 0.15s; border: none; background: none; padding: 0; }
+  #tabs { padding-bottom: env(safe-area-inset-bottom, 0px); min-height: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px)); background: var(--surface); border-top: 1px solid var(--border); display: flex; flex-shrink: 0; align-items: flex-start; }
+  .tab { min-height: var(--tab-h); flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: var(--text3); transition: color 0.15s; border: none; background: none; padding: 0; }
   .tab.active { color: var(--accent); }
   .tab svg { width: 22px; height: 22px; }
   .tab span { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; font-family: 'DM Mono', monospace; }
@@ -296,9 +296,8 @@
 <body>
 <div id="app">
   <div id="header">
-    <div id="duck-update-proof" role="status" style="background:#ff34c8;color:#170015;padding:16px 10px;margin:8px 0;border:4px solid #fff;border-radius:12px;text-align:center;font:900 20px/1.3 sans-serif;">🦆 QUACK! THE UPDATE LANDED<br><span style="font:700 13px sans-serif;">DUCK-1 · Your lifts are still yours. The duck is new.</span></div>
     <div id="header-row1">
-      <h1>BARBELL LOG <small style="font:10px monospace;">DUCK-1</small></h1>
+      <h1>BARBELL LOG</h1>
       <div style="display:flex;align-items:center;gap:8px;">
         <div id="header-comp-badge" onclick="switchTab('comp',document.querySelector('.tab:nth-child(4)'))">
           <span class="days" id="header-badge-days"></span>
@@ -945,7 +944,7 @@
   </div>
 </div>
 
-<script src="app-updates.js?v=2026-10-30.4" data-version="2026-10-30.4"></script>
+<script src="app-updates.js?v=2026-10-30.5" data-version="2026-10-30.5"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
