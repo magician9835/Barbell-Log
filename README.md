@@ -7,11 +7,12 @@ Olympic lifting tracker. Single HTML file, iPhone Safari optimised, Google Sheet
 
 ---
 
-## Rebuilding with Claude
+## Continuing development
 
-Share this file with a new Claude session:
-
-> "I have an Olympic lifting tracker at the GitHub URL above. Here is the full rebuild spec. Please help me continue developing it."
+Use [DEVELOPMENT.md](DEVELOPMENT.md) for the workspace → checks → pull request →
+publish workflow. The backend is tracked in `barbell-log-apps-script.js`.
+Run `npm run check` before publishing. The feature reference below describes the
+existing app; consult DEVELOPMENT.md for known reliability gaps.
 
 ---
 
@@ -102,9 +103,10 @@ Competition NOT in Log a Set modal — use Meets tab.
 
 ## Sync model
 
-Sheet is source of truth. Never overwritten.
+The sheet is the source of truth for lift entries. The current backend still has
+bulk replacement actions; see DEVELOPMENT.md before using them.
 
-- **⇅ SYNC** — pulls from sheet (sheet wins), appends local-only entries, never deletes sheet rows
+- **⇅ SYNC** — pulls entries from the sheet; does not push local-only entries
 - **Log a Set** — appends new row to sheet on save
 - **Edit entry** — updates specific row by ID (`updateEntry` action)
 - **Delete entry** — deletes specific row by ID (`deleteEntry` action)

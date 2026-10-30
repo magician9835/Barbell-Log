@@ -1,0 +1,9 @@
+{
+  "name": "barbell-log",
+  "private": true,
+  "scripts": {
+    "check": "node scripts/check.mjs && node --test tests/*.test.mjs",
+    "start": "python3 -m http.server 8000 --bind 127.0.0.1"
+  },
+  "engines": { "node": ">=22" }
+}
