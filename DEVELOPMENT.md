@@ -103,3 +103,11 @@ scale in the installed app. Viewport limits, Safari gesture cancellation and
 pan-only touch action prevent page zoom; form controls use at least 16px text
 to avoid iPhone focus zoom. Normal vertical/horizontal scrolling remains
 available. Revisit this trade-off if an accessibility zoom option is requested.
+
+## Training record variants (2026-10-30.12)
+
+The main Training record card selects the highest logged weight for the base
+lift across its variations, excluding Competition sessions. It retains and
+renders the exact source entry's movement modifiers, date and session. Tied
+weights select the most recent date. This display rule is separate from the
+workout percentage reference, which still defaults to the full movement.

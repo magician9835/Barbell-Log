@@ -6,8 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-30.11">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-30.11">
+<link rel="apple-touch-icon" href="icon.png?v=2026-10-30.12">
+<link rel="icon" type="image/png" href="icon.png?v=2026-10-30.12">
 <meta name="theme-color" content="#0c0d0f">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -294,7 +294,7 @@
   .warmup-progress.done { background:var(--accent); }
 </style>
 <link rel="stylesheet" href="training.css?v=2026-10-30.8">
-<link rel="stylesheet" href="phone-layout.css?v=2026-10-30.11">
+<link rel="stylesheet" href="phone-layout.css?v=2026-10-30.12">
 </head>
 <body>
 <div id="app">
@@ -949,7 +949,7 @@
 
 <script src="training-core.js?v=2026-10-30.8"></script>
 <script src="pending-lifts.js?v=2026-10-30.8"></script>
-<script src="app-updates.js?v=2026-10-30.11" data-version="2026-10-30.11"></script>
+<script src="app-updates.js?v=2026-10-30.12" data-version="2026-10-30.12"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -1585,6 +1585,11 @@ function getAllPBs(){
   return {getPB, allLifts, pbs, logPBs};
 }
 
+function getTrainingRecord(entries,lift){
+  return entries.filter(e=>e.base===lift&&Number.isFinite(Number(e.weight))&&Number(e.weight)>0&&e.session!=='Competition')
+    .sort((a,b)=>Number(b.weight)-Number(a.weight)||String(b.date||'').localeCompare(String(a.date||'')))[0]||null;
+}
+
 function renderPBs(){
   const s=loadSettings();
   const {getPB, allLifts} = getAllPBs();
@@ -1596,16 +1601,9 @@ function renderPBs(){
   const compSnatch=meetPBs.snatch; // {weight, date, meet}
   const compCJ=meetPBs.cj;
 
-  // Get training bests from log (all sessions)
-  function getTrainingBest(lift){
-    const entries=getCachedEntries().filter(e=>e.base===lift&&e.weight&&e.session!=='Competition'&&!(e.position||[]).some(p=>p!=='Floor')&&!(e.technique||[]).length&&!['Power','Muscle'].includes(e.receiving));
-    if(!entries.length)return null;
-    const max=Math.max(...entries.map(e=>e.weight));
-    const best=entries.find(e=>e.weight===max);
-    return{weight:max,date:best.date,session:best.session};
-  }
-  const trainSnatch=getTrainingBest('Snatch');
-  const trainCJ=getTrainingBest('Clean and Jerk');
+  // Training records include variations; retain the actual entry for its label.
+  const trainSnatch=getTrainingRecord(getCachedEntries(),'Snatch');
+  const trainCJ=getTrainingRecord(getCachedEntries(),'Clean and Jerk');
 
   // Totals
   const meetResults=getMeets().map(m=>{const sn=Math.max(0,...m.snatch.filter(a=>a.made).map(a=>Number(a.weight)||0));const cj=Math.max(0,...m.cj.filter(a=>a.made).map(a=>Number(a.weight)||0));return{...m,total:sn&&cj?sn+cj:null};});
@@ -1671,7 +1669,7 @@ function renderPBs(){
         ${compCell(compSnatch?.weight,compSnatch?.date,compSnatch?.meet)}
       </div>
       <div style="padding:12px;background:rgba(230,45,66,0.06);">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(230,45,66,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Snatch</div>
+        <div style="font-size:11px;line-height:1.5;font-weight:700;letter-spacing:.4px;color:var(--text2);font-family:DM Mono,monospace;margin-bottom:6px;">${escapeText(trainSnatch?buildLiftName(trainSnatch):'Snatch')}</div>
         ${trainCell(trainSnatch?.weight,trainSnatch?.date,sessionLabel(trainSnatch?.session))}
       </div>
     </div>
@@ -1682,7 +1680,7 @@ function renderPBs(){
         ${compCell(compCJ?.weight,compCJ?.date,compCJ?.meet)}
       </div>
       <div style="padding:12px;background:rgba(230,45,66,0.06);">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(230,45,66,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Clean &amp; Jerk</div>
+        <div style="font-size:11px;line-height:1.5;font-weight:700;letter-spacing:.4px;color:var(--text2);font-family:DM Mono,monospace;margin-bottom:6px;">${escapeText(trainCJ?buildLiftName(trainCJ):'Clean and Jerk')}</div>
         ${trainCell(trainCJ?.weight,trainCJ?.date,sessionLabel(trainCJ?.session))}
       </div>
     </div>
@@ -1693,7 +1691,7 @@ function renderPBs(){
         ${compTotal?`<div style="font-size:26px;font-weight:800;color:#ffd700;font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(compTotal)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div><div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${escapeText(bestTotalMeet?.name||'Same-meet total')}</div>`:'<div style="font-size:20px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
       </div>
       <div style="padding:12px;background:rgba(230,45,66,0.06);">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(230,45,66,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Total</div>
+        <div style="font-size:11px;line-height:1.5;font-weight:700;letter-spacing:.4px;color:var(--text2);font-family:DM Mono,monospace;margin-bottom:6px;">Total</div>
         ${trainTotal?`<div style="font-size:26px;font-weight:800;color:#ff8792;font-family:DM Mono,monospace;line-height:1;letter-spacing:-1px;">${dispW(trainTotal)}<span style="font-size:12px;font-weight:400;color:var(--text3);letter-spacing:0;margin-left:1px;">${u}</span></div><div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">${dispW(trainSnatch.weight)} + ${dispW(trainCJ.weight)}</div>`:'<div style="font-size:20px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
       </div>
     </div>
@@ -1704,7 +1702,7 @@ function renderPBs(){
         ${scComp?`<div style="font-size:24px;font-weight:800;color:#ffd700;font-family:DM Mono,monospace;line-height:1;">${scComp}</div>${compBWForSinclair||bw?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">at ${bestSinclairMeet?.bw||compBWForSinclair||bw}kg</div>`:''}`:'<div style="font-size:18px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
       </div>
       <div style="padding:12px;background:rgba(230,45,66,0.06);">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(230,45,66,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Sinclair</div>
+        <div style="font-size:11px;line-height:1.5;font-weight:700;letter-spacing:.4px;color:var(--text2);font-family:DM Mono,monospace;margin-bottom:6px;">Sinclair</div>
         ${scTrain?`<div style="font-size:24px;font-weight:800;color:#ff8792;font-family:DM Mono,monospace;line-height:1;">${scTrain}</div>${bw?`<div style="font-size:10px;color:var(--text3);font-family:DM Mono,monospace;margin-top:3px;">at ${bw}kg</div>`:''}`:'<div style="font-size:18px;font-weight:800;color:var(--text3);font-family:DM Mono,monospace;">--</div>'}
       </div>
     </div>`;
@@ -4091,8 +4089,8 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="training.js?v=2026-10-30.11"></script>
-<script src="phone-layout.js?v=2026-10-30.11"></script>
-<script src="app-interactions.js?v=2026-10-30.11"></script>
+<script src="training.js?v=2026-10-30.12"></script>
+<script src="phone-layout.js?v=2026-10-30.12"></script>
+<script src="app-interactions.js?v=2026-10-30.12"></script>
 </body>
 </html>
