@@ -27,38 +27,35 @@
 
 ---
 
-## Step 1 — Update the app (always do this)
+## Step 1 — Update the website
 
-1. Go to **github.com/magician9835/Barbell-Log**
-2. Click `olympic-lifting-tracker.html`
-3. Click the **three dots (...)** → **Upload new version**
-4. Upload the new file and commit
-5. Wait ~60 seconds, then open the live URL in Safari to confirm
-
----
-
-## Step 2 — Update the Apps Script (when data model changed)
-
-1. Open your **Google Sheet**
-2. Click **Extensions → Apps Script**
-3. Select all (Cmd+A), delete, paste contents of `barbell-log-apps-script.js`
-4. Save (Cmd+S)
-5. Click **Deploy → New deployment**
-   - Type: **Web app**
-   - Execute as: **Me**
-   - Who has access: **Anyone**
-6. Click **Deploy**, authorise, **copy the new URL**
-
-> Every new deployment generates a new URL. The old one stops working.
+Follow [DEVELOPMENT.md](DEVELOPMENT.md): edit in the workspace, run checks,
+review a pull request, and merge to the branch used by GitHub Pages.
+Keep `olympic-lifting-tracker.html` at the same address so the installed phone
+shortcut continues to work. Website-only updates need no Apps Script deployment.
 
 ---
 
-## Step 3 — Update the URL in the app (after new Apps Script deployment)
+## Step 2 — Update Apps Script only when backend code changes
 
-1. Open the app on **iPhone** → Settings tab → Google Sheets Sync
-2. Clear the old URL, paste the new one
-3. Tap **Sync Now** — should show "Synced"
-4. Repeat on **Mac**
+1. Back up the spreadsheet and test changes using a separate copy first.
+2. Open the live spreadsheet → **Extensions → Apps Script**.
+3. Replace the code with the reviewed `barbell-log-apps-script.js` and save.
+4. Select **Deploy → Manage deployments**.
+5. Select the existing web app deployment and click **Edit** (pencil).
+6. Choose **New version**, then **Deploy**.
+
+Updating the existing deployment preserves its web app URL. Older deployments
+are not automatically disabled by creating another deployment. Create a separate
+new deployment only when you deliberately need another endpoint, such as testing.
+
+---
+
+## Step 3 — Keep the existing endpoint
+
+The app's Settings URL can stay unchanged when the existing deployment is
+updated. If you deliberately replace the endpoint, update Settings separately
+on each device. Publishing the website from GitHub does not publish Apps Script.
 
 ---
 
@@ -83,9 +80,10 @@
 
 ## Sync model (important)
 
-The Google Sheet is the source of truth.
+The Google Sheet is the source of truth for lift entries. See DEVELOPMENT.md for
+known save-confirmation issues and bulk backend actions that replace sheet data.
 
-- **⇅ SYNC** pulls from the sheet (sheet wins on conflicts), appends any local-only entries, never overwrites or deletes sheet rows
+- **⇅ SYNC** pulls log entries from the sheet. It does not push local-only entries.
 - **Log a Set** appends a new row to the sheet immediately on save
 - **Edit entry** (tap any log entry) updates the specific row in the sheet by ID
 - **Delete entry** removes from the app and deletes the row from the sheet
