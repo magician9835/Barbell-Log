@@ -135,3 +135,24 @@ and focused keyboard viewports use their visible height.
 commit d5d514e with current code under those reported metrics. This is a
 reproduction, not a physical iPhone test. Real-device confirmation remains
 necessary. Phone layout details now includes statusBarCompensated and scale.
+
+## Native-view clipping and deprecated status-bar mode (2026-10-30.15)
+
+The owner's physical screenshot after .14 proves that the 62px extension is
+clipped: the navigation is cut off at the reported 812px native viewport. This
+supersedes the .14 simulated inference. Restore the 812px visible bound. Never
+add screen-minus-viewport height to the shell.
+
+Remove apple-mobile-web-app-status-bar-style=black-translucent in accordance
+with WebKit guidance: https://bugs.webkit.org/show_bug.cgi?id=317153#c2 . The
+native system can apply blur above Home Screen content and installation-time
+status bar metadata can be retained. A standard standalone web manifest now
+uses the same canonical URL, dark background and icon. A fresh Home Screen
+installation must be compared on the owner's device while retaining the old
+installation and backing up local data. Do not claim that a page reload updates
+installation-time native chrome, or that browser simulation proves the frame.
+
+Phone layout details now includes available/outer/document dimensions and actual
+CSS vh/svh/lvh/dvh probe heights. No data is sent automatically. Existing local
+workouts/settings are untouched; a new installed app can have separate local
+storage and may need the existing JSON backup restored.
