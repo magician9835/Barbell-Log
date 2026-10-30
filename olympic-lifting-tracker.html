@@ -691,8 +691,8 @@
       <div class="field">
         <label>Session Type</label>
         <select id="m-session">
-          <option value="Coached Class">Coached Class</option>
-          <option value="1:1 Session">1:1 Session</option>
+          <option value="Coached Class">Class</option>
+          <option value="1:1 Session">1:1</option>
           <option value="Solo">Solo</option>
         </select>
       </div>
@@ -799,8 +799,8 @@
       <div class="field">
         <label>Session</label>
         <select id="edit-session">
-          <option value="Coached Class">Coached Class</option>
-          <option value="1:1 Session">1:1 Session</option>
+          <option value="Coached Class">Class</option>
+          <option value="1:1 Session">1:1</option>
           <option value="Solo">Solo</option>
         </select>
       </div>
@@ -944,7 +944,7 @@
   </div>
 </div>
 
-<script src="app-updates.js?v=2026-10-30.5" data-version="2026-10-30.5"></script>
+<script src="app-updates.js?v=2026-10-30.6" data-version="2026-10-30.6"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -1020,6 +1020,10 @@ const LIFT_CONFIG = {
 };
 
 const SEP = ' · ';
+
+function sessionLabel(session){
+  return {'Coached Class':'Class','1:1 Session':'1:1',Solo:'Solo',Competition:'Competition'}[session]||session||'Solo';
+}
 
 // Build a competition display title from its components
 function buildCompTitle(name, date, location){
@@ -1199,7 +1203,7 @@ function renderLog(){
     html+=`<div class="date-group-label">${formatDate(date)}</div><div class="card" style="margin:0 16px;">`;
     groups[date].forEach((e,i)=>{
       const sc=e.session==='Coached Class'?'session-coached':e.session==='Solo'?'session-solo':e.session==='Competition'?'session-comp':'session-one';
-      const ss=e.session==='Coached Class'?'Class':e.session==='1:1 Session'?'1:1':e.session==='Competition'?'Comp':'Solo';
+      const ss=sessionLabel(e.session);
       const ln=buildLiftName(e);
       const sr=[e.sets?`${e.sets}×`:'',e.reps?`${e.reps} reps`:''].filter(Boolean).join(' ');
       const qb=e.quality?`<div class="quality-bar">${[1,2,3,4,5].map(n=>`<div class="qb${n<=e.quality?' filled':''}"></div>`).join('')}</div>`:'';
@@ -1643,7 +1647,7 @@ function renderPBs(){
       </div>
       <div style="padding:12px;background:rgba(200,245,90,0.06);">
         <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(200,245,90,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Snatch</div>
-        ${trainCell(trainSnatch?.weight,trainSnatch?.date,trainSnatch?.session)}
+        ${trainCell(trainSnatch?.weight,trainSnatch?.date,sessionLabel(trainSnatch?.session))}
       </div>
     </div>
     <!-- C&J row -->
@@ -1654,7 +1658,7 @@ function renderPBs(){
       </div>
       <div style="padding:12px;background:rgba(200,245,90,0.06);">
         <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(200,245,90,0.4);font-family:DM Mono,monospace;margin-bottom:6px;">Clean &amp; Jerk</div>
-        ${trainCell(trainCJ?.weight,trainCJ?.date,trainCJ?.session)}
+        ${trainCell(trainCJ?.weight,trainCJ?.date,sessionLabel(trainCJ?.session))}
       </div>
     </div>
     <!-- Total row -->
@@ -1694,7 +1698,7 @@ function renderPBs(){
         if(cj&&(!pb||cj.weight>pb.weight))pb={...cj,lift:'Clean and Jerk (used)'};
       }
       function _sClass(s){return s==='Coached Class'?'session-coached':s==='Solo'?'session-solo':s==='Competition'?'session-comp':'session-one';}
-      function _sLabel(s){return s==='Coached Class'?'Class':s==='1:1 Session'?'1:1':s==='Competition'?'Comp':'Solo';}
+      function _sLabel(s){return sessionLabel(s);}
       const sessionTag=pb&&pb.session?('<span class="tag '+_sClass(pb.session)+'" style="margin-top:4px;display:inline-block;">'+_sLabel(pb.session)+'</span>'):'';
       return`<div class="pb-card pb-strength"${i>0?' style="border-top:1px solid var(--border)"':''}>
         <div style="flex:1;">
