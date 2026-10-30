@@ -118,3 +118,20 @@ All-record summaries retain the originating entry's session, ID and modifiers.
 An equally weighted seeded PB no longer overrides the known log source.
 Historical records with no recoverable session display Session not recorded;
 they are never guessed as Class, Solo or 1:1.
+
+## Measured installed iPhone correction (2026-10-30.14)
+
+The owner's installed iPhone 16 Pro reported screen 402×874, inner/visible
+viewport 402×812, top safe area 62px and bottom safe area 34px. The old explicit
+innerHeight sizing therefore ended the shell at 812px. Correct only the
+standalone portrait case where screen minus viewport equals the top safe area,
+the reported width matches, visual/layout viewports agree and scale is one.
+Add the reported top inset once to the shell height; do not change the existing
+header/footer safe-area padding. Full 874px viewports do not get another inset,
+and focused keyboard viewports use their visible height.
+
+`tests/phone-viewport.test.mjs` covers the exact supplied report and exclusions.
+`scripts/reported-iphone-check.py` compares the previous published layout at
+commit d5d514e with current code under those reported metrics. This is a
+reproduction, not a physical iPhone test. Real-device confirmation remains
+necessary. Phone layout details now includes statusBarCompensated and scale.
