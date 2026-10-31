@@ -37,6 +37,35 @@ with sync_playwright() as p:
  page.locator('[data-w=loading]').select_option('competition')
  assert '5 kg collars' in page.locator('.studio-session-card').inner_text()
  assert page.locator('[data-w=session]').input_value()=='Coached Class'
+ # Rehearsal and manual-log dialogs are top-layer elements, outside Train.
+ # They must reject horizontal movement while retaining vertical scrolling.
+ for mode in ['opener','log']:
+  page.evaluate('TrainingApp.opener()' if mode=='opener' else 'openLogModal()')
+  dialog=page.locator('dialog').last
+  for width in [320,375,402,430]:
+   page.set_viewport_size({'width':width,'height':812})
+   metrics=dialog.evaluate("""d=>{const s=getComputedStyle(d);return{width:d.clientWidth,scrollWidth:d.scrollWidth,overflowX:s.overflowX,touchAction:s.touchAction,overscrollX:s.overscrollBehaviorX}}""")
+   assert metrics['scrollWidth']<=metrics['width']+1,(engine,mode,width,metrics)
+   assert metrics['overflowX']=='hidden' and metrics['touchAction']=='pan-y' and metrics['overscrollX']=='none',(engine,mode,width,metrics)
+   dialog.evaluate('(d)=>{d.scrollLeft=100;d.scrollTop=0}')
+   assert dialog.evaluate('(d)=>d.scrollLeft')==0
+  dialog.hover(position={'x':dialog.bounding_box()['width']-10,'y':100});page.mouse.wheel(160,0);page.wait_for_timeout(100)
+  assert dialog.evaluate('(d)=>d.scrollLeft')==0
+  dialog.hover(position={'x':20,'y':80});page.mouse.wheel(0,400)
+  page.wait_for_function('document.querySelector("dialog[open]").scrollTop>0',timeout=3000)
+  if mode=='opener':
+   page.locator('[data-opener="0-0"]').fill('65')
+   assert page.locator('[data-opener="0-0"]').input_value()=='65'
+  else:
+   page.locator('[data-editor=weight]').fill('55')
+   assert page.locator('[data-editor=weight]').input_value()=='55'
+  page.set_viewport_size({'width':402,'height':812})
+  dialog.evaluate('(d)=>d.scrollTop=0')
+  page.screenshot(path=str(out/(engine+'-'+mode+'-vertical.png')))
+  dialog.locator('[aria-label=Close]').click()
+ page.locator('#tabs .tab').first.click()
+ assert page.locator('.filter-bar').first.evaluate('(e)=>{e.scrollLeft=100;return e.scrollLeft>0}')
+ assert page.evaluate('window.scrollX')==0
  assert not errors,errors
- print('PASS:',engine,'native date/select bounds, equal heights, stacked metadata, blank-plan actions, complex fields and separate competition loading at 320–430px.')
+ print('PASS:',engine,'native date/select bounds, equal heights, stacked metadata, blank-plan actions, complex fields separate competition loading, vertical-only dialogs and horizontal filter scrolling at 320–430px.')
  browser.close()

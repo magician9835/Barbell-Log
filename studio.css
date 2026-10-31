@@ -78,3 +78,11 @@
 
 /* Wide button styles must not override hidden account/setup controls. */
 #pane-settings [hidden]{display:none!important}
+
+/* Vertical screens must not become sideways scrollers on iOS. Dialogs live
+   outside #pane-planner, so they need the same gesture restriction explicitly. */
+.tab-pane,.modal,.studio-dialog{overflow-x:hidden;overscroll-behavior-x:none}
+#pane-planner,#pane-pbs,#pane-comp,#pane-settings,.modal,.studio-dialog{touch-action:pan-y}
+.studio-dialog{max-width:min(600px,calc(100vw - 24px));overflow-wrap:anywhere}
+/* The lift filter strip is the app's intentional horizontal scroll surface. */
+.filter-bar{touch-action:pan-x pan-y;overscroll-behavior-x:none}
