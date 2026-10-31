@@ -16,6 +16,7 @@ function render(entry, meets) {
   const labelSource=html.match(/function sessionLabel\(session\)\{[\s\S]*?\n\}/)[0];
   const identitySource=html.match(/function liftIdentity\(e\)\{[^\n]+/)[0];
   const escapeSource=html.match(/function escapeText\(value\)\{[^\n]+/)[0];
+  vm.runInContext(readFileSync('programme-view.js','utf8'),context);
   vm.runInContext(identitySource+'\n'+escapeSource+'\n'+labelSource + '\n' + renderSource + '\nrenderLog();', context);
   return container.innerHTML;
 }
