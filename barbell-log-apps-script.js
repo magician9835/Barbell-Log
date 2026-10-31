@@ -12,7 +12,7 @@ const SHEETS = {
 };
 
 const HEADERS = {
-  LOG:        ['Date','Session','Base Lift','Position','Receiving','Grip','Technique','Weight (kg)','Sets','Reps','Quality','Notes','ID'],
+  LOG:        ['Date','Session','Base Lift','Position','Receiving','Grip','Technique','Weight (kg)','Sets','Reps','Quality','Notes','ID','Structure JSON','Workout ID'],
   MEETS:      ['ID','Name','Date','Location','Full Title','Bodyweight (kg)','Sn A1 Wt','Sn A1 Made','Sn A2 Wt','Sn A2 Made','Sn A3 Wt','Sn A3 Made','CJ A1 Wt','CJ A1 Made','CJ A2 Wt','CJ A2 Made','CJ A3 Wt','CJ A3 Made','Best Snatch','Best CJ','Total','Sinclair','Notes'],
   BODYWEIGHT: ['Date','Weight (kg)','Note'],
   PBS:        ['Date','Lift','Weight (kg)','Weight (lbs)'],
@@ -20,12 +20,16 @@ const HEADERS = {
 
 // ── ROUTING ──────────────────────────────────────────────────────────────────
 function doPost(e) {
+  let lock;
   try {
+    lock=LockService.getScriptLock();lock.waitLock(30000);
     const data = JSON.parse(e.postData.contents);
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     let result = {};
 
     switch(data.action) {
+      case 'saveState': result=saveAppState(ss,data.record); break;
+      case 'deleteMeet': deleteMeetById(ss,data.id); break;
       case 'log':        appendLogEntry(ss, data.entry); break;
       case 'syncAll':    syncAllEntries(ss, data.entries); break;
       case 'saveMeet':   saveMeet(ss, data.meet); break;
@@ -36,7 +40,7 @@ function doPost(e) {
       case 'syncFull':   syncFull(ss, data); break;
       case 'updateEntry': updateEntry(ss, data.entry); break;
       case 'deleteEntry': deleteEntry(ss, data.id); break;
-      default: result = { error: 'Unknown action: ' + data.action };
+      default: throw new Error('Unknown action: '+data.action);
     }
 
     return ContentService
@@ -47,7 +51,7 @@ function doPost(e) {
     return ContentService
       .createTextOutput(JSON.stringify({ success: false, error: err.message }))
       .setMimeType(ContentService.MimeType.JSON);
-  }
+  } finally {if(lock)lock.releaseLock();}
 }
 
 function doGet(e) {
@@ -60,7 +64,7 @@ function doGet(e) {
       const meets   = getAllMeets(ss);
       const bw      = getAllBW(ss);
       return ContentService
-        .createTextOutput(JSON.stringify({ entries, meets, bw }))
+        .createTextOutput(JSON.stringify({ entries, meets, bw, apiVersion:3, appState:getAppState(ss) }))
         .setMimeType(ContentService.MimeType.JSON);
     } catch(err) {
       return ContentService
@@ -97,6 +101,7 @@ function getOrCreate(ss, name, headers) {
       }
     }
   }
+  if(name===SHEETS.LOG){if(sheet.getMaxColumns&&sheet.getMaxColumns()<HEADERS.LOG.length)sheet.insertColumnsAfter(sheet.getMaxColumns(),HEADERS.LOG.length-sheet.getMaxColumns());const current=sheet.getRange(1,1,1,Math.max(sheet.getLastColumn(),13)).getValues()[0];['ID','Structure JSON','Workout ID'].forEach(h=>{if(!current.includes(h)){sheet.getRange(1,sheet.getLastColumn()+1).setValue(h).setFontWeight('bold');current.push(h);}});}
   return sheet;
 }
 
@@ -128,6 +133,8 @@ function entryToRow(e) {
     e.quality || '',
     e.notes || '',
     e.id || '',
+    e.structure?JSON.stringify(e.structure):'',
+    e.workoutId||'',
   ];
 }
 
@@ -145,9 +152,7 @@ function appendLogEntry(ss, entry) {
     for (const row of data) {
       // Dedup by ID
       if (entry.id && idCol >= 0 && row[idCol] === entry.id) return;
-      // Dedup by date + base + weight fingerprint
-      const rowDate = row[dateCol] ? Utilities.formatDate(new Date(row[dateCol]), Session.getScriptTimeZone(), 'yyyy-MM-dd') : '';
-      if (rowDate === (entry.date||'') && row[baseCol] === (entry.base||'') && parseFloat(row[wtCol]) === parseFloat(entry.weight||0)) return;
+
     }
   }
   sheet.appendRow(entryToRow(entry));
@@ -166,7 +171,7 @@ function getAllLogEntries(ss) {
   if (!sheet || sheet.getLastRow() <= 1) return [];
 
   // Read actual headers to handle both old (11-col, no Grip) and new (13-col) layouts
-  const numCols = Math.max(sheet.getLastColumn(), HEADERS.LOG.length);
+  const numCols = Math.max(sheet.getLastColumn(), 1);
   const headerRow = sheet.getRange(1, 1, 1, numCols).getValues()[0];
 
   // Build column index map from actual headers
@@ -205,6 +210,8 @@ function getAllLogEntries(ss) {
     reps:      r[idxReps] ? parseInt(r[idxReps]) : null,
     quality:   r[idxQuality] ? parseInt(r[idxQuality]) : null,
     notes:     r[idxNotes] || '',
+    ...(col['Structure JSON']!==undefined&&r[col['Structure JSON']]?{structure:JSON.parse(r[col['Structure JSON']])}:{}),
+    ...(col['Workout ID']!==undefined&&r[col['Workout ID']]?{workoutId:r[col['Workout ID']]}:{}),
   }));
 }
 
@@ -253,6 +260,7 @@ function meetToRow(m) {
 
 function saveMeet(ss, meet) {
   const sheet = getOrCreate(ss, SHEETS.MEETS, HEADERS.MEETS);
+  if(meet.id&&sheet.getLastRow()>1){const ids=sheet.getRange(2,1,sheet.getLastRow()-1,1).getValues();for(let i=0;i<ids.length;i++)if(ids[i][0]===meet.id){sheet.getRange(i+2,1,1,HEADERS.MEETS.length).setValues([meetToRow(meet)]);return;}}
   sheet.appendRow(meetToRow(meet));
 }
 
@@ -376,3 +384,24 @@ function syncFull(ss, data) {
   if (data.bw)      syncBW(ss, data.bw);
   if (data.pbs)     syncPBs(ss, data.pbs);
 }
+
+
+// Append-only plan/settings backups. Existing sheet rows are never cleared.
+const STATE_HEADERS=['ID','Key','Updated At','Part','Parts','JSON'];
+function saveAppState(ss,record){
+  if(!record||typeof record.id!=='string'||!/^[-a-zA-Z0-9_]{1,100}$/.test(record.id)||typeof record.key!=='string'||!/^[-a-zA-Z0-9_/]{1,120}$/.test(record.key)||record.value===undefined)throw new Error('Invalid state record');
+  const text=JSON.stringify(record.value);if(text.length>500000)throw new Error('State backup too large');
+  const sheet=getOrCreate(ss,'AppState',STATE_HEADERS);
+  if(sheet.getLastRow()>1&&sheet.getRange(2,1,sheet.getLastRow()-1,1).getValues().some(r=>r[0]===record.id))return{saved:true,id:record.id};
+  const parts=Math.max(1,Math.ceil(text.length/40000)),updated=new Date().toISOString();
+  const rows=Array.from({length:parts},(_,i)=>[record.id,record.key,updated,i+1,parts,text.slice(i*40000,(i+1)*40000)]);
+  sheet.getRange(sheet.getLastRow()+1,1,rows.length,6).setValues(rows);
+  return{saved:true,id:record.id};
+}
+function getAppState(ss){
+  const sheet=ss.getSheetByName('AppState');if(!sheet||sheet.getLastRow()<2)return{};
+  const rows=sheet.getRange(2,1,sheet.getLastRow()-1,6).getValues(),groups={};
+  rows.forEach((r,index)=>{if(!r[0]||!r[1])return;const item=groups[r[0]]||(groups[r[0]]={id:r[0],key:r[1],updatedAt:r[2],parts:Number(r[4]),chunks:[],index});item.chunks[Number(r[3])-1]=String(r[5]);item.index=index;});
+  const result={};Object.values(groups).sort((a,b)=>a.index-b.index).forEach(g=>{if(g.chunks.filter(x=>x!==undefined).length!==g.parts)return;try{result[g.key]={id:g.id,key:g.key,updatedAt:typeof g.updatedAt==='string'?g.updatedAt:g.updatedAt.toISOString(),value:JSON.parse(g.chunks.join(''))};}catch(error){console.warn('Unreadable state version '+g.id);}});return result;
+}
+function deleteMeetById(ss,id){if(!id)throw new Error('Meet ID required');const sheet=ss.getSheetByName(SHEETS.MEETS);if(!sheet||sheet.getLastRow()<2)return;const ids=sheet.getRange(2,1,sheet.getLastRow()-1,1).getValues();for(let i=ids.length-1;i>=0;i--)if(ids[i][0]===id)sheet.deleteRow(i+2);}

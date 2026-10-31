@@ -36,6 +36,7 @@
     const isFront=lift==='Front squat';const isBack=lift==='Back squat';
     const base=isFront||isBack?'Squat':lift;
     const matching=entries.filter(e=>e.base===base&&e.weight>0&&
+      (!e.structure?.length||e.structure.every(c=>!(c.position||[]).some(p=>p!=='Floor')&&!['Power','Muscle'].includes(c.receiving)&&!(c.technique||[]).length))&&
       !(e.position||[]).some(p=>p!=='Floor')&&
       !['Power','Muscle'].includes(e.receiving)&&
       (isFront||isBack?(e.technique||[]).includes(isFront?'Front':'Back'):!(e.technique||[]).length));

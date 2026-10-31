@@ -1,78 +1,105 @@
-"""Local browser integration against a fake API; never writes to Google."""
+"""Exercise real mobile UI against a fake Sheets API; never writes to Google."""
 from pathlib import Path
 from playwright.sync_api import sync_playwright
-import json
-
+import json, mimetypes
 root=Path(__file__).resolve().parents[1]
-artifacts=Path('/workspace/barbell-review/overhaul');artifacts.mkdir(parents=True,exist_ok=True)
+out=Path('/workspace/barbell-review/v3');out.mkdir(parents=True,exist_ok=True)
 with sync_playwright() as p:
-    browser=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox'],timeout=8000)
-    page=browser.new_page(viewport={'width':393,'height':852},is_mobile=True)
-    page.set_default_timeout(5000)
-    errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
-    rows={};bw=[];meets=[]
-    def serve(route):
-        url=route.request.url
-        if url.startswith('http://localhost:8000/api'):
-            if route.request.method=='POST':
-                payload=json.loads(route.request.post_data)
-                if payload['action']=='deleteEntry':rows.pop(payload['id'],None)
-                elif payload['action']=='logBW':bw.append(payload['entry'])
-                elif payload['action']=='saveMeet':meets.append(payload['meet'])
-                else:rows[payload['entry']['id']]=payload['entry']
-            route.fulfill(content_type='application/json',body=json.dumps({'entries':list(rows.values()),'bw':bw,'meets':meets}));return
-        if url.startswith('http://localhost:8000/'):
-            name=url.split('localhost:8000/')[1].split('?')[0]
-            path=root/name
-            if path.is_file() and path.suffix in ['.html','.js','.css','.json']:
-                mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'}[path.suffix]
-                route.fulfill(content_type=mime,body=path.read_text());return
-        route.abort()
-    page.route('**/*',serve)
-    page.goto('http://localhost:8000/olympic-lifting-tracker.html',wait_until='domcontentloaded')
-    page.locator('#open-training').click();page.locator('[data-action="class"]').click()
-    for field,value in zip(page.locator('[data-blockfield="reference"]').all(),['60','100','100']):
-        field.fill(value);field.press('Tab')
-    assert len(page.locator('.train-preview>span').all())==17
-    page.screenshot(path=str(artifacts/'class-setup.png'),full_page=True)
-    page.locator('[data-action="start"]').click()
-    assert page.locator('.train-target strong').inner_text()=='42'
-    page.locator('[data-action="complete"]').click()
-    assert page.locator('#pending-lifts-button').is_visible()
-    assert len(json.loads(page.evaluate("localStorage.getItem('barbell_training_v2')"))['done'])==1
-    page.reload(wait_until='domcontentloaded');page.locator('#open-training').click()
-    assert '1 / 17' in page.locator('.train-progress').inner_text()
-    page.locator('summary',has_text='Adjust today').click()
-    ref=page.locator('[data-active-reference]');ref.fill('70');ref.press('Tab')
-    assert page.locator('.train-target strong').inner_text()=='52.5'
-    workout=json.loads(page.evaluate("localStorage.getItem('barbell_training_v2')"))
-    assert list(workout['done'].values())[0]['weight']==42
-    page.screenshot(path=str(artifacts/'active-workout.png'))
-    page.evaluate("""async()=>{saveSettingsData({...loadSettings(),sheetsUrl:'http://localhost:8000/api'});await syncBoth();}""")
-    assert len(rows)==1
-    assert '1 Snatch pull + 2 Hang snatch' in next(iter(rows.values()))['notes']
-    assert json.loads(page.evaluate("localStorage.getItem('barbell_pending_lifts_v1')"))==[]
-    # Exercise the actual edit/delete UI with the fake endpoint.
-    entry_id=next(iter(rows))
-    page.evaluate('(id)=>openEditModal(id)',entry_id)
-    page.locator('#edit-weight').fill('43')
-    page.evaluate('saveEditEntry()')
-    assert rows[entry_id]['weight']==43
-    page.evaluate('(id)=>openEditModal(id)',entry_id);page.evaluate('deleteEditEntry()')
-    assert not rows
-    # Private lesson route retains existing session values.
-    page.evaluate('TrainingApp.recap()')
-    assert page.locator('#m-session').input_value()=='1:1 Session'
-    page.evaluate('closeLogModal()')
-    # Every tab renders without JS errors; navigation stays inside the viewport.
-    for index,name in enumerate(['log','planner','pbs','comp','settings']):
-        page.evaluate('([name,index])=>switchTab(name,document.querySelectorAll("#tabs .tab")[index])',[name,index])
-        page.screenshot(path=str(artifacts/(name+'.png')))
-    for width,height in [(320,667),(393,852),(430,932)]:
-        page.set_viewport_size({'width':width,'height':height})
-        page.wait_for_timeout(50)
-        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
-        tabs=page.locator('#tabs').bounding_box();assert abs(tabs['y']+tabs['height']-height)<1
-    assert not errors,errors
-    print('PASS: 17-set class, daily reference override, offline reload, confirmed sync, real edit/delete, 1:1 route and three phone sizes.',flush=True)
-    browser.close()
+ b=p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])
+ page=b.new_page(viewport={'width':402,'height':812},is_mobile=True,has_touch=True)
+ page.set_default_timeout(6000)
+ errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+ rows={};states={}
+ def serve(r):
+  url=r.request.url
+  if url.startswith('http://localhost:8000/api'):
+   if r.request.method=='POST':
+    data=json.loads(r.request.post_data);action=data['action']
+    if action=='saveState':
+     record=data['record'];states[record['key']]={**record,'updatedAt':'2026-10-30T23:00:00Z'}
+    elif action=='deleteEntry':rows.pop(data['id'],None)
+    elif action=='updateEntry':rows[data['entry']['id']]=data['entry']
+   r.fulfill(content_type='application/json',body=json.dumps({'apiVersion':3,'appState':states,'entries':list(rows.values()),'meets':[],'bw':[]}));return
+  if url.startswith('http://localhost:8000/'):
+   path=root/url.split('localhost:8000/')[1].split('?')[0]
+   if path.is_file():r.fulfill(content_type=mimetypes.guess_type(str(path))[0] or 'application/octet-stream',body=path.read_bytes());return
+  r.abort()
+ page.route('**/*',serve)
+ page.goto('http://localhost:8000/olympic-lifting-tracker.html',wait_until='domcontentloaded')
+ assert page.locator('.brand-lockup img').is_visible()
+ page.locator('#header-comp-badge').click();assert int(page.locator('.countdown-big').inner_text())>=0;page.locator('dialog [aria-label=Close]').click()
+ page.locator('#tabs .tab').nth(1).click();page.locator('[data-act=new-class]').click()
+ assert page.locator('.studio-component').count()==0
+ page.locator('[data-act=add-block]').click()
+ page.locator('[data-comp=base]').select_option('Pull')
+ page.locator('[data-act=modifier][data-value="Snatch Grip"]').click()
+ page.locator('[data-act=component-add]').click()
+ page.locator('[data-act=modifier][data-value="Hang Above Knee"]').last.click()
+ page.locator('[data-block-field=reference]').fill('60')
+ page.locator('[data-block-field=warmups]').select_option('no')
+ page.locator('[data-stage-rep]').nth(1).fill('2')
+ page.locator('[data-stage=sets]').fill('2')
+ assert page.locator('[data-value="Hang (unspecified)"]').count()==0
+ assert page.evaluate('document.documentElement.scrollWidth')==402
+ page.locator('[data-act=template-save]').click()
+ page.locator('[data-act=start]').click()
+ assert page.locator('[data-actual-rep]').count()==2
+ # Editing actual reps must not replace the input node or shrink the shell.
+ field=page.locator('[data-actual-rep="1"]');field.evaluate('(x)=>window.originalReps=x');field.fill('3')
+ assert field.evaluate('(x)=>x===window.originalReps')
+ height=page.locator('#app').bounding_box()['height']
+ page.set_viewport_size({'width':402,'height':500});page.wait_for_timeout(100)
+ assert page.locator('#app').bounding_box()['height']==height
+ assert field.is_visible() and field.evaluate('(x)=>x===window.originalReps')
+ page.set_viewport_size({'width':402,'height':812});field.blur();page.wait_for_timeout(150)
+ page.locator('[data-actual=note]').fill('Coach said: good extension')
+ page.locator('[data-act=complete]').click()
+ assert len(json.loads(page.evaluate("localStorage.getItem('barbell_pending_lifts_v1')")))==1
+ plan=json.loads(page.evaluate("localStorage.getItem('barbell_workout_v3')"));entry=next(iter(plan['done'].values()))
+ assert entry['session']=='Coached Class' and entry['structure'][1]['reps']==3
+ assert entry['structure'][1]['position']==['Hang Above Knee']
+ # Connect and verify both lift and entire-plan readback confirmation.
+ page.evaluate("async()=>{saveSettingsData({...loadSettings(),sheetsUrl:'http://localhost:8000/api'});await syncBoth();await CloudBackup.connect();}")
+ page.wait_for_function("PendingLifts.list().length===0")
+ page.wait_for_function("Object.keys(CloudBackup.status().lastRead?.appState||{}).length>0")
+ assert len(rows)==1 and len(states)==1
+ assert next(iter(states.values()))['value']['data']['barbell_workout_v3']['done']
+ page.screenshot(path=str(out/'active.png'))
+ # Leave without saving unfinished work; completed sets must remain in the log.
+ page.locator('[data-act=exit]').click();page.locator('#discard-draft').click()
+ assert len(rows)==1
+ page.locator('[data-act=template-open]').click();assert page.locator('.studio-component').count()==2
+ page.locator('[data-act=switch]').click();page.locator('[data-act=template-delete]').click();page.locator('#confirmYes').click()
+ assert page.locator('[data-act=template-open]').count()==0
+ # Manual log uses the identical complex editor and normalized Class session.
+ page.evaluate("openEditModal("+json.dumps(entry['id'])+")")
+ assert page.locator('[data-editor=session]').input_value()=='Coached Class'
+ assert page.locator('dialog .studio-component').count()==2
+ page.locator('[data-editor=weight]').fill('45')
+ page.locator('[data-act=editor-save]').click();page.wait_for_function('document.querySelector("#studio-log-dialog")===null')
+ assert next(iter(rows.values()))['weight']==45
+ # Actual Competition must stay a deliberate session choice.
+ page.locator('[data-act=opener]').click()
+ for selector,value in [('[data-opener="0-0"]','65'),('[data-opener="0-1"]','68'),('[data-opener="0-2"]','70'),('[data-opener="1-0"]','90')]:page.locator(selector).fill(value)
+ page.locator('#build-openers').click();page.locator('[data-act=start]').click()
+ assert page.locator('.studio-collar').inner_text()=='2.5'
+ opener=json.loads(page.evaluate("localStorage.getItem('barbell_workout_v3')"));assert opener['loading']=='competition' and opener['session']=='Solo'
+ page.screenshot(path=str(out/'opener.png'))
+ page.locator('[data-act=exit]').click();page.locator('#keep-draft').click()
+ # Paste/photo review path builds an editable draft, not an automatic saved record.
+ page.locator('[data-act=import]').click()
+ page.locator('#program-text').fill('A) Snatch pull + hang snatch (20 min)\n1 x 1+2 @ 70%\n3 x 1+1 @ 85%')
+ page.locator('#build-transcription').click();assert page.locator('.studio-component').count()==2
+ assert page.locator('[data-stage=sets]').count()==2
+ page.screenshot(path=str(out/'builder.png'))
+ page.locator('#tabs .tab').first.click();page.locator('#log-sub-analytics').click()
+ assert page.locator('[data-analytics=variant]').is_visible()
+ assert page.locator('.analytics-record').count()==1
+ page.locator('.analytics-record').click();page.locator('[data-act=editor-delete]').click();page.locator('#confirm-delete-set').click()
+ page.wait_for_function('document.querySelector("#studio-log-dialog")===null');assert len(rows)==0
+ for width in [320,375,402,430]:
+  page.set_viewport_size({'width':width,'height':812});page.locator('#tabs .tab').nth(1).click()
+  assert page.evaluate('document.documentElement.scrollWidth')<=width
+ assert not errors,errors
+ print('PASS: blank Class, arbitrary complex, stable keyboard/rep input, offline queue/reload, confirmed plan backup, templates, discard, normalized editor, opener collars, transcription draft, analytics filters, delete and 320–430px widths.')
+ b.close()

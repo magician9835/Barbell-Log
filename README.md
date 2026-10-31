@@ -1,6 +1,6 @@
 # Barbell Log
 
-**Current workflow:** [Training overhaul](OVERHAUL.md) — class programs, editable session references, set progression, confirmed tracking and the red/black design.
+**Current workflow:** [Training v3](V3.md) — blank class builder, arbitrary complexes, photo transcription drafts, opener rehearsal, actual gym plate loading and confirmed plan backups after connector activation.
 
 
 Olympic lifting tracker. Single HTML file, iPhone Safari optimised, Google Sheets sync.
@@ -27,9 +27,13 @@ Single self-contained HTML file. Vanilla HTML/CSS/JS. No build step. localStorag
 
 ## Design system
 
-Dark theme. `#111111` background. Accent `#c8f55a` (yellow-green). Surfaces `#1a1a1a` / `#222222` / `#2a2a2a`. Borders `#333333`. Red `#ff5252`. Blue `#5ab4ff`. Orange `#ff9a3c`. Gold `#ffd700`. Syne for UI, DM Mono for numbers. Grain texture overlay. Modifier separator ` · `. Modals use `dvh`.
+Dark theme. `#111111` background. Accent red / pink, red primary actions and high contrast white text. Surfaces `#1a1a1a` / `#222222` / `#2a2a2a`. Borders `#333333`. Red `#ff5252`. Blue `#5ab4ff`. Orange `#ff9a3c`. Gold `#ffd700`. Syne for UI, DM Mono for numbers. Grain texture overlay. Modifier separator ` · `. Modals use `dvh`.
 
 ---
+
+## Earlier feature reference
+
+The descriptions below predate v3. Use V3.md for current Train, Analytics, backup and phone behavior.
 
 ## Five tabs
 
