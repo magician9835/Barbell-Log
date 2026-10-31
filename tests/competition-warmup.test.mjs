@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
-const c=vm.createContext({});vm.runInContext(readFileSync('competition-warmup-model.js','utf8'),c);const M=c.CompetitionWarmupModel;
-test('competition ladder uses opener percentages, lower-volume C&J, singles near the opener and a bare bar',()=>{const sn=M.suggest(65,'sn'),cj=M.suggest(95,'cj');assert.equal(sn[0].weight,20);assert.equal(sn.at(-1).weight,61);assert.equal(sn.at(-1).reps,1);assert.ok(sn.every(s=>s.weight<65&&Number.isInteger(s.weight)));assert.ok(cj.find(s=>s.weight===47).reps<sn.find(s=>s.weight===32).reps);assert.equal(new Set(M.suggest(26).map(s=>s.weight)).size,M.suggest(26).length);assert.equal(M.suggest(20).length,0);});
+const c=vm.createContext({});vm.runInContext(readFileSync('workout-model.js','utf8'),c);vm.runInContext(readFileSync('competition-warmup-model.js','utf8'),c);const M=c.CompetitionWarmupModel;
+test('competition ladder uses plate-friendly weights, lower-volume C&J, singles near the opener and a bare bar',()=>{const sn=M.suggest(65,'sn'),cj=M.suggest(95,'cj');assert.equal(sn[0].weight,20);assert.equal(sn.at(-1).weight,60);assert.equal(sn.at(-1).reps,1);assert.ok(sn.every(s=>s.weight<65&&Number.isInteger(s.weight)));assert.ok(cj.find(s=>s.weight===40).reps<sn.find(s=>s.weight===30).reps);assert.equal(new Set(M.suggest(26).map(s=>s.weight)).size,M.suggest(26).length);assert.equal(M.suggest(20).length,0);});
 test('three attempts out is configurable and heavier recovery can exceed two minutes',()=>{const rows=M.schedule(M.suggest(65),{pace:1.5,start:'10:00',initialOut:0});assert.equal(rows.at(-1).out,3);assert.equal(rows.at(-1).clock,'09:56');assert.equal(rows.at(-2).out-rows.at(-1).out,3);assert.equal(M.schedule(M.suggest(65),{pace:1,finalOut:5}).at(-1).out,5);});
 test('remaining attempts are explicit and order updates preserve completed set IDs',()=>{const steps=M.suggest(65),live={remaining:10,at:1000000};const a=M.schedule(steps,{live,now:1000000}),b=M.schedule(steps,{live:{...live,remaining:12},now:1000000});assert.equal(b.at(-1).at-a.at(-1).at,120000);assert.equal(a[0].id,b[0].id);const done={[a[0].id]:{at:1}};assert.equal(M.status(a,done,live).next.id,a[1].id);assert.equal(live.remaining,10);});
 test('unknown timing remains unknown, zero means first, and C&J start is separate',()=>{assert.equal(M.schedule(M.suggest(65),{start:'10:00',initialOut:null})[0].clock,'');assert.ok(M.schedule(M.suggest(65),{start:'10:00',initialOut:0})[0].clock.startsWith('09:'));assert.equal(M.startCJ('10:00',10,1,10),'10:40');assert.equal(M.startCJ('10:00',null,1,10),'');assert.equal(M.startCJ('10:00',10,1,10,'11:15'),'11:15');});
@@ -12,3 +12,12 @@ test('warm-up edits validate whole-kilo setups and retain distinct repeat sets',
 test('zero remaining attempts prioritises the platform over unfinished warm-ups',()=>{const rows=M.schedule(M.suggest(65));assert.equal(M.status(rows,{}, {remaining:0,at:1}).state,'called');});
 
 test('a quick pre-session adjustment keeps estimates anchored to the session start',()=>{const at=new Date('2026-11-08T09:00:00').getTime(),start=new Date('2026-11-08T09:30:00').getTime(),raw={remaining:4,at},live=M.liveForSession(raw,'09:30','2026-11-08');assert.equal(live.anchor,start);assert.equal(raw.at,at);assert.equal(raw.anchor,undefined);const rows=M.schedule(M.suggest(65),{live,now:at});assert.equal(rows.at(-1).at,start+60000);const later={remaining:4,at:start+600000};assert.equal(M.liveForSession(later,'09:30','2026-11-08').anchor,later.at);assert.equal(M.liveForSession(raw,'','2026-11-08').anchor,at);});
+
+test('competition and rehearsal share a practical loading ladder, including small openers',()=>{
+  assert.deepEqual(JSON.parse(JSON.stringify(M.suggest(60).map(s=>s.weight))),[20,30,40,45,50,55]);
+  assert.deepEqual(JSON.parse(JSON.stringify(M.suggest(95,'cj').map(s=>s.weight))),[20,40,50,60,70,80,85,90]);
+  for(const target of [26,27,33,60,65,95,100,150])for(const key of ['sn','cj']){
+    const rows=M.suggest(target,key);assert.ok(rows.every(s=>s.weight===20||s.weight>=26));
+    if(rows.length)M.validSteps(rows,target);
+  }
+});

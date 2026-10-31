@@ -24,7 +24,9 @@ with sync_playwright() as p:
   page.locator('#cw-setup [data-cw-lift='+k+']').click();assert page.locator('#wu-'+k+'-opener').is_visible()
  page.locator('#cw-setup [data-cw-lift=sn]').click()
  # A custom, repeatable ladder, with validation and no fabricated completion.
- page.locator('[data-cw-edit=sn]').click();page.locator('[data-step="1"][data-key=weight]').fill('65');page.locator('#cw-save-ladder').click();assert page.locator('#cw-edit-error').inner_text()
+ page.locator('[data-cw-edit=sn]').click()
+ assert [float(x.input_value()) for x in page.locator('[data-key=weight]').all()]==[20,30,40,50,55,60]
+ page.locator('[data-step="1"][data-key=weight]').fill('65');page.locator('#cw-save-ladder').click();assert page.locator('#cw-edit-error').inner_text()
  page.locator('[data-step="1"][data-key=weight]').fill('30');page.locator('#cw-add-step').click()
  for width in [320,375,402,430]:
   page.set_viewport_size({'width':width,'height':812})
@@ -77,6 +79,15 @@ with sync_playwright() as p:
  page.locator('#cw-remaining').fill('4');page.locator('#cw-confirm-count').click();assert page.locator('.cw-counter-controls strong').inner_text()=='4'
  page.locator('.cw-delay>summary').click();page.locator('#cw-reset-progress').click();page.locator('#confirmYes').click();assert page.locator('.cw-counter-controls strong').inner_text()=='—'
  assert page.evaluate("loadSettings().competitionWarmupV1.lifts.sn.live.remaining")==18
+ # New defaults update untouched suggestions, never a custom or active ladder.
+ for state in ['custom','done','live','untouched']:
+  page.evaluate("""state=>{const s=loadSettings(),d=s.competitionWarmupV1;
+   d.active='sn';d.mode='day';d.lifts.sn={steps:[{id:'old-33',weight:33,reps:1}],generatedFor:65,custom:state==='custom',done:state==='done'?{'old-33':{weight:33,reps:1,at:Date.now()}}:{}};
+   if(state==='live')d.lifts.sn.live={remaining:8,at:Date.now()};saveSettingsData(s);
+  }""",state)
+  page.reload(wait_until='domcontentloaded');page.locator('#tabs .tab').nth(3).click();page.locator('#comp-sub-warmup').click()
+  weights=[int(x.inner_text().split(' kg')[0]) for x in page.locator('#cw-ladder li strong').all()]
+  assert weights==([20,30,40,50,55,60] if state=='untouched' else [33]),(state,weights)
  assert not errors,errors
  print('PASS:',engine,'shared session setup, separate lift plans, legacy values, editable ladder/validation, full visible build-up, reachable day action with iPhone safe areas, live count changes, done/skip/undo, reload, independent C&J and backed-up state.')
  b.close()

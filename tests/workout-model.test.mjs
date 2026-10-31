@@ -28,3 +28,40 @@ test('linked rehearsal setup follows attempts with stable IDs and a separate reh
 test('linked updates preserve recorded lifts and freeze an in-progress build-up',()=>{const w=M.opener({Snatch:[60,63,65],'Clean and Jerk':[85,90,95]});w.phase='active';const b=w.blocks[0],old=M.expand(b,'competition'),warm=old[0],op=old.find(s=>s.phase==='work');w.done[warm.key]=M.entry(w,b,warm,warm.weight,warm.reps);w.done[op.key]=M.entry(w,b,op,61,op.reps,'Actual opener');const recorded=JSON.stringify(w.done);const next=M.syncOpenerPlan(w,{Snatch:[62,65,68],'Clean and Jerk':[87,92,97]});assert.equal(JSON.stringify(next.done),recorded);assert.equal(next.blocks[0].stages[0].value,60);assert.equal(next.blocks[0].stages[1].value,65);assert.deepEqual(plain(M.expand(next.blocks[0],'competition').filter(s=>s.phase==='warmup').map(s=>[s.key,s.weight])),plain(old.filter(s=>s.phase==='warmup').map(s=>[s.key,s.weight])));});
 test('linked updates retain notes and explicit actual loads while refreshing untouched defaults',()=>{const w=M.opener({Snatch:[60,63,65],'Clean and Jerk':[85,90,95]}),rows=M.expand(w.blocks[0],'competition').filter(s=>s.phase==='work');w.actuals={[rows[0].key]:{weight:60,note:'Keep this'},[rows[1].key]:{weight:62,note:'My adjustment'}};const next=M.syncOpenerPlan(w,{Snatch:[61,64,66],'Clean and Jerk':[86,91,96]});assert.equal(next.actuals[rows[0].key].weight,61);assert.equal(next.actuals[rows[0].key].note,'Keep this');assert.equal(next.actuals[rows[1].key].weight,62);});
 test('invalid linked attempts cannot partially update a rehearsal or a finished snapshot',()=>{const w=M.opener({Snatch:[65,68,70],'Clean and Jerk':[90,95,100]}),b=w.blocks[0],op=M.expand(b,'competition').find(s=>s.phase==='work');w.done[op.key]=M.entry(w,b,op,65,op.reps);const before=JSON.stringify(w);assert.throws(()=>M.syncOpenerPlan(w,{Snatch:[60,62,64],'Clean and Jerk':[90,95,100]}),/recorded/);assert.equal(JSON.stringify(w),before);assert.throws(()=>M.syncOpenerPlan(w,{Snatch:[65,68,70],'Clean and Jerk':[null,95,100]}),/openers/);const finished={...w,phase:'finished'};assert.equal(M.syncOpenerPlan(finished,{Snatch:[80,85,90],'Clean and Jerk':[100,105,110]}),finished);});
+
+test('warm-ups prefer simple plates and narrow to five-kilo steps before the target',()=>{
+  assert.deepEqual(plain(M.warmupWeights(60)),[20,30,40,45,50,55]);
+  assert.deepEqual(plain(M.warmupWeights(95,'gym','Clean and Jerk')),[20,40,50,60,70,80,85,90]);
+  assert.deepEqual(plain(M.warmupWeights(90,'gym','Clean and Jerk')),[20,40,50,60,70,80,85]);
+  for(const mode of ['gym','competition'])for(const lift of ['Snatch','Clean and Jerk'])for(const target of [26,27,31,33,42.5,55,60,61,62.5,65,80,95,100,125,150]){
+    const weights=plain(M.warmupWeights(target,mode,lift));
+    assert.equal(weights[0],20);assert.equal(new Set(weights).size,weights.length);
+    assert.ok(weights.every((weight,i)=>weight<target&&(i===0||weight>weights[i-1])));
+    assert.ok(weights.slice(1).every(weight=>M.load(weight,mode,'warmup').weight===weight));
+    const top=[...weights,target].filter(weight=>weight>20&&weight>=target-(lift==='Snatch'?20:15));
+    assert.ok(top.every((weight,i)=>!i||weight-top[i-1]<=5),[mode,lift,target,weights]);
+    assert.ok(target-weights.at(-1)<=5||target<=26);
+    assert.ok(weights.slice(1,-1).every(weight=>weight%5===0));
+  }
+});
+test('warm-ups lead to the first working stage and leave prescribed work unchanged',()=>{
+  const b=M.block();b.reference=100;b.stages=[M.stage(b.components,1,60),M.stage(b.components,2,85)];
+  const rows=M.expand(b),warm=rows.filter(s=>s.phase==='warmup');
+  assert.deepEqual(plain(warm.map(s=>s.weight)),[20,30,40,45,50,55]);
+  assert.deepEqual(plain(rows.filter(s=>s.phase==='work').map(s=>s.weight)),[60,85,85]);
+  assert.ok(warm.every(s=>s.rest<=120));b.warmups=false;assert.equal(M.expand(b).filter(s=>s.phase==='warmup').length,0);
+});
+test('older active and finished workouts retain their original ladder and completed keys',()=>{
+  for(const phase of ['active','finished']){
+    const w=M.opener({Snatch:[60,63,65],'Clean and Jerk':[90,95,100]});w.phase=phase;
+    for(const b of w.blocks)b.warmupPlanVersion=1;
+    const before=plain(M.expand(w.blocks[0],w.loading));
+    w.done[before[0].key]={id:'already-recorded',weight:before[0].weight};
+    for(const b of w.blocks)delete b.warmupPlanVersion;
+    const migrated=M.migrate(w);
+    assert.deepEqual(plain(M.expand(migrated.blocks[0],migrated.loading)),before);
+    assert.equal(migrated.done[before[0].key].weight,before[0].weight);
+  }
+  const w=M.opener({Snatch:[60],'Clean and Jerk':[90]});for(const b of w.blocks)delete b.warmupPlanVersion;
+  const migrated=M.migrate(w);assert.deepEqual(plain(M.expand(migrated.blocks[0],migrated.loading).filter(s=>s.phase==='warmup').map(s=>s.weight)),[20,30,40,45,50,55]);
+});

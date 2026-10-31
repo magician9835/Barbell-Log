@@ -5,14 +5,10 @@
  const clock=(time,minutes)=>{if(!/^\d{2}:\d{2}$/.test(time||''))return'';const [h,m]=time.split(':').map(Number),t=((Math.round(h*60+m+minutes)%1440)+1440)%1440;return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');};
  function suggest(opener,key='sn'){
   opener=Math.floor(Number(opener));if(!Number.isFinite(opener)||opener<26)return[];
-  const seen=new Set(),steps=[];
-  for(const [i,p] of [0,.5,.65,.75,.85,.95].entries()){
-   const raw=i===0?20:Math.floor(opener*p),weight=raw<26?20:raw;
-   if(weight>=opener||seen.has(weight))continue;seen.add(weight);
-   const reps=i===0?3:i===1?(key==='sn'?3:2):i===2&&key==='sn'?2:1;
-   steps.push({id:'suggested-'+key+'-'+weight,weight,reps});
-  }
-  return steps;
+  return root.WorkoutModel.warmupWeights(opener,'competition',key==='sn'?'Snatch':'Clean and Jerk').map(weight=>({
+   id:'suggested-'+key+'-'+weight,weight,
+   reps:weight===20?3:weight<=opener*.5?(key==='sn'?3:2):weight<=opener*.7&&key==='sn'?2:1
+  }));
  }
  function validSteps(steps,opener){if(!Array.isArray(steps)||!steps.length)throw Error('Add at least one warm-up.');if(steps.length>20)throw Error('Keep the ladder to 20 warm-up sets.');const ids=new Set();for(const s of steps){if(!s.id||ids.has(s.id))throw Error('Warm-up set IDs must be unique.');ids.add(s.id);if(!Number.isInteger(Number(s.weight))||(Number(s.weight)!==20&&Number(s.weight)<26)||Number(s.weight)>=Number(opener))throw Error('Use a 20 kg bare bar or whole kilos from 26 kg, below your opener.');if(!Number.isInteger(Number(s.reps))||s.reps<1||s.reps>10)throw Error('Use 1–10 reps.');}return true;}
  function schedule(steps,{pace=1,finalOut=3,spacing=3,initialOut=null,start='',live=null,now=Date.now()}={}){
