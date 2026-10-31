@@ -162,3 +162,6 @@
 .cw-counter-controls{display:grid;grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);gap:10px}.cw-counter-controls>button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:5px;min-height:50px}.cw-counter-controls>button>span{font-size:20px;line-height:1}.cw-counter-controls>button>small{font-size:11px;line-height:1.3}.cw-counter-controls>strong{min-width:0}.cw-counter .cw-counter-help{font-size:10px;line-height:1.4;margin:4px 0}
 
 .rehearsal-link{border-top:1px solid var(--border);padding-top:10px;margin-top:12px}.rehearsal-link p{font-size:12px;line-height:1.5;color:var(--text2);margin:6px 0}.rehearsal-link-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rehearsal-link-actions button{font-size:12px;padding:8px 10px}.rehearsal-block input[readonly]{background:var(--surface2);color:var(--text)}
+
+/* Checkbox rows use the whole label as their touch target. */
+.studio-check{min-height:44px}.studio-check input{flex:0 0 22px}

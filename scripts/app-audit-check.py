@@ -21,8 +21,10 @@ with sync_playwright() as p:
   for width in [320,375,402,430]:
    page.set_viewport_size({'width':width,'height':812})
    assert page.evaluate('document.documentElement.scrollWidth')<=width,name+' page overflow'
-   issues=page.evaluate('''()=>[...document.querySelectorAll('.tab-pane.active input:not([type=file]):not([type=checkbox]),.tab-pane.active select,.modal-overlay.open input,dialog[open] input,dialog[open] select')].filter(e=>e.getClientRects().length).flatMap(e=>{const r=e.getBoundingClientRect(),outer=e.closest('dialog,.modal,.tab-pane').getBoundingClientRect();return r.x<outer.x-1||r.right>outer.right+1||r.height<43?[{id:e.id,html:e.outerHTML,rect:r.toJSON()}]:[]})''')
+   issues=page.evaluate('''()=>[...document.querySelectorAll('.tab-pane.active input:not([type=file]):not([type=checkbox]),.tab-pane.active select,.modal-overlay.open input:not([type=checkbox]),dialog[open] input:not([type=checkbox]),dialog[open] select')].filter(e=>e.getClientRects().length).flatMap(e=>{const r=e.getBoundingClientRect(),outer=e.closest('dialog,.modal,.tab-pane').getBoundingClientRect();return r.x<outer.x-1||r.right>outer.right+1||r.height<43?[{id:e.id,html:e.outerHTML,rect:r.toJSON()}]:[]})''')
    assert not issues,(engine,name,width,issues)
+  for checkbox in page.locator('dialog[open] input[type=checkbox]').all():
+   assert checkbox.locator('..').bounding_box()['height']>=44
   page.set_viewport_size({'width':402,'height':812});coverage.append(name)
   page.screenshot(path=str(out/(engine+'-'+name+'.png')))
  check('log')
