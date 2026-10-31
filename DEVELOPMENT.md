@@ -268,3 +268,18 @@ History groups records by workout/date/session with compressed per-exercise actu
 Main Class/1:1/Solo sessions expose an Accessories action carrying parent workout ID, date and session type. No custom session name is required. Existing record/snapshot RPCs and backup keys remain unchanged; no schema migration or credential changes are needed.
 
 Validation covers exact DB/plate loads, different side counts, out-of-order offline logging/reload, supersets, current-load template reuse/deletion, retrospective plate circuits, Class-linked bodyweight records, history grouping, fresh-device recovery and native WebKit layouts.
+
+## Whole-app cleanup and control audit (2026-10-31.17)
+
+Settings now starts with display units and bodyweight. Account/sync follows daily controls; backup/export is a collapsed disclosure with four matching button controls. Weigh-in dates have their own full-width row, imports and estimates are optional disclosures, and version information sits in the footer.
+
+Fixed in this pass:
+- Competition and legacy Settings/Goals fields have at least 44px touch height, bounded native date/time fields and wrapping goal controls. Meet result buttons and the countdown chip have full touch targets; long toast messages wrap.
+- Meet management was permanently hidden; Manage now appears when meets exist. New meet attempts round down to whole kilos, require a made/missed selection when a weight is entered, and cannot silently turn unselected results into misses.
+- Competition name/location editing no longer rebuilds unrelated attempt inputs. Reset attempts is reviewable and does not erase meet metadata/history.
+- Competition day timing/openers are persisted in `settings.compWarmup`, included in the existing account plan snapshots. Minute arithmetic handles fractional minutes/midnight; small openers do not repeat the empty bar in their warm-up ladder.
+- Bodyweight CSV imports enter the durable mutation queue, retain stable IDs in the phone cache, reject impossible calendar dates and refresh the bodyweight field. No historic imports are automatically resent.
+- Analytics cards use the intended card style; chart, volume and record weights follow display units without changing stored kilos. The Goals note no longer claims adjustable default targets are official IWF standards.
+- Starting a different Train workout, template, rehearsal or transcription preserves a nonempty unfinished draft in the existing backed-up session history. Other saved drafts can be resumed with their recorded sets; explicit discard removes only that draft. Photo selection is a keyboard-accessible button.
+
+`python scripts/app-audit-check.py` exercises page states and controls using isolated fixtures, never the live database. It runs in Chromium and WebKit in CI, checks 320/375/402/430px input bounds, and covers every lift selector and available modifier, complex ordering/copy/removal, stages, loading/reference/warm-up selectors, draft switching, 1:1 logging, transcription validation, log/analytics filters, Goals, competition attempts/timing/reset, meet result validation/deletion, Settings, bodyweight CSV queueing, backup/CSV downloads, restore validation/cancellation, and layout diagnostics. Existing training, database/offline recovery, builder and iPhone shell suites remain required. Live phone gestures, camera OCR accuracy, email delivery and platform file share sheets still need physical-device checks.
