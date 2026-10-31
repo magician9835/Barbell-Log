@@ -49,9 +49,16 @@ with sync_playwright() as p:
    assert metrics['overflowX']=='hidden' and metrics['touchAction']=='pan-y' and metrics['overscrollX']=='none',(engine,mode,width,metrics)
    dialog.evaluate('(d)=>{d.scrollLeft=100;d.scrollTop=0}')
    assert dialog.evaluate('(d)=>d.scrollLeft')==0
-  dialog.hover(position={'x':dialog.bounding_box()['width']-10,'y':100});page.mouse.wheel(160,0);page.wait_for_timeout(100)
-  assert dialog.evaluate('(d)=>d.scrollLeft')==0
-  dialog.hover(position={'x':20,'y':80});page.mouse.wheel(0,400)
+  if engine=='chromium':
+   dialog.hover(position={'x':dialog.bounding_box()['width']-10,'y':100});page.mouse.wheel(160,0);page.wait_for_timeout(100)
+   assert dialog.evaluate('(d)=>d.scrollLeft')==0
+   dialog.hover(position={'x':20,'y':80});page.mouse.wheel(0,400)
+  else:
+   # Playwright mobile WebKit does not implement mouse-wheel input. Native
+   # bounds/gesture CSS and scrollability are still checked in that engine.
+   dialog.evaluate('(d)=>d.scrollBy(160,0)')
+   assert dialog.evaluate('(d)=>d.scrollLeft')==0
+   dialog.evaluate('(d)=>d.scrollBy(0,400)')
   page.wait_for_function('document.querySelector("dialog[open]").scrollTop>0',timeout=3000)
   if mode=='opener':
    page.locator('[data-opener="0-0"]').fill('65')
