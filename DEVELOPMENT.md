@@ -246,3 +246,7 @@ Opener rehearsal is a top-layer dialog outside the Train pane, so the pane's ver
 ## Bare-bar opener warm-ups (2026-10-31.13)
 
 Competition rehearsal now starts at 20kg with no plates/collars, rather than treating collars alone as a 25kg warm-up. Warm-up load calculation, the plate diagram, actual-weight input snapping and saved records use the same phase-aware calculation. Collars appear with loaded warm-ups. With the configured 20kg bar and 5kg collars, loaded competition setups start at 26kg (a 0.5kg plate per side), and rehearsal attempts use that minimum. Existing recorded history is untouched. Tests check both lift ladders, loaded mass accounting, saving the bare-bar set at 20kg, and changing actual warm-up weights without stale collar images.
+
+## Working-set ratings only (2026-10-31.14)
+
+Hide technique rating controls during warm-ups and when editing newly recorded warm-ups. Store an explicit work/warmup phase and force warm-up quality to null, including stale draft values. Recognise older generated warm-ups by their saved workout ID and exact generated phase line, without inferring phase from free-form mentions of warming up. Weight, reps and notes still log normally. Working sets/attempts retain the optional rating and editor control. Coaching comparisons and rating reminders exclude marked warm-ups. Existing historical data is preserved. Tests cover saved warm-up phase/quality, notes retention, working ratings, editor visibility and the transition from build-up to attempts.
