@@ -14,7 +14,7 @@ seed={'id':'legacy-snatch','date':'2026-10-25','session':'Coached Class','base':
 rows={('lift',seed['id']):{'data':seed.copy(),'revision':1,'deleted':False}};states={};mutations={};calls=[];offline=False;sheet_posts=[]
 with sync_playwright() as p:
  browser=p.chromium.launch(executable_path=os.environ.get('BARBELL_BROWSER_PATH') or shutil.which('chromium') or None,args=['--no-sandbox']);page=browser.new_page(viewport={'width':402,'height':812},is_mobile=True,has_touch=True);page.set_default_timeout(7000);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
- page.add_init_script("""localStorage.setItem('barbell_cleanup_20261030_v1','true');""")
+ page.add_init_script("""localStorage.setItem('barbell_cleanup_20261030_v1','true');Object.defineProperty(navigator,'onLine',{get:()=>localStorage.getItem('__test_offline')!=='1',configurable:true});""")
  def response(route,data,status=200):route.fulfill(status=status,content_type='application/json',headers={'access-control-allow-origin':'*','access-control-allow-headers':'*'},body=json.dumps(data))
  def serve(route):
   global offline
@@ -62,7 +62,11 @@ with sync_playwright() as p:
  assert rows[('lift','phone-only')]['data']['weight']==75
  assert page.evaluate('AppData.endpoint()').endswith(uid)
  assert page.evaluate("JSON.parse(localStorage.barbell_before_database_v4).data.barbell_pending_lifts_v1")
- page.wait_for_function('!!CloudBackup.status().lastConfirmed')
+ page.wait_for_function('!!CloudBackup.status().lastConfirmed');page.wait_for_function('document.getElementById("sync-status-banner").hidden')
+ assert page.locator('#syncBtn').count()==0
+ header_height=page.locator('#header').bounding_box()['height']
+ assert page.locator('#refresh-data-button').is_visible()
+ page.locator('#refresh-data-button').click();page.wait_for_function('!document.getElementById("refresh-data-button").disabled')
  # Exercise the exact provided accessory workout, both-side counts, and stable inputs.
  page.locator('#tabs .tab').nth(1).click();page.locator('[data-act=accessory]').click();page.locator('[data-ac=new]').click();page.locator('[data-ac=start]').click()
  for _ in range(3):page.locator('[data-ac=complete]').click()
@@ -71,13 +75,13 @@ with sync_playwright() as p:
  ac=[r for (k,i),r in rows.items() if k=='accessory'];assert len(ac)==1 and ac[0]['data']['exercises'][0]['left']==7 and ac[0]['data']['weight']==14
  assert len([1 for (k,i) in rows if k=='lift'])==2
  page.screenshot(path=str(out/'connected-accessory.png'))
- offline=True;page.locator('[data-ac=complete]').click();page.wait_for_timeout(300);assert len(json.loads(page.evaluate('localStorage.barbell_pending_lifts_v1')))==1
+ offline=True;page.evaluate("localStorage.setItem('__test_offline','1');window.dispatchEvent(new Event('offline'))");assert page.locator('#sync-status').inner_text()=='Offline · saved on phone';assert page.locator('#header').bounding_box()['height']==header_height;page.locator('[data-ac=complete]').click();page.wait_for_timeout(300);assert len(json.loads(page.evaluate('localStorage.barbell_pending_lifts_v1')))==1
  page.reload(wait_until='domcontentloaded');page.locator('#tabs .tab').nth(1).click();page.locator('[data-act=accessory]').click();page.locator('[data-ac=resume]').click();assert page.locator('[data-ac-actual=weight]').input_value()=='14'
- offline=False;page.evaluate('async()=>{await PendingLifts.drain(AppData.endpoint());await fetchAndRender();}');assert len([1 for k,i in rows if k=='accessory'])==2
+ offline=False;page.evaluate("localStorage.removeItem('__test_offline');window.dispatchEvent(new Event('online'))");page.wait_for_function('PendingLifts.list().length===0');page.wait_for_function('document.getElementById("sync-status-banner").hidden');assert len([1 for k,i in rows if k=='accessory'])==2
  # A concurrent edit cannot silently overwrite the newer database record.
  page.evaluate("openEditModal('legacy-snatch')");rows[('lift','legacy-snatch')]['data']={**seed,'weight':80};rows[('lift','legacy-snatch')]['revision']=2
  page.locator('[data-editor=weight]').fill('70');page.locator('[data-act=editor-save]').click();page.wait_for_function('PendingLifts.list().some(i=>i.conflict)');assert rows[('lift','legacy-snatch')]['data']['weight']==80
- page.evaluate('DatabaseUI.pending()');page.locator('[data-choice=cloud]').click();page.wait_for_function('PendingLifts.list().length===0');page.locator('dialog [aria-label=Close]').click()
+ page.locator('#sync-status').click();assert page.locator('dialog').last.is_visible();page.locator('[data-choice=cloud]').click();page.wait_for_function('PendingLifts.list().length===0');page.locator('dialog [aria-label=Close]').click()
  assert rows[('lift','legacy-snatch')]['data']['weight']==80
  # Complete the remaining presses and all three two-exercise superset rounds.
  page.locator('#tabs .tab').nth(1).click()
@@ -94,6 +98,8 @@ with sync_playwright() as p:
  page.reload(wait_until='domcontentloaded');page.wait_for_function('AppData.status().signedIn');assert page.evaluate('AppData.usesDatabase()')
  for width in [320,375,402,430]:
   page.set_viewport_size({'width':width,'height':812});page.locator('#tabs .tab').nth(4).click();assert page.evaluate('document.documentElement.scrollWidth')<=width
+  page.evaluate("localStorage.setItem('__test_offline','1');window.dispatchEvent(new Event('offline'))");assert page.locator('#sync-status').is_visible();assert page.evaluate('document.documentElement.scrollWidth')<=width;assert page.locator('#header').bounding_box()['height']==header_height
+  page.evaluate("localStorage.removeItem('__test_offline');window.dispatchEvent(new Event('online'))")
  # A second phone recovers the saved program before it writes its first snapshot.
  page.wait_for_timeout(800);page.evaluate('async()=>{await CloudBackup.sync();}')
  second=browser.new_page(viewport={'width':402,'height':812},is_mobile=True,has_touch=True);second.route('**/*',serve)
@@ -101,5 +107,5 @@ with sync_playwright() as p:
  assert second.evaluate("JSON.parse(localStorage.barbell_accessory_workout_v1).index")==12
  second.close()
  assert not errors,errors
- print('PASS: real SDK sign-in, legacy cutover, pending-ID transfer, confirmed snapshots, accessory isolation, exact DB weights, both-side reps, offline reload/retry, edit conflict review, fresh-phone plan recovery and mobile widths.')
+ print('PASS: real SDK sign-in, legacy cutover, pending-ID transfer, confirmed snapshots, accessory isolation, exact DB weights, both-side reps, offline reload/retry, edit conflict review, fresh-phone plan recovery, quiet header, automatic reconnect, manual Settings refresh and mobile widths.')
  browser.close()

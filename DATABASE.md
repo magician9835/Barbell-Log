@@ -137,3 +137,17 @@ The Free plan can pause for inactivity and does not include managed daily
 backups. Retain the unchanged spreadsheet and download periodic independent
 file backups. The current snapshots and mutation history share the database's
 failure domain. No paid resources were enabled.
+
+
+## Quiet sync controls — 2026-10-31.2
+
+The header has no refresh button in normal use. Offline/error states appear
+immediately; pending indicators appear only after 1.5 seconds, avoiding flashes
+for fast successful saves. A status chip temporarily replaces the competition
+countdown chip without increasing header height. The countdown remains available
+in the Log banner. The status chip opens pending-change review or connection
+settings. Manual Refresh data lives under Settings → Your database → Data sync
+and refreshes pending records, history and plan backups. Automatic startup,
+resume and online refresh remains enabled, including legacy pending writes.
+The browser integration verifies auto-reconnect and fixed header geometry at
+320–430px widths. The migration still requires the owner's app account.

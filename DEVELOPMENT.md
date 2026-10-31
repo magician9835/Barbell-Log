@@ -179,3 +179,12 @@ license. npm audit reported no vulnerabilities at release. Browser CI uses fake
 Auth/RPC; live SQL contract/import tests were rolled back. The unchanged Sheet
 is the historical fallback. Keep independent exports; Free Supabase does not
 include managed daily database backups.
+
+
+## Sync status (2026-10-31.2)
+
+sync-status.js owns the conditional header indicator and manual Settings refresh.
+Header syncBtn/pending-lifts-button were removed; do not recreate them in feature
+modules. renderPendingLifts delegates to SyncStatus. fetchEntries emits
+datasyncchange on completion, and cloud backup errors are exposed to the status
+view. Background refresh does not replace active workout form fields.
