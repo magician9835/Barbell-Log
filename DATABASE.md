@@ -33,9 +33,7 @@ The staged source contains 60 lift entries, 2 meets and 156 bodyweight entries.
 The source spreadsheet was read, not changed. A real-database rollback test
 claimed and round-tripped this payload, retaining the 65 kg Hang Above Knee Snatch
 and Class source labels. Its verification account and rows were rolled back.
-The staging email is deliberately pending until the owner supplies their chosen
-app email; update that mapping through the authenticated admin connection before
-claiming from a fresh installation. Do not put the payload or owner email in Git.
+The import archive was linked to the owner's verified app account on 31 October 2026, after checking that all 218 historical record IDs already belonged to that account. Two device backups were verified. Initial cutover is complete; the setup below remains a recovery/new-installation guide. Do not put the payload or owner email in Git.
 
 ## Initial owner setup
 
@@ -151,3 +149,13 @@ and refreshes pending records, history and plan backups. Automatic startup,
 resume and online refresh remains enabled, including legacy pending writes.
 The browser integration verifies auto-reconnect and fixed header geometry at
 320–430px widths. The migration still requires the owner's app account.
+
+
+## Plate-loaded accessories — 2026-10-31.3
+
+Accessory records can identify equipment as a plate and store weightBasis as
+per plate. History, active-workout fields, templates and editing retain that
+label instead of treating the weight as per dumbbell. An unspecified plate
+count stays null; the app does not infer a total load. Legacy dumbbell records
+keep their existing labels. The browser workflow covers a plate-loaded record
+and its edit form.
