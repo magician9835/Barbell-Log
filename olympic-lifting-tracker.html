@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.1">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.1">
+<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.2">
+<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.2">
 <meta name="theme-color" content="#0c0d0f">
-<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.1">
+<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.2">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -293,21 +293,21 @@
   .warmup-progress { position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
   .warmup-progress.done { background:var(--accent); }
 </style>
-<link rel="stylesheet" href="training.css?v=2026-10-31.1">
-<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.1">
-<link rel="stylesheet" href="studio.css?v=2026-10-31.1">
+<link rel="stylesheet" href="training.css?v=2026-10-31.2">
+<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.2">
+<link rel="stylesheet" href="studio.css?v=2026-10-31.2">
 </head>
 <body>
 <div id="app">
   <div id="header">
     <div id="header-row1">
       <div class="brand-lockup"><img src="icon.png" alt=""><h1>BARBELL LOG</h1></div>
-      <div style="display:flex;align-items:center;gap:8px;">
+      <div class="header-actions" style="display:flex;align-items:center;gap:8px;">
         <div id="header-comp-badge" onclick="switchTab('comp',document.querySelector('.tab:nth-child(4)'))">
           <span class="days" id="header-badge-days"></span>
           <span class="label">days</span>
         </div>
-        <button class="sync-btn" id="syncBtn" onclick="syncBoth()">⇅</button>
+        <div id="sync-status-banner" class="sync-status-wrap" role="status" aria-live="polite" hidden><button type="button" id="sync-status"></button></div>
       </div>
     </div>
     <div id="header-row2">
@@ -640,7 +640,6 @@
           </div>
 
           <div class="settings-row" style="gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-secondary btn-sm" onclick="syncBoth()">⇅ Pull from Sheet</button>
             <button class="btn btn-secondary btn-sm" onclick="exportCSV()">Export CSV</button>
           </div>
         </div>
@@ -948,14 +947,14 @@
   </div>
 </div>
 
-<script src="training-core.js?v=2026-10-31.1"></script>
-<script src="workout-model.js?v=2026-10-31.1"></script>
-<script src="data-migrations.js?v=2026-10-31.1"></script>
+<script src="training-core.js?v=2026-10-31.2"></script>
+<script src="workout-model.js?v=2026-10-31.2"></script>
+<script src="data-migrations.js?v=2026-10-31.2"></script>
 <script src="vendor/supabase-2.118.0.js"></script>
-<script src="database-config.js?v=2026-10-31.1"></script>
-<script src="database.js?v=2026-10-31.1"></script>
-<script src="pending-lifts.js?v=2026-10-31.1"></script>
-<script src="app-updates.js?v=2026-10-31.1" data-version="2026-10-31.1"></script>
+<script src="database-config.js?v=2026-10-31.2"></script>
+<script src="database.js?v=2026-10-31.2"></script>
+<script src="pending-lifts.js?v=2026-10-31.2"></script>
+<script src="app-updates.js?v=2026-10-31.2" data-version="2026-10-31.2"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -2892,6 +2891,8 @@ let _entriesCache = [];
 try{_entriesCache=JSON.parse(localStorage.getItem('barbell_last_entries_v1')||'[]');if(!Array.isArray(_entriesCache))_entriesCache=[];}catch{}
 let _fetchInProgress = false;
 let _lastFetchError=false;
+let _lastFetchEndpoint='';
+let _manualSyncRunning=false;
 
 function getCachedEntries(){ return PendingLifts.overlay(_entriesCache,AppData.endpoint()); }
 function setCachedEntries(e){ _entriesCache = e||[];try{localStorage.setItem('barbell_last_entries_v1',JSON.stringify(_entriesCache));}catch(error){console.warn('Offline cache unavailable');} }
@@ -2902,12 +2903,13 @@ async function fetchEntries(){
   if(!endpoint){
     const container=document.getElementById('logList');
     if(container&&container.innerHTML.includes('Loading'))
-      container.innerHTML='<div class="empty"><div class="empty-icon">⚙️</div><p>Add your Apps Script URL in Settings to load your log.</p></div>';
+      container.innerHTML='<div class="empty"><div class="empty-icon">⚙️</div><p>Connect your database in Settings to load your history.</p></div>';
     return [];
   }
   if(_fetchInProgress) return getCachedEntries();
   _fetchInProgress=true;
   _lastFetchError=false;
+  _lastFetchEndpoint=endpoint;
   try{
     let data;
     if(AppData.usesDatabase())data=PendingLifts.overlayRecords(await AppData.read(),endpoint);
@@ -2951,6 +2953,7 @@ async function fetchEntries(){
     return getCachedEntries();
   }finally{
     _fetchInProgress=false;
+    window.dispatchEvent(new Event('datasyncchange'));
   }
 }
 
@@ -2983,19 +2986,24 @@ async function fetchAndRender(){
 
 // ⇅ SYNC = pull only, refresh display
 async function syncBoth(){
-  const s=loadSettings();
-  if(!AppData.endpoint()){showToast('Connect your database or sheet in Settings','error');return;}
-  const btn=document.getElementById('syncBtn');
-  btn.textContent='↻';btn.classList.add('syncing');
-  await PendingLifts.drain(AppData.endpoint());
-  await fetchEntries();
-  renderLog();
-  if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
-  if(document.getElementById('log-pane-analytics')?.classList.contains('active'))renderAnalytics();
-  if(document.getElementById('pane-comp').classList.contains('active'))renderMeetList();
-  btn.textContent='⇅';btn.classList.remove('syncing');
-  renderPendingLifts();
-  showToast(_lastFetchError?'Could not refresh — your pending changes are kept on this phone':PendingLifts.list().length?'Some changes are still waiting for confirmation':'Refreshed',_lastFetchError?'error':'success');
+  if(_manualSyncRunning)return;
+  if(!AppData.endpoint()){DatabaseUI.open();showToast('Sign in to connect your database','');return;}
+  _manualSyncRunning=true;
+  const btn=document.getElementById('refresh-data-button');
+  if(btn){btn.disabled=true;btn.textContent='Refreshing…';}
+  try{
+    await PendingLifts.drain(AppData.endpoint());
+    await fetchEntries();
+    await CloudBackup.sync();
+    renderLog();
+    if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
+    if(document.getElementById('log-pane-analytics')?.classList.contains('active'))renderAnalytics();
+    if(document.getElementById('pane-comp').classList.contains('active'))renderMeetList();
+    const backup=CloudBackup.status();
+    const attention=_lastFetchError||PendingLifts.list().some(i=>i.error||i.conflict)||backup.lastError;
+    showToast(attention?'Could not finish sync — your changes remain on this phone':PendingLifts.list().length?'Some changes are still waiting for confirmation':'Data refreshed',attention?'error':'success');
+  }catch(error){showToast(error.message||'Could not refresh. Your changes remain on this phone.','error');}
+  finally{_manualSyncRunning=false;if(btn){btn.disabled=false;btn.textContent='Refresh data';}renderPendingLifts();}
 }
 
 // Write to sheet then refresh cache
@@ -3009,17 +3017,7 @@ async function sheetPost(action,payload){
   }catch(e){ console.error('Sheet post failed:',e); }
 }
 
-function renderPendingLifts(){
-  const count=PendingLifts.list().length;
-  let button=document.getElementById('pending-lifts-button');
-  if(!button){
-    button=document.createElement('button');button.id='pending-lifts-button';button.type='button';
-    button.style.cssText='margin:4px 0 8px;padding:10px;border:1px solid var(--orange);border-radius:8px;background:var(--surface);color:var(--orange);font:700 12px sans-serif;';
-    button.onclick=()=>syncBoth();document.getElementById('header').appendChild(button);
-  }
-  button.hidden=!count;
-  button.textContent=count+' change'+(count===1?'':'s')+' saved on phone — tap to retry';
-}
+function renderPendingLifts(){window.SyncStatus?.render();}
 window.addEventListener('pendingliftschange',()=>{renderPendingLifts();renderLog();});
 
 async function saveLiftChange(action,entry){
@@ -4100,14 +4098,15 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="cloud-backup.js?v=2026-10-31.1"></script>
-<script src="studio.js?v=2026-10-31.1"></script>
-<script src="database-ui.js?v=2026-10-31.1"></script>
-<script src="accessory-model.js?v=2026-10-31.1"></script>
-<script src="accessory.js?v=2026-10-31.1"></script>
-<script src="home.js?v=2026-10-31.1"></script>
-<script src="analytics.js?v=2026-10-31.1"></script>
-<script src="phone-layout.js?v=2026-10-31.1"></script>
-<script src="app-interactions.js?v=2026-10-31.1"></script>
+<script src="cloud-backup.js?v=2026-10-31.2"></script>
+<script src="studio.js?v=2026-10-31.2"></script>
+<script src="database-ui.js?v=2026-10-31.2"></script>
+<script src="accessory-model.js?v=2026-10-31.2"></script>
+<script src="accessory.js?v=2026-10-31.2"></script>
+<script src="sync-status.js?v=2026-10-31.2"></script>
+<script src="home.js?v=2026-10-31.2"></script>
+<script src="analytics.js?v=2026-10-31.2"></script>
+<script src="phone-layout.js?v=2026-10-31.2"></script>
+<script src="app-interactions.js?v=2026-10-31.2"></script>
 </body>
 </html>
