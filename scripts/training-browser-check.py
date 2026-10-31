@@ -73,7 +73,14 @@ with sync_playwright() as p:
  # Connect and verify both lift and entire-plan readback confirmation.
  page.evaluate("async()=>{saveSettingsData({...loadSettings(),sheetsUrl:'http://localhost:8000/api'});await syncBoth();await CloudBackup.connect();}")
  page.wait_for_function("PendingLifts.list().length===0")
- page.wait_for_function("Object.keys(CloudBackup.status().lastRead?.appState||{}).length>0")
+ # A previous snapshot can arrive before the debounced workout backup. Wait
+ # for readback of this completed, edited set rather than any device snapshot.
+ page.wait_for_function("""id => {
+  const status=CloudBackup.status();
+  return !status.pending && Object.values(status.lastRead?.appState||{}).some(
+   record => Object.values(record.value?.data?.barbell_workout_v3?.done||{}).some(
+    entry => entry.id===id && entry.quality===4));
+ }""",arg=entry['id'])
  assert len(rows)==1 and len(states)==1
  assert next(iter(states.values()))['value']['data']['barbell_workout_v3']['done']
  page.screenshot(path=str(out/'active.png'))
