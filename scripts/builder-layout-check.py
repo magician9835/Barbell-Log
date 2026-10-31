@@ -76,7 +76,13 @@ with sync_playwright() as p:
  # Recording keeps the current build-up visible with one clear next action.
  page.evaluate('TrainingApp.open();TrainingApp.opener()')
  for selector,value in [('[data-opener="0-0"]','65'),('[data-opener="0-1"]','68'),('[data-opener="0-2"]','70'),('[data-opener="1-0"]','90')]:page.locator(selector).fill(value)
- page.locator('#build-openers').click();page.locator('[data-act=start]').click()
+ page.locator('#build-openers').click()
+ assert page.locator('#training-root [data-comp],#training-root [data-act=modifier],#training-root [data-act=component-add],#training-root [data-act=add-block],#training-root [data-block-field=referenceLift]').count()==0
+ assert page.locator('.rehearsal-block').count()==2
+ assert page.locator('[data-rehearsal-attempt]').count()==6
+ page.locator('[data-rehearsal-rest]').first.fill('4');page.locator('[data-rehearsal-rest]').first.blur()
+ assert page.evaluate("JSON.parse(localStorage.getItem('barbell_workout_v3')).blocks[0].restSeconds")==240
+ page.locator('[data-act=start]').click()
  assert page.locator('.session-plan-grid').first.locator('li').count()==8
  assert page.locator('.session-plan-grid [aria-current=step]').count()==1
  assert page.locator('[data-actual=quality]').count()==0
