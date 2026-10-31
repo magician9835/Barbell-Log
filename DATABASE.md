@@ -159,3 +159,7 @@ label instead of treating the weight as per dumbbell. An unspecified plate
 count stays null; the app does not infer a total load. Legacy dumbbell records
 keep their existing labels. The browser workflow covers a plate-loaded record
 and its edit form.
+
+## Accessory workflow (2026-10-31.16)
+
+Accessory records retain kind `accessory` and stable workout/block/round IDs. They now include session title and optional parent-workout linkage. Bodyweight/band records use null primary weight and retain exercise/equipment details in JSON. The existing owner policies, mutation queue and nullable positive-weight constraint already support this; there is no database migration. Plan state, saved workouts, archived drafts and notes use the existing backed-up accessory keys.
