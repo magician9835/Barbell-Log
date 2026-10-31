@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.9">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.9">
+<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.10">
+<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.10">
 <meta name="theme-color" content="#0c0d0f">
-<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.9">
+<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.10">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -293,9 +293,9 @@
   .warmup-progress { position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
   .warmup-progress.done { background:var(--accent); }
 </style>
-<link rel="stylesheet" href="training.css?v=2026-10-31.9">
-<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.9">
-<link rel="stylesheet" href="studio.css?v=2026-10-31.9">
+<link rel="stylesheet" href="training.css?v=2026-10-31.10">
+<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.10">
+<link rel="stylesheet" href="studio.css?v=2026-10-31.10">
 </head>
 <body>
 <div id="app">
@@ -503,6 +503,7 @@
             <div class="section-label" style="margin:0;">Attempt Planner</div>
             <button onclick="resetComp()" style="background:none;border:1px solid var(--border);color:var(--text3);font-size:11px;font-family:DM Mono,monospace;padding:4px 12px;border-radius:20px;cursor:pointer;">Reset</button>
           </div>
+          <p class="studio-muted" style="margin:0 0 10px">Whole kilos only · suggested attempts round down.</p>
           <div class="card" id="compAttempts"></div>
         </div>
         <div class="section">
@@ -529,8 +530,8 @@
             <button onclick="syncOpenersFromPlan()" style="background:none;border:1px solid var(--border);color:var(--text3);font-size:11px;font-family:DM Mono,monospace;padding:4px 12px;border-radius:20px;cursor:pointer;">↺ From Plan</button>
           </div>
           <div class="card">
-            <div class="field"><label>Snatch Opener (kg)</label><input type="number" id="wu-sn-opener" placeholder="e.g. 72" step="0.5" oninput="renderWarmup()"></div>
-            <div class="field"><label>C&amp;J Opener (kg)</label><input type="number" id="wu-cj-opener" placeholder="e.g. 90" step="0.5" oninput="renderWarmup()"></div>
+            <div class="field"><label>Snatch Opener (kg)</label><input type="number" id="wu-sn-opener" placeholder="e.g. 72" step="1" min="1" inputmode="numeric" oninput="renderWarmup()" onchange="this.value=roundCompetitionWeight(this.value)??'';renderWarmup()"></div>
+            <div class="field"><label>C&amp;J Opener (kg)</label><input type="number" id="wu-cj-opener" placeholder="e.g. 90" step="1" min="1" inputmode="numeric" oninput="renderWarmup()" onchange="this.value=roundCompetitionWeight(this.value)??'';renderWarmup()"></div>
           </div>
         </div>
         <div class="section">
@@ -947,15 +948,15 @@
   </div>
 </div>
 
-<script src="training-core.js?v=2026-10-31.9"></script>
-<script src="workout-model.js?v=2026-10-31.9"></script>
-<script src="programme-view.js?v=2026-10-31.9"></script>
-<script src="data-migrations.js?v=2026-10-31.9"></script>
+<script src="training-core.js?v=2026-10-31.10"></script>
+<script src="workout-model.js?v=2026-10-31.10"></script>
+<script src="programme-view.js?v=2026-10-31.10"></script>
+<script src="data-migrations.js?v=2026-10-31.10"></script>
 <script src="vendor/supabase-2.118.0.js"></script>
-<script src="database-config.js?v=2026-10-31.9"></script>
-<script src="database.js?v=2026-10-31.9"></script>
-<script src="pending-lifts.js?v=2026-10-31.9"></script>
-<script src="app-updates.js?v=2026-10-31.9" data-version="2026-10-31.9"></script>
+<script src="database-config.js?v=2026-10-31.10"></script>
+<script src="database.js?v=2026-10-31.10"></script>
+<script src="pending-lifts.js?v=2026-10-31.10"></script>
+<script src="app-updates.js?v=2026-10-31.10" data-version="2026-10-31.10"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -2265,6 +2266,17 @@ function updateTimerDisplay(){const m=Math.floor(timerRemaining/60),s=timerRemai
 // Default attempt percentages
 const DEFAULT_COMP_PCTS = [93, 98, 102];
 
+// Attempt suggestions are always rounded down to a whole kilogram.
+function roundCompetitionWeight(value) {
+  const weight=Number(value);
+  return Number.isFinite(weight)&&weight>0 ? Math.floor(weight+1e-9)||null : null;
+}
+function getCompetitionReference(key) {
+  const meets=getMeetPBs(),s=loadSettings();
+  const lift=key==='snatch'?'Snatch':'Clean and Jerk';
+  return Math.max(Number((key==='snatch'?meets.snatch:meets.cj)?.weight)||0,Number((s.pbs||[]).find(p=>p.lift===lift)?.weight)||0)||null;
+}
+
 function getCompPcts() {
   const s = loadSettings();
   return (s.comp && s.comp.pcts) ? s.comp.pcts : {snatch: [...DEFAULT_COMP_PCTS], cj: [...DEFAULT_COMP_PCTS]};
@@ -2274,6 +2286,11 @@ function renderComp() {
   const s = loadSettings();
   const pbs = s.pbs || [];
   const comp = s.comp || {};
+  let corrected=false;
+  for(const key of ['snatch','cj'])if(Array.isArray(comp[key])){
+    comp[key]=comp[key].map(value=>{const rounded=roundCompetitionWeight(value);if(value!==rounded)corrected=true;return rounded;});
+  }
+  if(corrected)saveSettingsData({...s,comp});
   if (comp.name) document.getElementById('comp-name').value = comp.name;
   if (comp.date) document.getElementById('comp-date').value = comp.date;
   if (comp.location && document.getElementById('comp-location')) document.getElementById('comp-location').value = comp.location;
@@ -2310,7 +2327,7 @@ function renderComp() {
     const pb = lift.pb || null;
     const liftPcts = pcts[lift.key] || [...DEFAULT_COMP_PCTS];
     const saved = comp[lift.key] || [null, null, null];
-    const attempts = saved.map((v, i) => v !== null ? v : (pb ? roundWeight(pb * liftPcts[i] / 100) : null));
+    const attempts = saved.map((v, i) => v != null ? roundCompetitionWeight(v) : (pb ? roundCompetitionWeight(pb * liftPcts[i] / 100) : null));
     // Build label showing both values when both exist
     const parts = [];
     if(lift.compBest) parts.push(lift.compBest+'kg comp');
@@ -2326,8 +2343,8 @@ function renderComp() {
           const p = liftPcts[i];
           return `<div class="comp-attempt">
             <div class="comp-attempt-label">${['Opener','2nd','3rd'][i]}</div>
-            <input class="comp-weight-input" type="number" id="cw-${lift.key}-${i}" value="${w}" step="0.5" placeholder="--"
-              oninput="onCompWeightInput('${lift.key}',${i},this.value)">
+            <input class="comp-weight-input" type="number" id="cw-${lift.key}-${i}" value="${w}" step="1" min="1" inputmode="numeric" placeholder="--"
+              onchange="commitCompWeight('${lift.key}',${i},this)" oninput="onCompWeightInput('${lift.key}',${i},this.value)">
             <div class="comp-attempt-pct-wrap">
               <input class="comp-attempt-pct-input" type="number" id="cp-${lift.key}-${i}" value="${p}" min="50" max="150" step="0.5"
                 oninput="onCompPctInput('${lift.key}',${i},this.value,'${lift.key}')">
@@ -2346,13 +2363,13 @@ function onCompWeightInput(key, idx, val) {
   const s = loadSettings();
   if (!s.comp) s.comp = {};
   if (!s.comp[key]) s.comp[key] = [null, null, null];
-  const weight = parseFloat(val) || null;
+  const weight = roundCompetitionWeight(val);
   s.comp[key][idx] = weight;
   // Update pct display
-  const pb = (s.pbs || []).find(p => p.lift === (key === 'snatch' ? 'Snatch' : 'Clean and Jerk'));
+  const pb = getCompetitionReference(key);
   if (pb && weight) {
     const pctEl = document.getElementById(`cp-${key}-${idx}`);
-    if (pctEl) pctEl.value = Math.round(weight / pb.weight * 100 * 10) / 10;
+    if (pctEl) pctEl.value = Math.round(weight / pb * 100 * 10) / 10;
   }
   saveSettingsData(s);
   updateCompTotal();
@@ -2366,9 +2383,9 @@ function onCompPctInput(key, idx, val) {
   const pct = parseFloat(val);
   if (!isNaN(pct)) {
     s.comp.pcts[key][idx] = pct;
-    const pb = (s.pbs || []).find(p => p.lift === (key === 'snatch' ? 'Snatch' : 'Clean and Jerk'));
+    const pb = getCompetitionReference(key);
     if (pb) {
-      const newWeight = roundWeight(pb.weight * pct / 100);
+      const newWeight = roundCompetitionWeight(pb * pct / 100);
       s.comp[key] = s.comp[key] || [null, null, null];
       s.comp[key][idx] = newWeight;
       const wEl = document.getElementById(`cw-${key}-${idx}`);
@@ -2377,6 +2394,13 @@ function onCompPctInput(key, idx, val) {
   }
   saveSettingsData(s);
   updateCompTotal();
+}
+
+function commitCompWeight(key,idx,input) {
+  const raw=input.value,rounded=roundCompetitionWeight(raw);
+  input.value=rounded??'';
+  onCompWeightInput(key,idx,input.value);
+  if(raw!==''&&Number(raw)!==rounded)showToast('Competition weight rounded down to '+(rounded??0)+' kg','');
 }
 
 function saveCompMeta() {
@@ -2405,8 +2429,8 @@ function resetComp() {
 function updateCompTotal() {
   const s3El = document.getElementById('cw-snatch-2');
   const c3El = document.getElementById('cw-cj-2');
-  const s3 = s3El ? parseFloat(s3El.value) : null;
-  const c3 = c3El ? parseFloat(c3El.value) : null;
+  const s3 = s3El ? roundCompetitionWeight(s3El.value) : null;
+  const c3 = c3El ? roundCompetitionWeight(c3El.value) : null;
   const total = s3 && c3 ? s3 + c3 : null;
   document.getElementById('compTotal').textContent = total ? total : '--';
   renderCompContext(total);
@@ -3229,11 +3253,11 @@ function populateWarmupFromPlan(){
   // comp.snatch/cj are arrays of plain numbers (or null = use pct calc)
   function getOpener(key,pbLift){
     const saved=comp[key]&&comp[key][0];
-    if(saved!=null)return saved;
+    if(saved!=null)return roundCompetitionWeight(saved);
     // Fall back to pct of PB
-    const pb=(pbs.find(p=>p.lift===pbLift)||{}).weight;
+    const pb=getCompetitionReference(key);
     const pct=(pcts[key]&&pcts[key][0])||93;
-    return pb?roundWeight(pb*pct/100):null;
+    return pb?roundCompetitionWeight(pb*pct/100):null;
   }
   const sn=getOpener('snatch','Snatch');
   const cj=getOpener('cj','Clean and Jerk');
@@ -3255,10 +3279,10 @@ function syncOpenersFromPlan(){
   const pcts=getCompPcts();
   function getOpener(key,pbLift){
     const saved=comp[key]&&comp[key][0];
-    if(saved!=null)return saved;
-    const pb=(pbs.find(p=>p.lift===pbLift)||{}).weight;
+    if(saved!=null)return roundCompetitionWeight(saved);
+    const pb=getCompetitionReference(key);
     const pct=(pcts[key]&&pcts[key][0])||93;
-    return pb?roundWeight(pb*pct/100):null;
+    return pb?roundCompetitionWeight(pb*pct/100):null;
   }
   const sn=getOpener('snatch','Snatch');
   const cj=getOpener('cj','Clean and Jerk');
@@ -3273,7 +3297,7 @@ function syncOpenersFromPlan(){
 
 function buildWarmupLadder(opener){
   const pcts=[0,0.50,0.65,0.75,0.83,0.90,0.95];
-  return pcts.map((p,i)=>({attempt:i+1,kg:i===0?20:Math.round(opener*p*4)/4,pct:i===0?null:Math.round(p*100)}));
+  return pcts.map((p,i)=>({attempt:i+1,kg:i===0?20:Math.max(20,roundCompetitionWeight(opener*p)),pct:i===0?null:Math.round(p*100)}));
 }
 
 function addMinutes(timeStr,mins){
@@ -3286,8 +3310,8 @@ function addMinutes(timeStr,mins){
 
 function renderWarmup(){
   const out=document.getElementById('warmup-output');if(!out)return;
-  const snOpener=parseFloat(document.getElementById('wu-sn-opener').value)||null;
-  const cjOpener=parseFloat(document.getElementById('wu-cj-opener').value)||null;
+  const snOpener=roundCompetitionWeight(document.getElementById('wu-sn-opener').value);
+  const cjOpener=roundCompetitionWeight(document.getElementById('wu-cj-opener').value);
   const startTime=document.getElementById('wu-start-time').value||null;
   const totalLiftersEl=document.getElementById('wu-total-lifters');
   const totalLifters=totalLiftersEl&&totalLiftersEl.value!==''?parseInt(totalLiftersEl.value):null;
@@ -3961,17 +3985,17 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="cloud-backup.js?v=2026-10-31.9"></script>
-<script src="studio.js?v=2026-10-31.9"></script>
-<script src="database-ui.js?v=2026-10-31.9"></script>
-<script src="accessory-model.js?v=2026-10-31.9"></script>
-<script src="accessory.js?v=2026-10-31.9"></script>
-<script src="sync-status.js?v=2026-10-31.9"></script>
-<script src="home.js?v=2026-10-31.9"></script>
-<script src="coaching.js?v=2026-10-31.9"></script>
-<script src="analytics-chart.js?v=2026-10-31.9"></script>
-<script src="analytics.js?v=2026-10-31.9"></script>
-<script src="phone-layout.js?v=2026-10-31.9"></script>
-<script src="app-interactions.js?v=2026-10-31.9"></script>
+<script src="cloud-backup.js?v=2026-10-31.10"></script>
+<script src="studio.js?v=2026-10-31.10"></script>
+<script src="database-ui.js?v=2026-10-31.10"></script>
+<script src="accessory-model.js?v=2026-10-31.10"></script>
+<script src="accessory.js?v=2026-10-31.10"></script>
+<script src="sync-status.js?v=2026-10-31.10"></script>
+<script src="home.js?v=2026-10-31.10"></script>
+<script src="coaching.js?v=2026-10-31.10"></script>
+<script src="analytics-chart.js?v=2026-10-31.10"></script>
+<script src="analytics.js?v=2026-10-31.10"></script>
+<script src="phone-layout.js?v=2026-10-31.10"></script>
+<script src="app-interactions.js?v=2026-10-31.10"></script>
 </body>
 </html>

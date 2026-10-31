@@ -183,6 +183,29 @@ with sync_playwright() as p:
  for width in [320,375,402,430]:
   page.set_viewport_size({'width':width,'height':812});page.locator('#tabs .tab').nth(1).click()
   assert page.evaluate('document.documentElement.scrollWidth')<=width
+ # Competition planning always floors fractional suggestions and saved inputs.
+ page.evaluate("""()=>{saveSettingsData({...loadSettings(),pbs:[{lift:'Snatch',weight:65.5},{lift:'Clean and Jerk',weight:100.5}],meets:[{id:'rounding-meet',name:'Test meet',date:'2025-01-01',snatch:[{weight:70,made:true}],cj:[{weight:110,made:true}]}],comp:{name:'Rounding test',snatch:[64.9,null,null],cj:[null,null,null]}});}""")
+ page.locator('#tabs .tab').nth(3).click();page.locator('#comp-sub-plan').click()
+ assert page.locator('#cw-snatch-0').input_value()=='64'
+ assert page.evaluate('loadSettings().comp.snatch[0]')==64
+ assert [page.locator('#cw-snatch-'+str(i)).input_value() for i in [1,2]]==['68','71']
+ assert [page.locator('#cw-cj-'+str(i)).input_value() for i in range(3)]==['102','107','112']
+ assert page.locator('#compTotal').inner_text()=='183'
+ assert page.locator('#cw-snatch-0').get_attribute('step')=='1'
+ page.locator('#cp-snatch-0').fill('94.9')
+ assert page.locator('#cw-snatch-0').input_value()=='66'
+ assert page.evaluate('loadSettings().comp.snatch[0]')==66
+ page.locator('#cw-cj-0').fill('103.9');page.locator('#cw-cj-0').blur()
+ assert page.locator('#cw-cj-0').input_value()=='103'
+ assert page.evaluate('loadSettings().comp.cj[0]')==103
+ assert page.locator('#cp-cj-0').input_value()=='93.6'
+ page.locator('#comp-sub-warmup').click()
+ page.evaluate('syncOpenersFromPlan()')
+ assert page.locator('#wu-sn-opener').input_value()=='66'
+ assert page.locator('#wu-cj-opener').input_value()=='103'
+ assert page.evaluate('buildWarmupLadder(66).every(s=>Number.isInteger(s.kg))')
+ page.locator('#comp-sub-plan').click();page.locator('#cw-snatch-0').fill('');page.locator('#cw-snatch-0').blur()
+ assert page.evaluate('loadSettings().comp.snatch[0]') is None
  # File backups contain both JSON records and plain-string device/timestamp keys.
  page.locator('#tabs .tab').nth(4).click()
  with page.expect_download() as download_info:page.locator('[data-act=backup]').click()
