@@ -34,6 +34,10 @@ jobs:
       - run: python scripts/app-audit-check.py
         env:
           BARBELL_BROWSER_ENGINE: webkit
+      - run: python scripts/competition-warmup-check.py
+      - run: python scripts/competition-warmup-check.py
+        env:
+          BARBELL_BROWSER_ENGINE: webkit
       - uses: actions/upload-artifact@v4
         if: always()
         with:

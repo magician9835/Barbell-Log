@@ -51,7 +51,11 @@ with sync_playwright() as p:
  page.locator('#comp-pane-plan button[onclick="resetComp()"] ').click();assert page.locator('#confirmOverlay').is_visible();page.locator('#confirmOverlay [onclick="hideConfirm()"]').click();assert page.evaluate('loadSettings().comp.snatch[0]') is not None
  page.locator('#comp-pane-plan button[onclick="resetComp()"] ').click();page.locator('#confirmYes').click();assert page.evaluate('loadSettings().comp.snatch[0]') is None
  page.locator('#comp-sub-warmup').click();check('competition-warmup')
- for key,value in [('wu-sn-opener','60'),('wu-cj-opener','80'),('wu-start-time','09:30'),('wu-total-lifters','10'),('wu-lifters-sn','2'),('wu-lifters-cj','3'),('wu-break','10'),('wu-pace','1.5'),('wu-cj-start-override','11:15')]:page.locator('#'+key).fill(value)
+ page.locator('#cw-session').evaluate('(e)=>e.open=true');page.locator('.cw-preferences').evaluate('(e)=>e.open=true')
+ for key,value in [('wu-start-time','09:30'),('wu-total-lifters','10'),('wu-break','10'),('wu-pace','1.5')]:page.locator('#'+key).fill(value)
+ for lift,values in [('sn',[('wu-sn-opener','60'),('wu-lifters-sn','2')]),('cj',[('wu-cj-opener','80'),('wu-lifters-cj','3'),('wu-cj-start-override','11:15')])]:
+  page.locator('#cw-setup [data-cw-lift='+lift+']').click()
+  for key,value in values:page.locator('#'+key).fill(value)
  assert page.evaluate("loadSettings().compWarmup['wu-start-time'].value")=='09:30'
  page.locator('[onclick="clearCJOverride()"] ').click();assert page.locator('#wu-cj-start-override').input_value()==''
  assert page.evaluate("addMinutes('09:00',59.6)")=='10:00'
