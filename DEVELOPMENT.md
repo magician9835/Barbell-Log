@@ -310,3 +310,11 @@ Rehearsal setup uses dedicated Snatch and Clean & jerk cards with opener/optiona
 Existing unfinished rehearsal plans normalize their planned movements to the competition lifts, preserving component/stage IDs and completed record payloads. Finished sessions are not normalized. Optional third attempts retain attempt number 3 when the second is blank, and attempts must stay level or increase in whole kilos. Heavy-lift recovery defaults to 3 minutes and is adjustable from 1–10 minutes; the Class two-minute cap and block-time compression do not apply to rehearsal blocks. Light build-up at or below 50% retains untimed rest. No historical lift/meet rows are rewritten.
 
 Validation adds model checks for unchanged completed records, draft normalization, omitted attempts, ascending whole kilos and uncapped rehearsal recovery. Chromium/WebKit builder checks verify the dedicated cards, absent movement controls and editable recovery, alongside the existing Class/complex builder tests.
+
+## Quick running-order adjustments (2026-10-31.23)
+
+On-the-day counter controls are now labelled More ahead (+) and Fewer ahead (−), with larger targets. If a planned attempt count exists, a first adjustment starts the live count immediately from that estimate; there is no modal to unlock the controls. Before activation it is explicitly labelled as a planned estimate. With no starting count, either adjustment opens the count entry rather than assuming zero. Decrementing is disabled at zero and incrementing at 150. Each press counts a platform attempt, including repeats, rather than assuming each athlete only has one attempt ahead. Timing recalculates and completed warm-ups remain unchanged.
+
+The competition browser check covers one-tap activation from a planned count, increment/decrement, zero bounds, persistence and independent lift counts, alongside the iPhone-safe-area action bounds. No database schema or actual lift/meet records change.
+
+Quick adjustments made before a known session start keep their time estimates anchored to that start. The stored count update time remains separate for the stale-count reminder. For C&J, only an announced/entered start anchors a live count; an unconfirmed calculated session estimate does not override the athlete's live observation. Model tests cover before-start and already-started updates.

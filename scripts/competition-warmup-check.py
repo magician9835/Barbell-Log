@@ -9,7 +9,7 @@ with sync_playwright() as p:
  page=b.new_page(viewport={'width':402,'height':812},is_mobile=True,has_touch=True,locale='en-GB');page.set_default_timeout(6000)
  errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
  legacy={'wu-start-time':{'value':'09:30'},'wu-total-lifters':{'value':'10'},'wu-pace':{'value':'1.5'},'wu-sn-opener':{'value':'65'},'wu-cj-opener':{'value':'95'},'wu-lifters-sn':{'value':'0'},'wu-lifters-cj':{'value':'4'},'wu-cj-start-override':{'value':'11:15'}}
- page.add_init_script("if(!localStorage.getItem('audit-seeded')){localStorage.setItem('barbell_settings_v1',"+json.dumps(json.dumps({'comp':{'name':'Lift Off','date':'2026-11-08'},'compWarmup':legacy}))+ ");localStorage.setItem('audit-seeded','1');}")
+ page.add_init_script("if(!localStorage.getItem('audit-seeded')){localStorage.setItem('barbell_settings_v1',"+json.dumps(json.dumps({'comp':{'name':'Lift Off','date':'2020-01-01'},'compWarmup':legacy}))+ ");localStorage.setItem('audit-seeded','1');}")
  def serve(r):
   path=root/r.request.url.split('localhost:8000/')[-1].split('?')[0]
   if r.request.url.startswith('http://localhost:8000/') and path.is_file():r.fulfill(body=path.read_bytes(),content_type=mimetypes.guess_type(str(path))[0] or 'application/octet-stream')
@@ -45,6 +45,11 @@ with sync_playwright() as p:
    c=page.locator('#cw-complete').bounding_box();tabs=page.locator('#tabs').bounding_box();assert c['y']+c['height']<tabs['y'],(c,tabs)
   page.screenshot(path=str(out/(engine+'-day-'+str(width)+'.png')))
  page.set_viewport_size({'width':402,'height':812})
+ # A planned count can be adjusted with a single tap, with no modal to unlock it.
+ assert page.locator('.cw-counter-controls strong').inner_text()=='0'
+ assert page.locator('[data-live-add="-1"]').is_disabled()
+ page.locator('[data-live-add="1"]').click();assert page.locator('.cw-counter-controls strong').inner_text()=='1';assert page.locator('dialog[open]').count()==0
+ page.locator('[data-live-add="-1"]').click();assert page.locator('.cw-counter-controls strong').inner_text()=='0';assert page.locator('[data-live-add="-1"]').is_disabled()
  page.locator('#cw-set-count').click();page.locator('#cw-remaining').fill('0');page.locator('#cw-confirm-count').click();assert 'Follow the platform call' in page.locator('#cw-next').inner_text();assert page.locator('#cw-complete').count()==0
  page.locator('#cw-set-count').click();page.locator('#cw-remaining').fill('18');page.locator('#cw-confirm-count').click()
  assert page.locator('.cw-counter-controls strong').inner_text()=='18'
@@ -60,13 +65,17 @@ with sync_playwright() as p:
  assert page.locator('[data-undo="'+first_done+'"]').inner_text()=='✓ Done'
  page.locator('#cw-skip').click();assert page.evaluate("Object.values(loadSettings().competitionWarmupV1.lifts.sn.done).some(x=>x.skipped)")
  page.locator('[data-undo="'+first_done+'"]').click();assert not page.evaluate("loadSettings().competitionWarmupV1.lifts.sn.done["+json.dumps(first_done)+"]")
- page.locator('#cw-day [data-cw-lift=cj]').click();assert 'Clean & jerk' in page.locator('#cw-next').inner_text();assert page.locator('.cw-counter-controls strong').inner_text()=='—'
+ page.locator('#cw-day [data-cw-lift=cj]').click();assert 'Clean & jerk' in page.locator('#cw-next').inner_text();assert page.locator('.cw-counter-controls strong').inner_text()=='4'
  page.locator('#cw-day [data-cw-lift=sn]').click();assert page.locator('.cw-counter-controls strong').inner_text()=='18'
  page.locator('.cw-mode [data-cw-mode=setup]').click();page.locator('#cw-setup [data-cw-lift=cj]').click();assert '11:15' in page.locator('#cw-setup-summary-cj').inner_text()
  page.screenshot(path=str(out/(engine+'-setup.png')))
  # Settings snapshots include the new day progress, separate from actual meets.
  snapshot=page.evaluate('CloudBackup.snapshot()');assert snapshot['data']['barbell_settings_v1']['competitionWarmupV1']['lifts']['sn']['live']['remaining']==18
- page.locator('.cw-mode [data-cw-mode=day]').click();page.locator('.cw-delay>summary').click();page.locator('#cw-reset-progress').click();page.locator('#confirmYes').click();assert page.locator('.cw-counter-controls strong').inner_text()=='—'
+ page.locator('#wu-lifters-cj').fill('');page.locator('.cw-mode [data-cw-mode=day]').click()
+ # With no count, ask for the actual order rather than inventing a zero base.
+ page.locator('[data-live-add="1"]').click();assert page.locator('#cw-remaining').input_value()==''
+ page.locator('#cw-remaining').fill('4');page.locator('#cw-confirm-count').click();assert page.locator('.cw-counter-controls strong').inner_text()=='4'
+ page.locator('.cw-delay>summary').click();page.locator('#cw-reset-progress').click();page.locator('#confirmYes').click();assert page.locator('.cw-counter-controls strong').inner_text()=='—'
  assert page.evaluate("loadSettings().competitionWarmupV1.lifts.sn.live.remaining")==18
  assert not errors,errors
  print('PASS:',engine,'shared session setup, separate lift plans, legacy values, editable ladder/validation, full visible build-up, reachable day action with iPhone safe areas, live count changes, done/skip/undo, reload, independent C&J and backed-up state.')
