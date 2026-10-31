@@ -141,7 +141,9 @@ with sync_playwright() as p:
  warm_id=next(k for k,v in rows.items() if k!=entry['id'])
  assert rows[warm_id]['weight']==20 and 'Warm-up' in rows[warm_id]['notes']
  assert rows[warm_id]['phase']=='warmup' and rows[warm_id]['quality'] is None
+ page.wait_for_function('(id)=>getCachedEntries().some(e=>e.id===id)',arg=warm_id)
  page.evaluate('openEditModal('+json.dumps(warm_id)+')')
+ assert page.locator('#studio-log-dialog').is_visible()
  assert page.locator('[data-editor=quality]').count()==0
  page.locator('#studio-log-dialog [aria-label=Close]').click()
  # Remove this fixture record so later history assertions keep their one-row setup.
