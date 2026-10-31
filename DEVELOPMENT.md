@@ -256,3 +256,15 @@ Hide technique rating controls during warm-ups and when editing newly recorded w
 The active lift's full warm-up/working-set sequence stays above its recording card, with actual completed weights/reps and distinct done/current/skipped/planned markers. Rehearsal attempts are labelled Opener/2nd/3rd. Completed tiles open the existing log editor, and edits update the local workout summary as well as the record. Deleting a completed record marks its tile skipped instead of leaving a ghost Done state. Other lifts remain available in the session overview.
 
 Recording uses editable weight/reps directly, one contextual Log action and a single rest timer shown while running. Plate diagrams and optional set notes expand on demand; working-set ratings remain visible and warm-ups remain unrated. Finish/Leave remain accessible. Native builder checks cover visible plan, phone bounds, reachable primary action, one timer and stable rep input; the training workflow covers completed-tile editing and plan status updates.
+
+## Accessory workflow rebuild (2026-10-31.16)
+
+Replace the linear preparation/strength wizard with independent exercise cards and set rows. Saved/default workouts start directly with recent matching loads; blank and retrospective entry are first-class flows. Any set can be changed or logged in any order, both sides can be entered together or separately, and supersets log a round together. Changed actual loads carry into untouched following sets; edited sets retain their own actuals. One deadline-based rest timer appears while needed, with no automatic timers in retrospective mode. Preparation checklists, instructions, row distance and timers are optional.
+
+Exercises/supersets can be added or adjusted while training. Equipment supports dumbbells, plates, total barbell/machine/cable weights, bodyweight and bands. Unloaded exercise records use a null primary weight, compatible with the existing database constraint. Completed records and Olympic PBs stay separate. The block editor retains logged sets; composition changes reset only unlogged draft actuals.
+
+History groups records by workout/date/session with compressed per-exercise actuals and expandable individual edits/notes. Workouts can be saved, started, repeated or deleted from the library without deleting recorded history. Starting another workout archives an unfinished draft for resumption. Existing schema-1 sessions, IDs and completed sets survive the transition; old preparation state is mapped to the optional checklist.
+
+Main Class/1:1/Solo sessions expose an Accessories action carrying parent workout ID, date and session type. No custom session name is required. Existing record/snapshot RPCs and backup keys remain unchanged; no schema migration or credential changes are needed.
+
+Validation covers exact DB/plate loads, different side counts, out-of-order offline logging/reload, supersets, current-load template reuse/deletion, retrospective plate circuits, Class-linked bodyweight records, history grouping, fresh-device recovery and native WebKit layouts.

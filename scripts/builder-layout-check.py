@@ -113,6 +113,41 @@ with sync_playwright() as p:
  page.locator('#pane-planner').evaluate('(e)=>e.scrollTop=0')
  assert page.locator('[data-act=complete]').bounding_box()['y']+page.locator('[data-act=complete]').bounding_box()['height']<=page.locator('#tabs').bounding_box()['y']
  page.screenshot(path=str(out/(engine+'-recording-attempt.png')))
+ # The rebuilt accessory flow also accepts existing linear-session drafts.
+ page.evaluate("""()=>{const old=AccessoryModel.overhead(WorkoutModel.date());old.phase='active';old.index=4;const step=AccessoryModel.steps(old)[3],actual=AccessoryModel.actuals(step);actual[0].left=7;old.done[step.key]={entry:AccessoryModel.entry(old,step,actual)};const prep=old.blocks[1];old.actuals[prep.id+'-0']={checked:{[prep.items[0].id]:true}};localStorage.setItem('barbell_accessory_workout_v1',JSON.stringify(old));AccessoryApp.open();}""")
+ page.locator('[data-ac=resume]').click()
+ assert page.locator('.ac-exercise-card').count()==3
+ assert page.locator('.ac-set-list [data-ac-done=true]').count()==1
+ page.locator('.ac-preparation summary').click()
+ assert page.locator('[data-ac-prep]').first.is_checked()
+ page.locator('.ac-preparation summary').click()
+ for width in [320,375,402,430]:
+  page.set_viewport_size({'width':width,'height':812})
+  assert page.locator('#accessory-root').evaluate('(r)=>r.scrollWidth<=r.clientWidth')
+  assert all(card.evaluate('(c)=>c.scrollWidth<=c.clientWidth') for card in page.locator('.ac-exercise-card').all())
+ page.set_viewport_size({'width':402,'height':812})
+ page.locator('.ac-exercise-card').nth(1).locator('[data-ac=log-set]').last.click()
+ assert page.locator('.ac-set-list [data-ac-done=true]').count()==2
+ page.locator('.ac-exercise-card').first.locator('[data-ac=edit-record]').first.click()
+ assert page.locator('[data-x=left]').input_value()=='7'
+ page.locator('[data-x=left]').fill('6');page.locator('[data-x=weight]').fill('16');page.locator('#ac-save-edit').click()
+ assert '6L / 8R' in page.locator('.ac-exercise-card').first.inner_text()
+ assert '16 kg/DB' in page.locator('.ac-exercise-card').first.locator('.ac-set-list li').nth(1).inner_text()
+ page.locator('.ac-exercise-card').first.locator('[data-ac=edit-record]').first.click()
+ page.locator('#ac-delete-edit').click()
+ assert page.locator('.ac-set-list [data-ac-done=true]').count()==1
+ assert '16 kg/DB' in page.locator('.ac-exercise-card').first.locator('.ac-set-list li').first.inner_text()
+ page.locator('.ac-exercise-card').first.locator('[data-ac=log-set]').first.click()
+ assert page.locator('.ac-set-list [data-ac-done=true]').count()==2
+ page.locator('[data-ac=add-block]').click()
+ page.locator('[data-ex=name][data-j="0"]').fill('Push-up')
+ page.locator('[data-ex=equipment][data-j="0"]').select_option('bodyweight')
+ assert page.locator('[data-load-fields="0"]').is_hidden()
+ page.locator('#ac-save-block').click()
+ page.locator('.ac-exercise-card').last.locator('[data-ac=log-set]').first.click()
+ assert page.evaluate("JSON.parse(localStorage.barbell_accessory_records_v1).find(e=>e.name==='Push-up').weight") is None
+ page.locator('#pane-planner').evaluate('(p)=>p.scrollTop=0')
+ page.screenshot(path=str(out/(engine+'-accessory-overview.png')))
  assert not errors,errors
  print('PASS:',engine,'native date/select bounds, equal heights, stacked metadata, blank-plan actions, complex fields separate competition loading, vertical-only dialogs and horizontal filter scrolling at 320–430px.')
  browser.close()
