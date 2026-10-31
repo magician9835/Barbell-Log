@@ -16,3 +16,9 @@ console.log('App and backend JavaScript syntax checked; home-screen icon present
 
 const version = JSON.parse(readFileSync('app-version.json', 'utf8')).version;
 assert.ok(html.includes(`data-version="${version}"`) && html.includes(`app-updates.js?v=${version}`), 'Release versions must match');
+
+// Inline controls are executable code too; syntax-check them before release.
+for (const match of html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'').matchAll(/\bon(?:click|change|input|keydown)="([^"]*)"/g)) {
+  const handler=match[1].replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+  new Script(`(function(event){${handler}\n})`,{filename:'inline-control'});
+}

@@ -72,8 +72,10 @@ with sync_playwright() as p:
  assert page.locator('.legacy-connector').count()==0
  assert page.locator('#database-copy-app-url').count()==0
  assert page.locator('[data-db-activate]').is_hidden()
- assert page.evaluate("document.querySelector('#pane-settings').children[0].id")=='database-account'
- assert page.evaluate("document.querySelector('#pane-settings').children[1].id")=='backup-settings'
+ assert page.evaluate("document.querySelector('#pane-settings').children[0].id")=='display-settings'
+ assert page.evaluate("document.querySelector('#database-account').compareDocumentPosition(document.querySelector('#backup-settings')) & Node.DOCUMENT_POSITION_FOLLOWING")
+ assert page.locator('#backup-settings').get_attribute('open') is None
+ page.locator('#backup-settings>summary').click()
  for retired in ['Google Sheets Sync','Apps Script URL','Project setup (owner only)','BARBELL LOG v1.3']:
   assert retired not in settings.inner_text()
  assert page.locator('.settings-advanced').get_attribute('open') is None

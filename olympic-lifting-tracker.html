@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.16">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.16">
+<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.17">
+<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.17">
 <meta name="theme-color" content="#0c0d0f">
-<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.16">
+<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.17">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -293,9 +293,9 @@
   .warmup-progress { position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
   .warmup-progress.done { background:var(--accent); }
 </style>
-<link rel="stylesheet" href="training.css?v=2026-10-31.16">
-<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.16">
-<link rel="stylesheet" href="studio.css?v=2026-10-31.16">
+<link rel="stylesheet" href="training.css?v=2026-10-31.17">
+<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.17">
+<link rel="stylesheet" href="studio.css?v=2026-10-31.17">
 </head>
 <body>
 <div id="app">
@@ -530,19 +530,19 @@
             <button onclick="syncOpenersFromPlan()" style="background:none;border:1px solid var(--border);color:var(--text3);font-size:11px;font-family:DM Mono,monospace;padding:4px 12px;border-radius:20px;cursor:pointer;">↺ From Plan</button>
           </div>
           <div class="card">
-            <div class="field"><label>Snatch Opener (kg)</label><input type="number" id="wu-sn-opener" placeholder="e.g. 72" step="1" min="1" inputmode="numeric" oninput="renderWarmup()" onchange="this.value=roundCompetitionWeight(this.value)??'';renderWarmup()"></div>
-            <div class="field"><label>C&amp;J Opener (kg)</label><input type="number" id="wu-cj-opener" placeholder="e.g. 90" step="1" min="1" inputmode="numeric" oninput="renderWarmup()" onchange="this.value=roundCompetitionWeight(this.value)??'';renderWarmup()"></div>
+            <div class="field"><label>Snatch Opener (kg)</label><input type="number" id="wu-sn-opener" placeholder="e.g. 72" step="1" min="1" inputmode="numeric" oninput="saveWarmupSettings()" onchange="this.value=roundCompetitionWeight(this.value)??'';saveWarmupSettings()"></div>
+            <div class="field"><label>C&amp;J Opener (kg)</label><input type="number" id="wu-cj-opener" placeholder="e.g. 90" step="1" min="1" inputmode="numeric" oninput="saveWarmupSettings()" onchange="this.value=roundCompetitionWeight(this.value)??'';saveWarmupSettings()"></div>
           </div>
         </div>
         <div class="section">
           <div class="section-label">Timing</div>
           <div class="card">
-            <div class="field"><label>Session start time</label><input type="time" id="wu-start-time" oninput="renderWarmup()"></div>
-            <div class="field"><label>Total lifters in session</label><input type="number" id="wu-total-lifters" placeholder="e.g. 10" min="1" max="40" oninput="renderWarmup()"></div>
-            <div class="field"><label>Break after Snatch (min)</label><input type="number" id="wu-break" value="10" min="5" max="30" step="1" oninput="renderWarmup()"></div>
-            <div class="field"><label>Your position on Snatch</label><input type="number" id="wu-lifters-sn" placeholder="e.g. 4" min="0" max="30" oninput="renderWarmup()"></div>
-            <div class="field"><label>Your position on C&amp;J</label><input type="number" id="wu-lifters-cj" placeholder="e.g. 4" min="0" max="30" oninput="renderWarmup()"></div>
-            <div class="field"><label>Avg time per attempt (min)</label><input type="number" id="wu-pace" value="1.5" step="0.5" min="1" max="3" oninput="renderWarmup()"></div>
+            <div class="field"><label>Session start time</label><input type="time" id="wu-start-time" oninput="saveWarmupSettings()"></div>
+            <div class="field"><label>Total lifters in session</label><input type="number" id="wu-total-lifters" placeholder="e.g. 10" min="1" max="40" oninput="saveWarmupSettings()"></div>
+            <div class="field"><label>Break after Snatch (min)</label><input type="number" id="wu-break" value="10" min="5" max="30" step="1" oninput="saveWarmupSettings()"></div>
+            <div class="field"><label>Your position on Snatch</label><input type="number" id="wu-lifters-sn" placeholder="e.g. 4" min="0" max="30" oninput="saveWarmupSettings()"></div>
+            <div class="field"><label>Your position on C&amp;J</label><input type="number" id="wu-lifters-cj" placeholder="e.g. 4" min="0" max="30" oninput="saveWarmupSettings()"></div>
+            <div class="field"><label>Avg time per attempt (min)</label><input type="number" id="wu-pace" value="1.5" step="0.5" min="1" max="3" oninput="saveWarmupSettings()"></div>
           </div>
         </div>
         <div class="section">
@@ -553,7 +553,7 @@
           <div class="card">
             <div class="field">
               <label>Actual C&amp;J start time</label>
-              <input type="time" id="wu-cj-start-override" oninput="renderWarmup()"
+              <input type="time" id="wu-cj-start-override" oninput="saveWarmupSettings()"
                 style="font-size:22px;font-family:DM Mono,monospace;font-weight:700;color:var(--accent);">
               <div style="font-size:11px;color:var(--text3);margin-top:4px;">When announced, enter the actual time here. Overrides the estimate.</div>
             </div>
@@ -565,7 +565,7 @@
       <!-- HISTORY SUB-PANE -->
       <div class="sub-pane active" id="comp-pane-history">
         <div style="padding:12px 16px 0;display:flex;justify-content:space-between;align-items:center;">
-          <button id="meetEditBtn" hidden class="btn btn-secondary btn-sm" onclick="toggleMeetEditMode()">Edit</button>
+          <button id="meetEditBtn" hidden aria-pressed="false" class="btn btn-secondary btn-sm" onclick="toggleMeetEditMode()">Manage</button>
           <button class="btn btn-primary btn-sm" onclick="openMeetModal()">+ Log a Meet</button>
         </div>
         <div id="meetList" style="padding:8px 0;"></div>
@@ -574,11 +574,11 @@
 
     <!-- SETTINGS TAB -->
     <div class="tab-pane" id="pane-settings">
-      <div class="section">
+      <div class="section" id="display-settings">
         <div class="section-label">Display</div>
         <div class="card">
           <div class="settings-row">
-            <div><div class="settings-label">Units</div><div class="settings-sub">Stored in kg, converted for display</div></div>
+            <div><div class="settings-label">Units</div><div class="settings-sub">Display units for log and analytics. Plans use kg.</div></div>
             <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
               <button id="unit-kg" onclick="setUnit('kg')" style="padding:6px 16px;font-family:DM Mono,monospace;font-size:12px;font-weight:700;border:none;cursor:pointer;background:var(--accent);color:#000;">kg</button>
               <button id="unit-lbs" onclick="setUnit('lbs')" style="padding:6px 16px;font-family:DM Mono,monospace;font-size:12px;font-weight:700;border:none;cursor:pointer;background:var(--surface2);color:var(--text2);">lbs</button>
@@ -587,23 +587,21 @@
         </div>
       </div>
       <div class="section">
-        <div class="section-label">Athlete</div>
+        <div class="section-label">Bodyweight</div>
         <div class="card">
           <div class="field" style="display:flex;align-items:center;gap:10px;">
             <div style="flex:1;">
               <label>Bodyweight (kg)</label>
-              <input type="number" id="setting-bw" placeholder="e.g. 79.8" step="0.1" min="30" max="200"
+              <input type="number" id="setting-bw" placeholder="e.g. 79.8" step="0.1" min="20" max="300"
                 oninput="saveAthleteSettings()"
                 style="font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;width:100%;min-width:0;">
             </div>
-            <button onclick="logBWFromField()" style="flex-shrink:0;background:var(--accent);color:#000;border:none;border-radius:8px;padding:8px 12px;font-family:Syne,sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Log today</button>
+            <button class="studio-primary" onclick="logBWFromField()">Log today</button>
           </div>
-          <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
-            <div><div class="settings-label">Weight Class</div><div class="settings-sub" id="weight-class-display">Enter bodyweight above</div></div>
-          </div>
-          <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;border-bottom:none;">
-            <div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;line-height:1.6;" id="weight-class-detail"></div>
-          </div>
+          <details class="settings-weight-class">
+            <summary>Weight class <span id="weight-class-display">Enter bodyweight above</span></summary>
+            <div id="weight-class-detail"></div>
+          </details>
         </div>
       </div>
       <div class="section">
@@ -615,20 +613,20 @@
           </button>
         </div>
         <!-- Quick log row -->
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-          <input type="number" id="bw-entry" placeholder="kg" step="0.1" min="30" max="200"
+        <div class="settings-weigh-in">
+          <input aria-label="Bodyweight in kilograms" type="number" id="bw-entry" placeholder="kg" step="0.1" min="20" max="300"
             style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:DM Mono,monospace;padding:8px 12px;border-radius:8px;outline:none;width:90px;">
-          <input type="date" id="bw-date" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:13px;font-family:DM Mono,monospace;padding:8px 10px;border-radius:8px;outline:none;color-scheme:dark;flex:1;">
+          <input aria-label="Weigh-in date" type="date" id="bw-date" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:13px;font-family:DM Mono,monospace;padding:8px 10px;border-radius:8px;outline:none;color-scheme:dark;flex:1;">
           <button class="btn btn-secondary btn-sm" onclick="logBodyweight()">Log</button>
         </div>
         <!-- Recent entries (collapsed = 5 rows, expanded = all) -->
         <div class="card" id="bwLogList"></div>
         <!-- Import -->
-        <div style="margin-top:8px;">
-          <button class="btn btn-secondary btn-sm" onclick="document.getElementById('bw-csv-import').click()">Import Bodyweight CSV</button>
+        <details class="settings-import"><summary>Import weigh-ins</summary>
+          <button class="studio-secondary wide" onclick="document.getElementById('bw-csv-import').click()">Choose bodyweight CSV</button>
           <input type="file" id="bw-csv-import" accept=".csv" style="display:none;" onchange="importWithingsCSV(this)">
-          <div style="margin-top:6px;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Supports Withings and most CSV exports with Date, Weight columns.</div>
-        </div>
+          <div style="margin-top:6px;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Withings or Date, Weight columns in kg. Use YYYY-MM-DD dates; slash dates use month/day/year.</div>
+        </details>
       </div>
       <details class="section settings-advanced">
         <summary>Advanced lift estimates</summary>
@@ -641,7 +639,7 @@
           <button class="btn btn-ghost btn-sm" onclick="resetCoefficients()">Reset to Defaults</button>
         </div>
       </details>
-      <div style="padding:16px;text-align:center;color:var(--text3);font-size:10px;font-family:DM Mono,monospace;">BARBELL LOG · Built for Brian</div>
+      <div id="settings-footer">BARBELL LOG · Built for Brian</div>
     </div>
   </div>
 
@@ -845,10 +843,10 @@
 <div class="modal-overlay" id="meetModal" onclick="if(event.target===this)closeMeetModal()">
   <div class="modal">
     <div class="modal-handle"></div>
-    <button class="modal-close" onclick="closeMeetModal()">✕</button>
+    <button class="modal-close" aria-label="Close meet form" onclick="closeMeetModal()">✕</button>
     <h2>Log a Meet</h2>
     <div class="card" style="margin-bottom:8px;">
-      <div class="field"><label>Competition Name</label><input type="text" id="mm-name" placeholder="e.g. Lift Off 2025"></div>
+      <div class="field"><label>Competition Name</label><input type="text" id="mm-name" placeholder="e.g. Lift Off"></div>
       <div class="field"><label>Date</label><input type="date" id="mm-date" onchange="this.blur()"></div>
       <div class="field"><label>Location</label><input type="text" id="mm-location" placeholder="e.g. London"></div>
       <div class="field"><label>Bodyweight (kg)</label><input type="number" id="mm-bw" placeholder="e.g. 80.5" step="0.1" style="font-family:DM Mono,monospace;font-size:18px;"></div>
@@ -857,34 +855,34 @@
       <div style="padding:10px 14px 6px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;">Snatch</div>
       <div class="field" style="display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
         <label style="width:64px;margin:0;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Attempt 1</label>
-        <input type="number" id="mm-sn-w1" placeholder="kg" step="0.5"
+        <input type="number" id="mm-sn-w1" placeholder="kg" step="1" min="1" inputmode="numeric" aria-label="sn attempt 1 in kilograms" onchange="this.value=roundCompetitionWeight(this.value)??''"
           style="flex:1;font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;">
         <div style="display:flex;gap:6px;">
-          <button onclick="setMeetResult('sn',1,true)" id="mm-sn-r1-good"
+          <button onclick="setMeetResult('sn',1,true)" id="mm-sn-r1-good" aria-label="sn attempt 1 made" aria-pressed="false"
             style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">✅</button>
-          <button onclick="setMeetResult('sn',1,false)" id="mm-sn-r1-miss"
+          <button onclick="setMeetResult('sn',1,false)" id="mm-sn-r1-miss" aria-label="sn attempt 1 missed" aria-pressed="false"
             style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">❌</button>
         </div>
       </div>
       <div class="field" style="display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
         <label style="width:64px;margin:0;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Attempt 2</label>
-        <input type="number" id="mm-sn-w2" placeholder="kg" step="0.5"
+        <input type="number" id="mm-sn-w2" placeholder="kg" step="1" min="1" inputmode="numeric" aria-label="sn attempt 2 in kilograms" onchange="this.value=roundCompetitionWeight(this.value)??''"
           style="flex:1;font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;">
         <div style="display:flex;gap:6px;">
-          <button onclick="setMeetResult('sn',2,true)" id="mm-sn-r2-good"
+          <button onclick="setMeetResult('sn',2,true)" id="mm-sn-r2-good" aria-label="sn attempt 2 made" aria-pressed="false"
             style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">✅</button>
-          <button onclick="setMeetResult('sn',2,false)" id="mm-sn-r2-miss"
+          <button onclick="setMeetResult('sn',2,false)" id="mm-sn-r2-miss" aria-label="sn attempt 2 missed" aria-pressed="false"
             style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">❌</button>
         </div>
       </div>
       <div class="field" style="display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
         <label style="width:64px;margin:0;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Attempt 3</label>
-        <input type="number" id="mm-sn-w3" placeholder="kg" step="0.5"
+        <input type="number" id="mm-sn-w3" placeholder="kg" step="1" min="1" inputmode="numeric" aria-label="sn attempt 3 in kilograms" onchange="this.value=roundCompetitionWeight(this.value)??''"
           style="flex:1;font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;">
         <div style="display:flex;gap:6px;">
-          <button onclick="setMeetResult('sn',3,true)" id="mm-sn-r3-good"
+          <button onclick="setMeetResult('sn',3,true)" id="mm-sn-r3-good" aria-label="sn attempt 3 made" aria-pressed="false"
             style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">✅</button>
-          <button onclick="setMeetResult('sn',3,false)" id="mm-sn-r3-miss"
+          <button onclick="setMeetResult('sn',3,false)" id="mm-sn-r3-miss" aria-label="sn attempt 3 missed" aria-pressed="false"
             style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">❌</button>
         </div>
       </div>
@@ -893,34 +891,34 @@
       <div style="padding:10px 14px 6px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:DM Mono,monospace;">Clean and Jerk</div>
       <div class="field" style="display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
         <label style="width:64px;margin:0;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Attempt 1</label>
-        <input type="number" id="mm-cj-w1" placeholder="kg" step="0.5"
+        <input type="number" id="mm-cj-w1" placeholder="kg" step="1" min="1" inputmode="numeric" aria-label="cj attempt 1 in kilograms" onchange="this.value=roundCompetitionWeight(this.value)??''"
           style="flex:1;font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;">
         <div style="display:flex;gap:6px;">
-          <button onclick="setMeetResult('cj',1,true)" id="mm-cj-r1-good"
+          <button onclick="setMeetResult('cj',1,true)" id="mm-cj-r1-good" aria-label="cj attempt 1 made" aria-pressed="false"
             style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">✅</button>
-          <button onclick="setMeetResult('cj',1,false)" id="mm-cj-r1-miss"
+          <button onclick="setMeetResult('cj',1,false)" id="mm-cj-r1-miss" aria-label="cj attempt 1 missed" aria-pressed="false"
             style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">❌</button>
         </div>
       </div>
       <div class="field" style="display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
         <label style="width:64px;margin:0;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Attempt 2</label>
-        <input type="number" id="mm-cj-w2" placeholder="kg" step="0.5"
+        <input type="number" id="mm-cj-w2" placeholder="kg" step="1" min="1" inputmode="numeric" aria-label="cj attempt 2 in kilograms" onchange="this.value=roundCompetitionWeight(this.value)??''"
           style="flex:1;font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;">
         <div style="display:flex;gap:6px;">
-          <button onclick="setMeetResult('cj',2,true)" id="mm-cj-r2-good"
+          <button onclick="setMeetResult('cj',2,true)" id="mm-cj-r2-good" aria-label="cj attempt 2 made" aria-pressed="false"
             style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">✅</button>
-          <button onclick="setMeetResult('cj',2,false)" id="mm-cj-r2-miss"
+          <button onclick="setMeetResult('cj',2,false)" id="mm-cj-r2-miss" aria-label="cj attempt 2 missed" aria-pressed="false"
             style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">❌</button>
         </div>
       </div>
       <div class="field" style="display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
         <label style="width:64px;margin:0;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Attempt 3</label>
-        <input type="number" id="mm-cj-w3" placeholder="kg" step="0.5"
+        <input type="number" id="mm-cj-w3" placeholder="kg" step="1" min="1" inputmode="numeric" aria-label="cj attempt 3 in kilograms" onchange="this.value=roundCompetitionWeight(this.value)??''"
           style="flex:1;font-family:DM Mono,monospace;font-size:18px;background:transparent;border:none;color:var(--text);outline:none;">
         <div style="display:flex;gap:6px;">
-          <button onclick="setMeetResult('cj',3,true)" id="mm-cj-r3-good"
+          <button onclick="setMeetResult('cj',3,true)" id="mm-cj-r3-good" aria-label="cj attempt 3 made" aria-pressed="false"
             style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">✅</button>
-          <button onclick="setMeetResult('cj',3,false)" id="mm-cj-r3-miss"
+          <button onclick="setMeetResult('cj',3,false)" id="mm-cj-r3-miss" aria-label="cj attempt 3 missed" aria-pressed="false"
             style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:none;font-size:16px;cursor:pointer;">❌</button>
         </div>
       </div>
@@ -933,15 +931,15 @@
   </div>
 </div>
 
-<script src="training-core.js?v=2026-10-31.16"></script>
-<script src="workout-model.js?v=2026-10-31.16"></script>
-<script src="programme-view.js?v=2026-10-31.16"></script>
-<script src="data-migrations.js?v=2026-10-31.16"></script>
+<script src="training-core.js?v=2026-10-31.17"></script>
+<script src="workout-model.js?v=2026-10-31.17"></script>
+<script src="programme-view.js?v=2026-10-31.17"></script>
+<script src="data-migrations.js?v=2026-10-31.17"></script>
 <script src="vendor/supabase-2.118.0.js"></script>
-<script src="database-config.js?v=2026-10-31.16"></script>
-<script src="database.js?v=2026-10-31.16"></script>
-<script src="pending-lifts.js?v=2026-10-31.16"></script>
-<script src="app-updates.js?v=2026-10-31.16" data-version="2026-10-31.16"></script>
+<script src="database-config.js?v=2026-10-31.17"></script>
+<script src="database.js?v=2026-10-31.17"></script>
+<script src="pending-lifts.js?v=2026-10-31.17"></script>
+<script src="app-updates.js?v=2026-10-31.17" data-version="2026-10-31.17"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -1120,9 +1118,11 @@ function initDB(){
   const lbsBtn=document.getElementById('unit-lbs');
   if(kgBtn&&lbsBtn){
     kgBtn.style.background=u==='kg'?'var(--accent)':'var(--surface2)';
-    kgBtn.style.color=u==='kg'?'#000':'var(--text2)';
+    kgBtn.setAttribute('aria-pressed',String(u==='kg'));
+    lbsBtn.setAttribute('aria-pressed',String(u==='lbs'));
+    kgBtn.style.color=u==='kg'?'#fff':'var(--text2)';
     lbsBtn.style.background=u==='lbs'?'var(--accent)':'var(--surface2)';
-    lbsBtn.style.color=u==='lbs'?'#000':'var(--text2)';
+    lbsBtn.style.color=u==='lbs'?'#fff':'var(--text2)';
   }
   // Athlete
   const bw=settings.athleteBW||(settings.bwLog&&settings.bwLog[0]&&settings.bwLog[0].weight)||null;
@@ -1161,7 +1161,7 @@ function switchTab(name,el){
   if(name==='pbs'){renderPBs();renderGoals();}
   if(name==='comp'){renderComp();renderMeetList();renderCountdown();}
   if(name==='planner')window.TrainingApp?.render();
-  if(name==='settings'){renderCoeffSettings();renderBWLog();const s=loadSettings();renderWeightClass(s.athleteBW||(s.bwLog&&s.bwLog[0]&&s.bwLog[0].weight)||null);}
+  if(name==='settings'){renderCoeffSettings();renderBWLog();const s=loadSettings(),bw=s.athleteBW||s.bwLog?.[0]?.weight||null;document.getElementById('setting-bw').value=bw||'';renderWeightClass(bw);for(const unit of ['kg','lbs']){const b=document.getElementById('unit-'+unit),selected=unit===(s.unit||'kg');b.setAttribute('aria-pressed',String(selected));b.style.background=selected?'var(--accent)':'var(--surface2)';b.style.color=selected?'#fff':'var(--text2)';}}
 }
 
 // ============================================================
@@ -1385,10 +1385,13 @@ function toKg(val){ return getUnit()==='lbs'?Math.round(val/2.20462*100)/100:val
 function setUnit(u){
   const s=loadSettings(); s.unit=u; saveSettingsData(s);
   document.getElementById('unit-kg').style.background=u==='kg'?'var(--accent)':'var(--surface2)';
-  document.getElementById('unit-kg').style.color=u==='kg'?'#000':'var(--text2)';
+  document.getElementById('unit-kg').style.color=u==='kg'?'#fff':'var(--text2)';
   document.getElementById('unit-lbs').style.background=u==='lbs'?'var(--accent)':'var(--surface2)';
-  document.getElementById('unit-lbs').style.color=u==='lbs'?'#000':'var(--text2)';
+  document.getElementById('unit-lbs').style.color=u==='lbs'?'#fff':'var(--text2)';
+  document.getElementById('unit-kg').setAttribute('aria-pressed',String(u==='kg'));
+  document.getElementById('unit-lbs').setAttribute('aria-pressed',String(u==='lbs'));
   renderLog(); renderPBs();
+  if(document.getElementById('log-pane-analytics').classList.contains('active'))renderAnalytics();
   if(document.getElementById('pane-comp').classList.contains('active'))renderComp();
 }
 
@@ -1432,21 +1435,22 @@ function saveAthleteSettings(){
 }
 
 function queueBodyweight(entry){
-  try{PendingLifts.queue('logBW',{...entry,id:'bw-'+crypto.randomUUID()},AppData.endpoint());}
+  try{entry.id||='bw-'+crypto.randomUUID();PendingLifts.queue('logBW',entry,AppData.endpoint());}
   catch(error){showToast('Could not save on this phone. Please try again.','error');return false;}
   PendingLifts.drain(AppData.endpoint()).then(()=>renderPendingLifts()).catch(()=>{});return true;
 }
 function logBWFromField(){
   const bw=parseFloat(document.getElementById('setting-bw').value)||null;
-  if(!bw){showToast('Enter a bodyweight first','error');return;}
+  if(!Number.isFinite(bw)||bw<20||bw>300){showToast('Enter a bodyweight from 20 to 300 kg','error');return;}
   const today=TrainingCore.localDate();
-  if(!queueBodyweight({date:today,weight:bw,note:''}))return;
   const s=loadSettings();
   if(!s.bwLog)s.bwLog=[];
-  // Avoid duplicate for today
+  // Reuse the same record when correcting today's weigh-in.
   const existing=s.bwLog.find(e=>e.date===today);
-  if(existing){existing.weight=bw;}
-  else{s.bwLog.push({date:today,weight:bw});}
+  const record={...existing,date:today,weight:bw,note:existing?.note||''};
+  if(!queueBodyweight(record))return;
+  if(existing){Object.assign(existing,record);}
+  else{s.bwLog.push(record);}
   s.bwLog.sort((a,b)=>b.date.localeCompare(a.date));
   s.athleteBW=s.bwLog[0].weight;
   saveSettingsData(s);
@@ -1495,11 +1499,12 @@ function renderWeightClass(bw){
 function logBodyweight(){
   const val=parseFloat(document.getElementById('bw-entry').value);
   const date=document.getElementById('bw-date').value||TrainingCore.localDate();
-  if(!val||val<=0){showToast('Enter a positive weight','error');return;}
-  if(!queueBodyweight({date,weight:val,note:''}))return;
+  if(!Number.isFinite(val)||val<20||val>300){showToast('Enter a bodyweight from 20 to 300 kg','error');return;}
+  const record={date,weight:val,note:''};
+  if(!queueBodyweight(record))return;
   const s=loadSettings();
   if(!s.bwLog)s.bwLog=[];
-  s.bwLog.push({date,weight:val});
+  s.bwLog.push(record);
   s.bwLog.sort((a,b)=>b.date.localeCompare(a.date));
   // Update athleteBW to most recent
   s.athleteBW=s.bwLog[0].weight;
@@ -1539,7 +1544,7 @@ function renderBWLog(){
   }
   el.innerHTML = shown.map((e,i)=>`
     <div style="padding:9px 14px;display:flex;justify-content:space-between;align-items:center;${i>0?'border-top:1px solid var(--border)':''}">
-      <div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">${formatDate(e.date)}${e.note?'<span style="margin-left:6px;font-size:9px;opacity:0.5;">'+e.note+'</span>':''}</div>
+      <div style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">${formatDate(e.date)}${e.note?'<span style="margin-left:6px;font-size:11px;">'+escapeText(e.note)+'</span>':''}</div>
       <div style="font-size:14px;font-weight:700;font-family:DM Mono,monospace;color:var(--text);">${e.weight}<span style="font-size:10px;color:var(--text3);margin-left:2px;">kg</span></div>
     </div>`).join('');
 }
@@ -2276,11 +2281,12 @@ function renderComp() {
     comp[key]=comp[key].map(value=>{const rounded=roundCompetitionWeight(value);if(value!==rounded)corrected=true;return rounded;});
   }
   if(corrected)saveSettingsData({...s,comp});
-  if (comp.name) document.getElementById('comp-name').value = comp.name;
-  if (comp.date) document.getElementById('comp-date').value = comp.date;
-  if (comp.location && document.getElementById('comp-location')) document.getElementById('comp-location').value = comp.location;
+  document.getElementById('comp-name').value = comp.name||'';
+  document.getElementById('comp-date').value = comp.date||'';
+  document.getElementById('comp-location').value = comp.location||'';
   // Dynamic section label
   const planLabel = document.querySelector('#comp-pane-plan .section-label');
+  if (planLabel) planLabel.textContent='Next competition';
   if (planLabel && comp.name) {
     const labelParts = [comp.name];
     if (comp.date) {
@@ -2329,10 +2335,10 @@ function renderComp() {
           return `<div class="comp-attempt">
             <div class="comp-attempt-label">${['Opener','2nd','3rd'][i]}</div>
             <input class="comp-weight-input" type="number" id="cw-${lift.key}-${i}" value="${w}" step="1" min="1" inputmode="numeric" placeholder="--"
-              onchange="commitCompWeight('${lift.key}',${i},this)" oninput="onCompWeightInput('${lift.key}',${i},this.value)">
+              aria-label="${lift.label} ${['opener','second attempt','third attempt'][i]} in kilograms" onchange="commitCompWeight('${lift.key}',${i},this)" oninput="onCompWeightInput('${lift.key}',${i},this.value)">
             <div class="comp-attempt-pct-wrap">
               <input class="comp-attempt-pct-input" type="number" id="cp-${lift.key}-${i}" value="${p}" min="50" max="150" step="0.5"
-                oninput="onCompPctInput('${lift.key}',${i},this.value,'${lift.key}')">
+                aria-label="${lift.label} ${['opener','second attempt','third attempt'][i]} percentage" oninput="onCompPctInput('${lift.key}',${i},this.value,'${lift.key}')">
               <span class="comp-attempt-pct-sym">%</span>
             </div>
           </div>`;
@@ -2396,11 +2402,12 @@ function saveCompMeta() {
   s.comp.location = document.getElementById('comp-location')?.value||'';
   saveSettingsData(s);
   renderCountdown();
-  renderComp();
 }
 
 function resetComp() {
-
+  showConfirm('Reset planned attempts?','Your competition details and recorded meets will stay.','Reset attempts',()=>resetCompAttempts());
+}
+function resetCompAttempts(){
   const s = loadSettings();
   if (!s.comp) s.comp = {};
   s.comp.snatch = [null, null, null];
@@ -2591,6 +2598,7 @@ function openMeetModal(){
 function resetMeetResultBtns(lift,idx){
   const good=document.getElementById('mm-'+lift+'-r'+idx+'-good');
   const miss=document.getElementById('mm-'+lift+'-r'+idx+'-miss');
+  good?.setAttribute('aria-pressed','false');miss?.setAttribute('aria-pressed','false');
   if(good){good.style.background='none';good.style.borderColor='var(--border)';}
   if(miss){miss.style.background='none';miss.style.borderColor='var(--border)';}
 }
@@ -2598,6 +2606,8 @@ function resetMeetResultBtns(lift,idx){
 function setMeetResult(lift,idx,made){
   if(!meetResults[lift])meetResults[lift]={};
   meetResults[lift][idx]=made;
+  document.getElementById('mm-'+lift+'-r'+idx+'-good')?.setAttribute('aria-pressed',String(made));
+  document.getElementById('mm-'+lift+'-r'+idx+'-miss')?.setAttribute('aria-pressed',String(!made));
   const good=document.getElementById('mm-'+lift+'-r'+idx+'-good');
   const miss=document.getElementById('mm-'+lift+'-r'+idx+'-miss');
   if(good){good.style.background=made?'rgba(230,45,66,0.2)':'none';good.style.borderColor=made?'var(--accent)':'var(--border)';}
@@ -2619,6 +2629,14 @@ function saveMeet(){
     weight:parseFloat(document.getElementById('mm-cj-w'+i).value)||null,
     made:meetResults.cj[i]||false
   }));
+  for(const [key,label,attempts] of [['sn','Snatch',snatch],['cj','Clean and jerk',cj]]){
+    for(let i=0;i<attempts.length;i++){
+      const weight=attempts[i].weight;
+      if(document.getElementById('mm-'+key+'-w'+(i+1)).value!==''&&(weight===null||!Number.isFinite(weight)||weight<=0||!Number.isInteger(weight))){showToast(label+' attempt '+(i+1)+' must be a positive whole kilo','error');return;}
+      if(weight!==null&&meetResults[key][i+1]===null){showToast('Choose made or missed for '+label+' attempt '+(i+1),'error');return;}
+      if(weight===null&&meetResults[key][i+1]!==null){showToast('Enter a weight for '+label+' attempt '+(i+1),'error');return;}
+    }
+  }
   const location=document.getElementById('mm-location').value.trim();
   const meet={id:uid(),name,date,location,bw,snatch,cj,notes:document.getElementById('mm-notes').value.trim()};
   try{PendingLifts.queue('saveMeet',meet,AppData.endpoint());}catch(error){showToast('Could not save on this phone. Keep this form open.','error');return;}
@@ -2641,7 +2659,8 @@ function toggleMeetEditMode(){
   _meetEditMode=!_meetEditMode;
   const btn=document.getElementById('meetEditBtn');
   if(btn){
-    btn.textContent=_meetEditMode?'Done':'Edit';
+    btn.textContent=_meetEditMode?'Done':'Manage';
+    btn.setAttribute('aria-pressed',String(_meetEditMode));
     btn.style.color=_meetEditMode?'var(--red)':'';
     btn.style.borderColor=_meetEditMode?'var(--red)':'';
   }
@@ -2666,15 +2685,12 @@ function getMeetPBs(){
 function renderMeetList(){
   const el=document.getElementById('meetList');if(!el)return;
   const meets=getMeets();
+  const manage=document.getElementById('meetEditBtn');if(manage)manage.hidden=!meets.length;
   if(!meets.length){
     el.innerHTML='<div class="empty" style="padding:32px;"><div class="empty-icon">🏅</div><p>No meets logged yet.</p></div>';
     return;
   }
   // Delegated click handler for delete buttons (avoids quote-escaping issues)
-  el.onclick=function(ev){
-    const btn=ev.target.closest('.meet-delete-btn');
-    if(btn) deleteMeet(btn.dataset.id);
-  };
   el.onclick=function(ev){
     const btn=ev.target.closest('.meet-delete-btn');
     if(btn) deleteMeet(btn.dataset.id);
@@ -2834,7 +2850,7 @@ function renderGoals(){
   });
 
   // Edit multiples note
-  html+=`<div style="padding:0 16px 16px;font-size:11px;color:var(--text3);line-height:1.6;">Multiples are × bodyweight. Edit inline above -- changes save immediately. These default from IWF coaching standards.</div>`;
+  html+=`<div style="padding:0 16px 16px;font-size:11px;color:var(--text3);line-height:1.6;">Multiples are × bodyweight. Edit inline above -- changes save immediately. These are adjustable training targets, not official IWF standards.</div>`;
   el.innerHTML=html;
 }
 
@@ -2886,6 +2902,7 @@ function exportCSV(){
   const csv=[h,...rows].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
   const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=`barbell-log-${TrainingCore.localDate()}.csv`;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
   showToast('CSV exported','success');
 }
 function clearAllData(){showConfirm('Clear all local data?','This cannot be undone. Export first if needed.','Yes, clear data',function(){localStorage.removeItem(DB_KEY);clearEntryCache();renderLog();showToast('Data cleared','error');});}
@@ -3223,16 +3240,17 @@ function adjustPosition(id, delta){
   const current=parseInt(el.value)||0;
   const next=Math.max(0,current+delta);
   el.value=next;
-  renderWarmup();
+  saveWarmupSettings();
 }
 function clearCJOverride(){
   const el=document.getElementById('wu-cj-start-override');
   if(el)el.value='';
-  renderWarmup();
+  saveWarmupSettings();
 }
 
 function populateWarmupFromPlan(){
   const s=loadSettings();const comp=s.comp||{};
+  for(const [id,value] of Object.entries(s.compWarmup||{})){const el=document.getElementById(id);if(el&&document.activeElement!==el){el.value=value.value;el.dataset.planVal=value.planVal||'';}}
   const pbs=s.pbs||[];
   const pcts=getCompPcts();
   // comp.snatch/cj are arrays of plain numbers (or null = use pct calc)
@@ -3277,19 +3295,25 @@ function syncOpenersFromPlan(){
   if(cj){cjEl.value=cj;cjEl.dataset.planVal=cj;}
   if(!sn&&!cj)showToast('No openers set in Plan tab','error');
   else showToast('Openers updated from Plan','success');
-  renderWarmup();
+  saveWarmupSettings();
+}
+
+function saveWarmupSettings(){
+  const s=loadSettings();s.compWarmup={};
+  for(const input of document.querySelectorAll('#comp-pane-warmup input'))s.compWarmup[input.id]={value:input.value,planVal:input.dataset.planVal||''};
+  saveSettingsData(s);renderWarmup();
 }
 
 function buildWarmupLadder(opener){
   const pcts=[0,0.50,0.65,0.75,0.83,0.90,0.95];
-  return pcts.map((p,i)=>({attempt:i+1,kg:i===0?20:Math.max(20,roundCompetitionWeight(opener*p)),pct:i===0?null:Math.round(p*100)}));
+  return pcts.map((p,i)=>({attempt:i+1,kg:i===0?20:Math.max(20,roundCompetitionWeight(opener*p)),pct:i===0?null:Math.round(p*100)})).filter((step,i,steps)=>step.kg<opener&&!steps.slice(0,i).some(prev=>prev.kg===step.kg));
 }
 
 function addMinutes(timeStr,mins){
   if(!timeStr)return null;
   const [h,m]=timeStr.split(':').map(Number);
-  const total=h*60+m+mins;
-  const nh=Math.floor(total/60)%24,nm=Math.round(total%60);
+  const total=((Math.round(h*60+m+mins)%1440)+1440)%1440;
+  const nh=Math.floor(total/60),nm=total%60;
   return String(nh).padStart(2,'0')+':'+String(nm).padStart(2,'0');
 }
 
@@ -3910,6 +3934,7 @@ function importWithingsCSV(input){
     const s=loadSettings();
     if(!s.bwLog)s.bwLog=[];
     let imported=0;
+    let failed=false;
     // Skip header row
     const dataLines=lines.filter((_,i)=>i>0);
     dataLines.forEach(line=>{
@@ -3937,20 +3962,21 @@ function importWithingsCSV(input){
           }
         }
       }
-      if(!d||d.length!==10)return;
+      if(!d||d.length!==10||!Number.isFinite(Date.parse(d+'T00:00:00Z'))||new Date(d+'T00:00:00Z').toISOString().slice(0,10)!==d)return;
       // Dedup -- keep the earliest reading of each day
       const exists=s.bwLog.find(e=>e.date===d);
-      if(!exists){s.bwLog.push({date:d,weight:Math.round(weight*100)/100,note:'Imported'});imported++;}
+      if(!exists){const record={date:d,weight:Math.round(weight*100)/100,note:'Imported'};if(!queueBodyweight(record)){failed=true;return;}s.bwLog.push(record);imported++;}
     });
     s.bwLog.sort((a,b)=>b.date.localeCompare(a.date));
     if(s.bwLog.length)s.athleteBW=s.bwLog[0].weight;
     saveSettingsData(s);
-    renderBWChart();
+    if(document.getElementById('setting-bw'))document.getElementById('setting-bw').value=s.athleteBW||'';
     renderBWLog();
     renderWeightClass(s.athleteBW);
-    showToast(imported+' weigh-ins imported','success');
+    showToast(imported+' weigh-ins saved on phone'+(failed?' · some could not be saved':' · syncing'),'');
     input.value='';
   };
+  reader.onerror=()=>{showToast('Could not read that file','error');input.value='';};
   reader.readAsText(file);
 }
 
@@ -3970,17 +3996,17 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="cloud-backup.js?v=2026-10-31.16"></script>
-<script src="studio.js?v=2026-10-31.16"></script>
-<script src="database-ui.js?v=2026-10-31.16"></script>
-<script src="accessory-model.js?v=2026-10-31.16"></script>
-<script src="accessory.js?v=2026-10-31.16"></script>
-<script src="sync-status.js?v=2026-10-31.16"></script>
-<script src="home.js?v=2026-10-31.16"></script>
-<script src="coaching.js?v=2026-10-31.16"></script>
-<script src="analytics-chart.js?v=2026-10-31.16"></script>
-<script src="analytics.js?v=2026-10-31.16"></script>
-<script src="phone-layout.js?v=2026-10-31.16"></script>
-<script src="app-interactions.js?v=2026-10-31.16"></script>
+<script src="cloud-backup.js?v=2026-10-31.17"></script>
+<script src="studio.js?v=2026-10-31.17"></script>
+<script src="database-ui.js?v=2026-10-31.17"></script>
+<script src="accessory-model.js?v=2026-10-31.17"></script>
+<script src="accessory.js?v=2026-10-31.17"></script>
+<script src="sync-status.js?v=2026-10-31.17"></script>
+<script src="home.js?v=2026-10-31.17"></script>
+<script src="coaching.js?v=2026-10-31.17"></script>
+<script src="analytics-chart.js?v=2026-10-31.17"></script>
+<script src="analytics.js?v=2026-10-31.17"></script>
+<script src="phone-layout.js?v=2026-10-31.17"></script>
+<script src="app-interactions.js?v=2026-10-31.17"></script>
 </body>
 </html>

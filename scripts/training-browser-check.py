@@ -255,6 +255,7 @@ with sync_playwright() as p:
  assert page.evaluate('loadSettings().comp.snatch[0]') is None
  # File backups contain both JSON records and plain-string device/timestamp keys.
  page.locator('#tabs .tab').nth(4).click()
+ page.locator('#backup-settings>summary').click()
  with page.expect_download() as download_info:page.locator('[data-act=backup]').click()
  backup=download_info.value;backup_path=out/'roundtrip-backup.json';backup.save_as(str(backup_path))
  exported=json.loads(backup_path.read_text());assert exported['data']['barbell_device_id_v3']
