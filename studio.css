@@ -64,3 +64,12 @@
 .analytics-chart{width:100%;height:auto;color:var(--text2);overflow:visible}.analytics-chart a:focus-visible circle:last-of-type{stroke:var(--text);stroke-width:3}
 
 .coaching-notes{margin:24px 0}.coaching-card{margin:12px 0;padding:16px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:12px;min-width:0}.coaching-card h4{font-size:16px;line-height:1.4;margin:5px 0 8px}.coaching-card p,.coaching-method p{font:13px/1.6 -apple-system,BlinkMacSystemFont,sans-serif;color:var(--text2);overflow-wrap:anywhere}.coaching-scope{font-size:11px;color:var(--accent)}.coaching-card summary,.coaching-more>summary,.coaching-method>summary{min-height:44px;align-content:center;cursor:pointer;font-size:12px;color:var(--text2)}.coaching-card details p{margin:0 0 8px}.coaching-card a{display:inline-block;color:var(--accent);font-size:12px;line-height:1.6;overflow-wrap:anywhere;padding:8px 0}.coaching-method{border-top:1px solid var(--border);margin-top:12px}
+
+/* Builder fields follow the available phone width; long selectors never share
+   a narrow half-column with a date or reference input. */
+.studio-session-fields{grid-template-columns:minmax(0,1fr);gap:0}
+.studio-session-card{margin-top:12px}.studio-session-card>.studio-grid>.studio-field:first-child{margin-top:0}.studio-session-card>.studio-field:last-child{margin-bottom:0}
+.studio-empty-plan{margin:20px 0 8px}.studio-empty-plan h3{font-size:18px;line-height:1.4;margin-bottom:6px}.studio-empty-plan p{font-size:13px;line-height:1.6;color:var(--text2)}
+.studio-builder-help{margin-top:16px}.studio-builder-help p{margin:10px 0}.studio-builder-help a{font-size:12px;color:var(--accent);line-height:1.6}
+.studio-heading>button{flex:0 0 auto;min-height:44px}.studio-heading h2{margin-bottom:4px}
+@media(max-width:480px){.studio-grid{grid-template-columns:minmax(0,1fr);gap:0}.studio-grid.studio-grid-numeric{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.studio-stage .studio-grid-numeric{grid-template-columns:minmax(0,1fr)}.studio-heading h2{font-size:23px}.studio-component-top>div{gap:2px}.studio-field select{padding-right:24px;text-overflow:ellipsis}}
