@@ -100,6 +100,16 @@ with sync_playwright() as p:
  for width in [320,375,402,430]:
   page.set_viewport_size({'width':width,'height':812});page.locator('#tabs .tab').nth(1).click()
   assert page.evaluate('document.documentElement.scrollWidth')<=width
+ # File backups contain both JSON records and plain-string device/timestamp keys.
+ page.locator('#tabs .tab').nth(4).click()
+ with page.expect_download() as download_info:page.locator('[data-act=backup]').click()
+ backup=download_info.value;backup_path=out/'roundtrip-backup.json';backup.save_as(str(backup_path))
+ exported=json.loads(backup_path.read_text());assert exported['data']['barbell_device_id_v3']
+ saved_plan=json.loads(exported['data']['barbell_workout_v3'])
+ page.evaluate("localStorage.setItem('barbell_workout_v3','null')")
+ page.locator('#restore-file-backup').set_input_files(str(backup_path))
+ page.locator('#confirmYes').click();page.wait_for_load_state('domcontentloaded')
+ page.wait_for_function("JSON.parse(localStorage.getItem('barbell_workout_v3')||'null')?.id==="+json.dumps(saved_plan['id']))
  assert not errors,errors
- print('PASS: blank Class, arbitrary complex, stable keyboard/rep input, offline queue/reload, confirmed plan backup, templates, discard, normalized editor, opener collars, transcription draft, analytics filters, delete and 320–430px widths.')
+ print('PASS: blank Class, arbitrary complex, stable keyboard/rep input, offline queue/reload, confirmed plan backup, templates, discard, normalized editor, opener collars, transcription draft, analytics filters, delete, file backup/restore and 320–430px widths.')
  b.close()

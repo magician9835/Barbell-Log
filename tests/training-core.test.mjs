@@ -46,3 +46,8 @@ test('rounding respects the configured loading increment',()=>{
   const b=C.block('Clean','Clean','1 x 2 @ 75',{reference:101,increment:2.5});
   assert.equal(C.expand(b)[0].weight,75);
 });
+
+test('structured squat can be a normal reference; hang clean complex cannot be full C&J',()=>{
+ assert.equal(C.findReference('Back squat',[{base:'Squat',weight:125,technique:['Back'],structure:[{base:'Squat',technique:['Back']}]}]).weight,125);
+ assert.equal(C.findReference('Clean and Jerk',[{base:'Clean and Jerk',weight:100,structure:[{base:'Clean',position:['Hang Above Knee']},{base:'Jerk',receiving:'Split'}]}]).weight,null);
+});
