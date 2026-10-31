@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.19">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.19">
+<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.20">
+<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.20">
 <meta name="theme-color" content="#0c0d0f">
-<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.19">
+<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.20">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -293,9 +293,9 @@
   .warmup-progress { position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
   .warmup-progress.done { background:var(--accent); }
 </style>
-<link rel="stylesheet" href="training.css?v=2026-10-31.19">
-<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.19">
-<link rel="stylesheet" href="studio.css?v=2026-10-31.19">
+<link rel="stylesheet" href="training.css?v=2026-10-31.20">
+<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.20">
+<link rel="stylesheet" href="studio.css?v=2026-10-31.20">
 </head>
 <body>
 <div id="app">
@@ -490,14 +490,14 @@
       <!-- PLAN SUB-PANE -->
       <div class="sub-pane" id="comp-pane-plan">
         <div id="comp-countdown" class="countdown-banner" style="display:none;"></div>
-        <div class="section">
-          <div class="section-label">Next Competition</div>
+        <details id="comp-details" class="comp-details">
+          <summary>Edit competition details</summary>
           <div class="card">
-            <div class="field"><label>Name</label><input type="text" id="comp-name" placeholder="e.g. Lift Off" oninput="saveCompMeta()"></div>
-            <div class="field"><label>Date</label><input type="date" id="comp-date" onchange="saveCompMeta()"></div>
-            <div class="field"><label>Location</label><input type="text" id="comp-location" placeholder="e.g. London" oninput="saveCompMeta()"></div>
+            <div class="field"><label for="comp-name">Name</label><input type="text" id="comp-name" placeholder="e.g. Lift Off" oninput="saveCompMeta()"></div>
+            <div class="field"><label for="comp-date">Date</label><input type="date" id="comp-date" onchange="saveCompMeta()"></div>
+            <div class="field"><label for="comp-location">Location</label><input type="text" id="comp-location" placeholder="e.g. London" oninput="saveCompMeta()"></div>
           </div>
-        </div>
+        </details>
         <div class="section">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
             <div class="section-label" style="margin:0;">Attempt Planner</div>
@@ -932,15 +932,15 @@
   </div>
 </div>
 
-<script src="training-core.js?v=2026-10-31.19"></script>
-<script src="workout-model.js?v=2026-10-31.19"></script>
-<script src="programme-view.js?v=2026-10-31.19"></script>
-<script src="data-migrations.js?v=2026-10-31.19"></script>
+<script src="training-core.js?v=2026-10-31.20"></script>
+<script src="workout-model.js?v=2026-10-31.20"></script>
+<script src="programme-view.js?v=2026-10-31.20"></script>
+<script src="data-migrations.js?v=2026-10-31.20"></script>
 <script src="vendor/supabase-2.118.0.js"></script>
-<script src="database-config.js?v=2026-10-31.19"></script>
-<script src="database.js?v=2026-10-31.19"></script>
-<script src="pending-lifts.js?v=2026-10-31.19"></script>
-<script src="app-updates.js?v=2026-10-31.19" data-version="2026-10-31.19"></script>
+<script src="database-config.js?v=2026-10-31.20"></script>
+<script src="database.js?v=2026-10-31.20"></script>
+<script src="pending-lifts.js?v=2026-10-31.20"></script>
+<script src="app-updates.js?v=2026-10-31.20" data-version="2026-10-31.20"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -2285,18 +2285,7 @@ function renderComp() {
   document.getElementById('comp-name').value = comp.name||'';
   document.getElementById('comp-date').value = comp.date||'';
   document.getElementById('comp-location').value = comp.location||'';
-  // Dynamic section label
-  const planLabel = document.querySelector('#comp-pane-plan .section-label');
-  if (planLabel) planLabel.textContent='Next competition';
-  if (planLabel && comp.name) {
-    const labelParts = [comp.name];
-    if (comp.date) {
-      const d = new Date(comp.date + 'T00:00:00');
-      labelParts.push(d.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'2-digit'}));
-    }
-    if (comp.location) labelParts.push(comp.location);
-    planLabel.textContent = labelParts.join(' · ');
-  }
+  if(!comp.name&&!comp.date)document.getElementById('comp-details').open=true;
   const pcts = getCompPcts();
   // Use competition best as primary PB source; fall back to training best
   const meetPBsForPlan = getMeetPBs();
@@ -3997,17 +3986,17 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="cloud-backup.js?v=2026-10-31.19"></script>
-<script src="studio.js?v=2026-10-31.19"></script>
-<script src="database-ui.js?v=2026-10-31.19"></script>
-<script src="accessory-model.js?v=2026-10-31.19"></script>
-<script src="accessory.js?v=2026-10-31.19"></script>
-<script src="sync-status.js?v=2026-10-31.19"></script>
-<script src="home.js?v=2026-10-31.19"></script>
-<script src="coaching.js?v=2026-10-31.19"></script>
-<script src="analytics-chart.js?v=2026-10-31.19"></script>
-<script src="analytics.js?v=2026-10-31.19"></script>
-<script src="phone-layout.js?v=2026-10-31.19"></script>
-<script src="app-interactions.js?v=2026-10-31.19"></script>
+<script src="cloud-backup.js?v=2026-10-31.20"></script>
+<script src="studio.js?v=2026-10-31.20"></script>
+<script src="database-ui.js?v=2026-10-31.20"></script>
+<script src="accessory-model.js?v=2026-10-31.20"></script>
+<script src="accessory.js?v=2026-10-31.20"></script>
+<script src="sync-status.js?v=2026-10-31.20"></script>
+<script src="home.js?v=2026-10-31.20"></script>
+<script src="coaching.js?v=2026-10-31.20"></script>
+<script src="analytics-chart.js?v=2026-10-31.20"></script>
+<script src="analytics.js?v=2026-10-31.20"></script>
+<script src="phone-layout.js?v=2026-10-31.20"></script>
+<script src="app-interactions.js?v=2026-10-31.20"></script>
 </body>
 </html>

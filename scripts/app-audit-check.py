@@ -39,6 +39,9 @@ with sync_playwright() as p:
  page.locator('.goal-custom-input').first.fill('0.75');page.locator('.goal-custom-input').first.blur();assert page.evaluate("loadSettings().standards.Snatch[0].multiple")==0.75
  custom=page.locator('#goalsContent input[onchange^=saveCustomGoal]').first;custom.fill('70');custom.blur();assert page.evaluate("loadSettings().customGoals.Snatch")==70
  tab('comp');check('meet-history');page.locator('#comp-sub-plan').click();check('competition-plan')
+ assert page.locator('#comp-details').get_attribute('open') is None
+ assert page.locator('#compAttempts').bounding_box()['y']<450
+ page.locator('#comp-details>summary').click()
  field=page.locator('#comp-name');field.evaluate('(x)=>window.auditName=x');field.fill('Test meet');assert field.evaluate('(x)=>x===window.auditName')
  page.locator('#comp-location').fill('London');page.locator('#comp-date').fill('2026-11-08')
  for key in ['snatch','cj']:
