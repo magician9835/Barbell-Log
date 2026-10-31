@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {readFileSync} from 'node:fs';
+const context=vm.createContext({});vm.runInContext(readFileSync('analytics-chart.js','utf8'),context);const C=context.AnalyticsChart;
+const rows=(values,dates)=>values.map((weight,i)=>({id:'point-'+i,date:dates[i],weight,base:'Snatch'}));
+test('trend keeps constant weights constant and dampens an isolated spike',()=>{const dates=['2026-10-01','2026-10-08','2026-10-15'];assert.ok(C.smooth(rows([60,60,60],dates)).every(p=>p.weight===60));const smooth=C.smooth(rows([60,100,60],dates));assert.ok(smooth[1].weight>60&&smooth[1].weight<75);assert.ok(smooth[2].weight>60&&smooth[2].weight<smooth[1].weight);});
+test('30-day smoothing respects elapsed calendar time rather than number of sessions',()=>{const short=C.smooth(rows([60,100],['2026-01-01','2026-01-02'])).at(-1).weight;const long=C.smooth(rows([60,100],['2026-01-01','2026-01-31'])).at(-1).weight;assert.ok(long>short);assert.ok(Math.abs(long-(60+40*(1-Math.exp(-1))))<1e-9);});
+test('month/year labels stay readable across year boundaries and within one month',()=>{const ticks=C.ticks(Date.parse('2025-12-01'),Date.parse('2026-01-05'));assert.equal(ticks[0].label,'Dec 2025');assert.equal(ticks.at(-1).label,'Jan 2026');assert.equal(new Set(ticks.map(t=>t.label)).size,ticks.length);assert.equal(C.ticks(Date.parse('2026-10-01'),Date.parse('2026-10-31')).length,1);});
+test('sparse charts avoid an unsupported trend and keep recorded points editable',()=>{assert.match(C.render([]),/Start logging/);const one=C.render(rows([60],['2026-10-01']));assert.doesNotMatch(one,/analytics-smooth-line/);assert.match(one,/Oct 2026/);assert.match(one,/data-record="point-0"/);assert.doesNotMatch(one,/NaN|Infinity/);const three=C.render(rows([60,70,65],['2025-12-01','2026-01-01','2026-02-01']));assert.match(three,/analytics-smooth-line/);assert.equal((three.match(/data-record=/g)||[]).length,3);assert.match(three,/30-day exponential average/);});
