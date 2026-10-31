@@ -242,3 +242,7 @@ Account & sync and Backups & export now lead Settings. Remove the obsolete Sheet
 ## Contain horizontal movement in dialogs (2026-10-31.12)
 
 Opener rehearsal is a top-layer dialog outside the Train pane, so the pane's vertical gesture rule did not apply. Apply pan-y and horizontal overflow/overscroll containment to dialogs, legacy modals and vertical app screens. Keep the log's lift filter strip intentionally horizontal. Limit dialog width to the viewport and wrap long content. Builder browser checks now cover opener/manual-log dialog bounds, horizontal wheel/programmatic movement, working vertical wheel scroll, editable fields and a scrollable filter strip. CI runs Chromium wheel-movement checks and WebKit native bounds/scrollability checks. Mobile WebKit has no Playwright mouse-wheel API, so its scrollability check uses scrollBy plus computed gesture/overflow rules.
+
+## Bare-bar opener warm-ups (2026-10-31.13)
+
+Competition rehearsal now starts at 20kg with no plates/collars, rather than treating collars alone as a 25kg warm-up. Warm-up load calculation, the plate diagram, actual-weight input snapping and saved records use the same phase-aware calculation. Collars appear with loaded warm-ups. With the configured 20kg bar and 5kg collars, loaded competition setups start at 26kg (a 0.5kg plate per side), and rehearsal attempts use that minimum. Existing recorded history is untouched. Tests check both lift ladders, loaded mass accounting, saving the bare-bar set at 20kg, and changing actual warm-up weights without stale collar images.

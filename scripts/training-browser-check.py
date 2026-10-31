@@ -132,6 +132,21 @@ with sync_playwright() as p:
  page.locator('[data-act=opener]').click()
  for selector,value in [('[data-opener="0-0"]','65'),('[data-opener="0-1"]','68'),('[data-opener="0-2"]','70'),('[data-opener="1-0"]','90')]:page.locator(selector).fill(value)
  page.locator('#build-openers').click();page.locator('[data-act=start]').click()
+ assert page.locator('.studio-collar').count()==0
+ assert page.locator('[data-actual=weight]').input_value()=='20'
+ assert 'Empty-bar warm-up · no collars' in page.locator('[data-loading-label]').inner_text()
+ page.locator('[data-act=complete]').click()
+ page.wait_for_function('PendingLifts.list().length===0')
+ warm_id=next(k for k,v in rows.items() if k!=entry['id'])
+ assert rows[warm_id]['weight']==20 and 'Warm-up' in rows[warm_id]['notes']
+ # Remove this fixture record so later history assertions keep their one-row setup.
+ rows.pop(warm_id);page.evaluate('async()=>await fetchAndRender()')
+ assert page.locator('.studio-collar').inner_text()=='2.5'
+ assert page.locator('.studio-plate').count()>0
+ page.locator('[data-actual=weight]').fill('20');page.locator('[data-actual=weight]').blur()
+ assert page.locator('.studio-collar').count()==0
+ assert 'no collars' in page.locator('[data-loading-label]').inner_text()
+ page.locator('[data-actual=weight]').fill('26');page.locator('[data-actual=weight]').blur()
  assert page.locator('.studio-collar').inner_text()=='2.5'
  opener=json.loads(page.evaluate("localStorage.getItem('barbell_workout_v3')"));assert opener['loading']=='competition' and opener['session']=='Solo'
  page.screenshot(path=str(out/'opener.png'))
