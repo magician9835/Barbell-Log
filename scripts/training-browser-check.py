@@ -106,9 +106,28 @@ with sync_playwright() as p:
  page.set_viewport_size({'width':402,'height':812})
  page.screenshot(path=str(out/'edit-complex.png'))
  page.locator('[data-editor=weight]').fill('45')
+ page.locator('[data-editor=quality]').select_option('4')
  page.locator('[data-act=editor-save]').click();page.wait_for_function('document.querySelector("#studio-log-dialog")===null')
  assert next(iter(rows.values()))['weight']==45
  assert next(iter(rows.values()))['programme']['stages'][0]['actualWeight'] is None
+ # Rating can be revisited, changed, retained by unrelated edits, or cleared.
+ assert next(iter(rows.values()))['quality']==4
+ page.evaluate("openEditModal("+json.dumps(entry['id'])+")")
+ assert page.locator('[data-editor=quality]').input_value()=='4'
+ page.locator('[data-editor=quality]').select_option('2')
+ page.locator('[data-act=editor-save]').click();page.wait_for_function('document.querySelector("#studio-log-dialog")===null')
+ assert next(iter(rows.values()))['quality']==2
+ page.evaluate("openEditModal("+json.dumps(entry['id'])+")")
+ page.locator('[data-editor=note]').fill('Rating survives a note edit')
+ page.locator('[data-act=editor-save]').click();page.wait_for_function('document.querySelector("#studio-log-dialog")===null')
+ assert next(iter(rows.values()))['quality']==2
+ page.evaluate("openEditModal("+json.dumps(entry['id'])+")")
+ page.locator('[data-editor=quality]').select_option('')
+ page.locator('[data-act=editor-save]').click();page.wait_for_function('document.querySelector("#studio-log-dialog")===null')
+ assert next(iter(rows.values()))['quality'] is None
+ page.evaluate('openLogModal()')
+ assert page.locator('[data-editor=quality]').input_value()==''
+ page.locator('#studio-log-dialog [aria-label=Close]').click()
  # Actual Competition must stay a deliberate session choice.
  page.locator('[data-act=opener]').click()
  for selector,value in [('[data-opener="0-0"]','65'),('[data-opener="0-1"]','68'),('[data-opener="0-2"]','70'),('[data-opener="1-0"]','90')]:page.locator(selector).fill(value)
