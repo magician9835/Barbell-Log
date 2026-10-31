@@ -83,7 +83,7 @@ with sync_playwright() as p:
  page.locator('[data-rehearsal-rest]').first.fill('4');page.locator('[data-rehearsal-rest]').first.blur()
  assert page.evaluate("JSON.parse(localStorage.getItem('barbell_workout_v3')).blocks[0].restSeconds")==240
  page.locator('[data-act=start]').click()
- assert page.locator('.session-plan-grid').first.locator('li').count()==8
+ assert page.locator('.session-plan-grid').first.locator('li').count()==10
  assert page.locator('.session-plan-grid [aria-current=step]').count()==1
  assert page.locator('[data-actual=quality]').count()==0
  assert page.locator('[data-clock]').count()==1
