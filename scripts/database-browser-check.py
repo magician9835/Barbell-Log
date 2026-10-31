@@ -66,6 +66,21 @@ with sync_playwright() as p:
  assert page.locator('#syncBtn').count()==0
  header_height=page.locator('#header').bounding_box()['height']
  assert page.locator('#refresh-data-button').is_visible()
+ # Settings expose the active account and backups without retired setup UI.
+ settings=page.locator('#pane-settings')
+ assert page.locator('#sheetsUrl').count()==0
+ assert page.locator('.legacy-connector').count()==0
+ assert page.locator('#database-copy-app-url').count()==0
+ assert page.locator('[data-db-activate]').is_hidden()
+ assert page.evaluate("document.querySelector('#pane-settings').children[0].id")=='database-account'
+ assert page.evaluate("document.querySelector('#pane-settings').children[1].id")=='backup-settings'
+ for retired in ['Google Sheets Sync','Apps Script URL','Project setup (owner only)','BARBELL LOG v1.3']:
+  assert retired not in settings.inner_text()
+ assert page.locator('.settings-advanced').get_attribute('open') is None
+ with page.expect_download() as csv_info:page.locator('#export-lift-csv').click()
+ csv_path=out/'lift-export.csv';csv_info.value.save_as(str(csv_path))
+ assert 'legacy-snatch' in csv_path.read_text() and '"quality"' in csv_path.read_text()
+ page.locator('#database-account').scroll_into_view_if_needed();page.screenshot(path=str(out/'settings-clean.png'))
  page.locator('#refresh-data-button').click();page.wait_for_function('!document.getElementById("refresh-data-button").disabled')
  # Exercise the exact provided accessory workout, both-side counts, and stable inputs.
  page.locator('#tabs .tab').nth(1).click();page.locator('[data-act=accessory]').click();page.locator('[data-ac=new]').click();page.locator('[data-ac=start]').click()
