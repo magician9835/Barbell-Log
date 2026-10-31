@@ -4,7 +4,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json,time,base64,hmac,hashlib,mimetypes
 root=Path(__file__).resolve().parents[1]
-out=Path('/workspace/barbell-review/database');out.mkdir(parents=True,exist_ok=True)
+out=Path(os.environ.get('BARBELL_ARTIFACTS',str(root/'.artifacts')))/'database';out.mkdir(parents=True,exist_ok=True)
 uid='11111111-1111-4111-8111-111111111111';email='owner@example.test'
 def jwt():
  def b(x):return base64.urlsafe_b64encode(json.dumps(x).encode()).rstrip(b'=')

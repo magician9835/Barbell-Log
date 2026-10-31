@@ -28,7 +28,7 @@ with sync_playwright() as p:
  content=page.locator('#content').bounding_box();assert content['y']+content['height']<=tabs['y']+1
  assert page.evaluate('document.documentElement.scrollWidth')<=402
  for tab in page.locator('#tabs .tab').all():assert tab.bounding_box()['height']>=44
- out=Path('/workspace/barbell-review/iphone16pro-layout.png');out.parent.mkdir(exist_ok=True)
+ out=Path(os.environ.get('BARBELL_ARTIFACTS',str(root/'.artifacts')))/'iphone16pro-layout.png';out.parent.mkdir(parents=True,exist_ok=True)
  page.screenshot(path=str(out))
  # Simulate keyboard viewport changes while a form has focus.
  page.evaluate('TrainingApp.recap()')

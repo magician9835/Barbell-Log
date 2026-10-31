@@ -26,3 +26,9 @@ jobs:
       - run: python scripts/training-browser-check.py
       - run: python scripts/database-browser-check.py
       - run: python scripts/iphone-layout-check.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-browser-checks
+          path: .artifacts/
+          if-no-files-found: ignore
