@@ -72,6 +72,21 @@ with sync_playwright() as p:
  page.locator('[data-act=template-open]').click();assert page.locator('.studio-component').count()==2
  page.locator('[data-act=switch]').click();page.locator('[data-act=template-delete]').click();page.locator('#confirmYes').click()
  assert page.locator('[data-act=template-open]').count()==0
+ # Saved programmes use Train's stage rows; expanding details must not edit.
+ page.evaluate("""()=>{const items=getCachedEntries();items[0].programme={minutes:20,stages:[{sets:1,reps:[1,2],percent:70,actualWeight:null},{sets:3,reps:[1,1],percent:85,actualWeight:55}]};items[0].notes+='\\nProgramme from the board, with lower loads unknown.';setCachedEntries(items);renderLog();}""")
+ page.locator('#tabs .tab').nth(0).click()
+ row=page.locator('#logList .log-entry').first
+ assert row.locator('.record-actual').inner_text().startswith('1 × (1+3)')
+ assert row.locator('.record-programme').get_attribute('open') is None
+ row.locator('.record-programme summary').click()
+ assert row.locator('.programme-row').count()==2
+ assert 'Load not recorded' in row.locator('.record-programme').inner_text()
+ assert '55 kg recorded' in row.locator('.record-programme').inner_text()
+ assert page.locator('#studio-log-dialog').count()==0
+ row.locator('.record-notes summary').focus();page.keyboard.press('Enter')
+ assert page.locator('#studio-log-dialog').count()==0
+ page.screenshot(path=str(out/'record-programme.png'))
+ page.locator('#tabs .tab').nth(1).click()
  # Manual log uses the identical complex editor and normalized Class session.
  page.evaluate("openEditModal("+json.dumps(entry['id'])+")")
  assert page.locator('[data-editor=session]').input_value()=='Coached Class'
@@ -93,6 +108,7 @@ with sync_playwright() as p:
  page.locator('[data-editor=weight]').fill('45')
  page.locator('[data-act=editor-save]').click();page.wait_for_function('document.querySelector("#studio-log-dialog")===null')
  assert next(iter(rows.values()))['weight']==45
+ assert next(iter(rows.values()))['programme']['stages'][0]['actualWeight'] is None
  # Actual Competition must stay a deliberate session choice.
  page.locator('[data-act=opener]').click()
  for selector,value in [('[data-opener="0-0"]','65'),('[data-opener="0-1"]','68'),('[data-opener="0-2"]','70'),('[data-opener="1-0"]','90')]:page.locator(selector).fill(value)

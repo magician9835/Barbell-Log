@@ -47,3 +47,14 @@
 .studio-component-top{flex-wrap:wrap;row-gap:4px}
 .studio-component-top>span{flex-shrink:0}
 @media(max-width:480px){.studio-session-fields{grid-template-columns:minmax(0,1fr);gap:0}}
+
+/* Recorded work stays compact; programme rows match the Train preview. */
+.record-actual{display:flex;align-items:center;gap:12px;margin:8px 0;font:500 13px/1.5 'DM Mono',monospace;color:var(--text)}
+.record-actual small{font:11px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;color:var(--text2)}
+.record-programme,.record-notes{margin-top:8px;min-width:0}
+.record-programme summary,.record-notes summary{min-height:44px;display:list-item;align-content:center;cursor:pointer;font:500 12px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;color:var(--text2)}
+.record-programme .studio-preview{padding:0 0 8px}
+.record-programme .programme-row{grid-template-columns:minmax(0,1fr) auto;font:12px/1.6 -apple-system,BlinkMacSystemFont,sans-serif}
+.record-programme .programme-row small{grid-column:1/-1;font-size:11px}
+.record-notes p,.record-note{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.6 -apple-system,BlinkMacSystemFont,sans-serif;color:var(--text2);margin:6px 0 10px}
+.log-entry-header[role=button]:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
