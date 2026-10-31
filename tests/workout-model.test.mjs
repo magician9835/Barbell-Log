@@ -31,8 +31,9 @@ test('invalid linked attempts cannot partially update a rehearsal or a finished 
 
 test('warm-ups prefer simple plates and narrow to five-kilo steps before the target',()=>{
   assert.deepEqual(plain(M.warmupWeights(60)),[20,30,40,45,50,55]);
+  assert.deepEqual(plain(M.warmupWeights(65)),[20,30,40,45,50,55,60]);
   assert.deepEqual(plain(M.warmupWeights(95,'gym','Clean and Jerk')),[20,40,50,60,70,80,85,90]);
-  assert.deepEqual(plain(M.warmupWeights(90,'gym','Clean and Jerk')),[20,40,50,60,70,80,85]);
+  assert.deepEqual(plain(M.warmupWeights(90,'gym','Clean and Jerk')),[20,40,50,60,70,75,80,85]);
   for(const mode of ['gym','competition'])for(const lift of ['Snatch','Clean and Jerk'])for(const target of [26,27,31,33,42.5,55,60,61,62.5,65,80,95,100,125,150]){
     const weights=plain(M.warmupWeights(target,mode,lift));
     assert.equal(weights[0],20);assert.equal(new Set(weights).size,weights.length);

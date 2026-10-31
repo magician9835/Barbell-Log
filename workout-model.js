@@ -34,7 +34,7 @@
     const transition=Math.floor(Math.max(target*(lift==='Snatch'?.65:.8),target-(lift==='Snatch'?20:15))/5)*5;
     for(let i=0;i<40;i++){
       const current=weights.at(-1),step=current>=transition?5:10;
-      let next=current+step;
+      let next=current<transition?Math.min(current+step,transition):current+step;
       // Do not overshoot a five-kilo step that fits below the working weight.
       if(next>=target&&step===10)next=current+5;
       if(next>=target)break;

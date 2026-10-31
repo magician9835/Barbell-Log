@@ -25,7 +25,7 @@ with sync_playwright() as p:
  page.locator('#cw-setup [data-cw-lift=sn]').click()
  # A custom, repeatable ladder, with validation and no fabricated completion.
  page.locator('[data-cw-edit=sn]').click()
- assert [float(x.input_value()) for x in page.locator('[data-key=weight]').all()]==[20,30,40,50,55,60]
+ assert [float(x.input_value()) for x in page.locator('[data-key=weight]').all()]==[20,30,40,45,50,55,60]
  page.locator('[data-step="1"][data-key=weight]').fill('65');page.locator('#cw-save-ladder').click();assert page.locator('#cw-edit-error').inner_text()
  page.locator('[data-step="1"][data-key=weight]').fill('30');page.locator('#cw-add-step').click()
  for width in [320,375,402,430]:
@@ -35,7 +35,7 @@ with sync_playwright() as p:
  page.set_viewport_size({'width':402,'height':812});page.locator('#cw-save-ladder').click()
  assert page.locator('dialog[open]').count()==0
  page.locator('#cw-setup [data-cw-mode=day]').click();assert page.locator('#cw-day').is_visible()
- assert page.locator('#cw-ladder li').count()==7
+ assert page.locator('#cw-ladder li').count()==8
  assert 'no collars' in page.locator('#cw-ladder').inner_text()
  # The action must be reachable in the actual iPhone safe-area geometry.
  page.add_style_tag(content=':root{--phone-safe-top:62px;--phone-safe-bottom:34px;}')
@@ -87,7 +87,7 @@ with sync_playwright() as p:
   }""",state)
   page.reload(wait_until='domcontentloaded');page.locator('#tabs .tab').nth(3).click();page.locator('#comp-sub-warmup').click()
   weights=[int(x.inner_text().split(' kg')[0]) for x in page.locator('#cw-ladder li strong').all()]
-  assert weights==([20,30,40,50,55,60] if state=='untouched' else [33]),(state,weights)
+  assert weights==([20,30,40,45,50,55,60] if state=='untouched' else [33]),(state,weights)
  assert not errors,errors
  print('PASS:',engine,'shared session setup, separate lift plans, legacy values, editable ladder/validation, full visible build-up, reachable day action with iPhone safe areas, live count changes, done/skip/undo, reload, independent C&J and backed-up state.')
  b.close()

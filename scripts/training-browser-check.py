@@ -150,9 +150,9 @@ with sync_playwright() as p:
  page.locator('[data-act=opener]').click()
  for selector,value in [('[data-opener="0-0"]','65'),('[data-opener="0-1"]','68'),('[data-opener="0-2"]','70'),('[data-opener="1-0"]','90')]:page.locator(selector).fill(value)
  page.locator('#build-openers').click()
- assert page.evaluate("WorkoutModel.expand(JSON.parse(localStorage.getItem('barbell_workout_v3')).blocks[0],'competition').filter(s=>s.phase==='warmup').map(s=>s.weight)")==[20,30,40,50,55,60]
+ assert page.evaluate("WorkoutModel.expand(JSON.parse(localStorage.getItem('barbell_workout_v3')).blocks[0],'competition').filter(s=>s.phase==='warmup').map(s=>s.weight)")==[20,30,40,45,50,55,60]
  page.locator('[data-act=start]').click()
- assert page.locator('.session-plan-grid').first.locator('li').count()==9
+ assert page.locator('.session-plan-grid').first.locator('li').count()==10
  assert '65' in page.locator('.session-plan-grid').first.inner_text()
  assert '70' in page.locator('.session-plan-grid').first.inner_text()
  assert page.locator('.session-plan-grid [aria-current=step]').count()==1
