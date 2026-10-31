@@ -210,3 +210,7 @@ Date and session now stack at phone widths in both the session builder and log e
 ## Structured record programmes (2026-10-31.5)
 
 Train previews and saved-record programme details share ProgrammeView stage rows. Log cards show recorded sets and component rep counts without printing the entire notes field. Expand Programme for prescribed stages and explicitly labelled recorded/target/unknown loads; expand Notes for the original text. New training entries carry their planned stages without claiming target loads were performed. Manual edits preserve programme and source metadata. Browser checks cover details clicks/keyboard, unknown loads and metadata survival through editing. Thursday's photo metadata was attached to current records without replacing the user's edits.
+
+## Restore logged-set rating (2026-10-31.6)
+
+The shared manual log/edit dialog now exposes the existing optional 1–5 quality field. Existing ratings are selected when reopening; changing notes preserves the rating; choosing Not rated clears it to null. Training browser checks exercise set, change, preserve, clear and a blank new record.
