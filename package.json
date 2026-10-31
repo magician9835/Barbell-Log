@@ -3,7 +3,13 @@
   "private": true,
   "scripts": {
     "check": "node scripts/check.mjs && node --test tests/*.test.mjs",
-    "start": "python3 -m http.server 8000 --bind 127.0.0.1"
+    "start": "python3 -m http.server 8000 --bind 127.0.0.1",
+    "vendor:supabase": "node scripts/vendor-supabase.mjs"
   },
-  "engines": { "node": ">=22" }
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.118.0"
+  }
 }

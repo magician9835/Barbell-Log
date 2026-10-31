@@ -156,3 +156,26 @@ Phone layout details now includes available/outer/document dimensions and actual
 CSS vh/svh/lvh/dvh probe heights. No data is sent automatically. Existing local
 workouts/settings are untouched; a new installed app can have separate local
 storage and may need the existing JSON backup restored.
+
+
+## Supabase and accessory release (2026-10-31.1)
+
+DATABASE.md supersedes legacy backend guidance above. The live project is now
+provisioned with two migrations, owner RLS, transactional/idempotent write RPCs,
+version conflict detection and append-only plan snapshots. Active phone connections
+remain on Sheets until the owner signs into an app account and completes cutover.
+Never silently route pending writes between accounts or backends.
+
+The initial owner still needs to supply the email for staged historical data and
+set hosted Auth confirmation/reset URLs. The MCP connection can manage database
+schemas but does not expose Auth URL configuration. Matching local config.toml
+is not evidence that the hosted Auth settings changed. No unsolicited auth email
+was sent. Do not report the owner's phone as migrated until its cutover succeeds.
+
+New modules: database.js (adapter, Auth, cutover), database-ui.js (account/conflict
+review), accessory-model.js/accessory.js (provided overhead session and editable
+dumbbell/superset records). The SDK is vendored and pinned, with its lockfile and
+license. npm audit reported no vulnerabilities at release. Browser CI uses fake
+Auth/RPC; live SQL contract/import tests were rolled back. The unchanged Sheet
+is the historical fallback. Keep independent exports; Free Supabase does not
+include managed daily database backups.

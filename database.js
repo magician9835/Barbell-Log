@@ -1,0 +1,48 @@
+(() => {
+ 'use strict';
+ const cfg=window.BARBELL_DATABASE;
+ const BACKEND='barbell_backend_v4',OWNER='barbell_database_owner_v4';
+ let session=null,lastError='',activating=false,client=null,recovering=false;
+ const revisions=new Map(),authReturn=/access_token=|error_description=/.test(location.hash);
+ const emit=()=>window.dispatchEvent(new Event('databasechange'));
+ const isEndpoint=endpoint=>String(endpoint||'').startsWith('supabase://');
+ const selected=()=>localStorage.getItem(BACKEND)==='supabase';
+ const owner=()=>localStorage.getItem(OWNER)||session?.user?.id||'';
+ const endpoint=()=>selected()?`supabase://${new URL(cfg.url).hostname.split('.')[0]}/${owner()||'signed-out'}`:(JSON.parse(localStorage.getItem('barbell_settings_v1')||'{}').sheetsUrl||'');
+ const kind=action=>({updateEntry:'lift',deleteEntry:'lift',saveMeet:'meet',deleteMeet:'meet',logBW:'bodyweight',saveAccessory:'accessory',deleteAccessory:'accessory'}[action]);
+ function revision(action,id){const k=kind(action);if(revisions.has(k+'/'+id))return revisions.get(k+'/'+id);try{const settings=JSON.parse(localStorage.getItem('barbell_settings_v1')||'{}');const list=k==='lift'?JSON.parse(localStorage.getItem('barbell_last_entries_v1')||'[]'):k==='meet'?settings.meets:k==='bodyweight'?settings.bwLog:JSON.parse(localStorage.getItem('barbell_accessory_records_v1')||'[]');return list?.find(e=>e.id===id)?.revision??null;}catch{return null;}}
+ if(cfg?.url&&cfg?.publishableKey&&window.supabase){client=supabase.createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});client.auth.onAuthStateChange((event,next)=>{session=next;if(event==='PASSWORD_RECOVERY')recovering=true;if(event==='SIGNED_OUT')recovering=false;setTimeout(emit,0);});}
+ const ready=client?client.auth.getSession().then(({data,error})=>{if(error)lastError=error.message;session=data?.session||null;emit();return session;}).catch(e=>{lastError=e.message;return null;}):Promise.resolve(null);
+ async function requireSession(){await ready;if(!client||!session)throw Error('Sign in to Barbell Log in Settings. Your pending changes remain on this phone.');if(owner()&&owner()!==session.user.id)throw Error('This phone’s pending data belongs to another account. Sign in with the original account.');return session;}
+ async function rpc(name,args={}){await requireSession();const {data,error}=await client.rpc(name,args).abortSignal(AbortSignal.timeout(15000));if(error){lastError=error.message;emit();throw Error(error.message);}lastError='';return data;}
+ async function read(){const data=await rpc('barbell_get_all');if(!Array.isArray(data?.entries))throw Error('Invalid database response');for(const [k,list]of [['lift',data.entries],['meet',data.meets],['bodyweight',data.bw],['accessory',data.accessories]])for(const e of list||[])revisions.set(k+'/'+e.id,e.revision);return data;}
+ async function write(item){if(item.endpoint!==endpoint()||!isEndpoint(item.endpoint))throw Error('This change belongs to a different connection.');const payload=typeof item.entry==='object'?cleanRecord(item.entry):{id:item.id};const result=await rpc('barbell_apply_change',{p_token:item.token,p_action:item.action,p_payload:payload,p_expected_revision:item.expectedRevision??null});if(result?.conflict){const error=Error('This record changed on another device. Review it in Pending changes.');error.conflict=result.current;throw error;}if(result?.success!==true||result.id!==item.id)throw Error('Database did not confirm this change');revisions.set(kind(item.action)+'/'+item.id,result.revision);return result;}
+ async function saveSnapshot(record){const data=await rpc('barbell_save_snapshot',{p_id:record.id,p_key:record.key,p_value:record.value});if(data?.saved!==true||data.id!==record.id)throw Error('Plan save was not confirmed');return data;}
+ async function signIn(email,password){await ready;const {data,error}=await client.auth.signInWithPassword({email:email.trim(),password});if(error)throw Error(error.message);if(owner()&&owner()!==data.user.id){await client.auth.signOut();throw Error('Sign in with the account that owns this phone’s pending data.');}session=data.session;emit();return data;}
+ async function signUp(email,password){if(password.length<10)throw Error('Use a password with at least 10 characters.');const {data,error}=await client.auth.signUp({email:email.trim(),password,options:{emailRedirectTo:cfg.appUrl}});if(error)throw Error(error.message);if(data.session)session=data.session;emit();return data;}
+ async function resetPassword(email){if(!email.trim())throw Error('Enter your email first.');const {error}=await client.auth.resetPasswordForEmail(email.trim(),{redirectTo:cfg.appUrl});if(error)throw Error(error.message);}
+ async function updatePassword(password){if(password.length<10)throw Error('Use at least 10 characters.');const {error}=await client.auth.updateUser({password});if(error)throw Error(error.message);recovering=false;emit();}
+ async function signOut(){if(PendingLifts.list().some(i=>isEndpoint(i.endpoint)))throw Error('Sync or export your pending changes before signing out.');await client.auth.signOut();session=null;emit();}
+ function cleanRecord(e){const x={...e};delete x.pending;delete x.revision;return x;}
+ function normalizeLegacy(data){return{entries:(data.entries||[]).map(cleanRecord),meets:(data.meets||[]).map(cleanRecord),bw:(data.bw||[]).map(e=>({...cleanRecord(e),id:e.id||'bw-legacy-'+[e.date,e.weight,e.note||''].map(encodeURIComponent).join('-').slice(0,150)}))};}
+ async function activate(){if(activating)return;activating=true;emit();try{await requireSession();if(selected()){await read();await PendingLifts.drain(endpoint());await fetchAndRender();window.CloudBackup?.connect();return true;}await PendingLifts.idle();const oldEndpoint=endpoint();const settings=JSON.parse(localStorage.getItem('barbell_settings_v1')||'{}');const localAccessories=JSON.parse(localStorage.getItem('barbell_accessory_records_v1')||'[]');
+  const localBefore={};for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key.startsWith('barbell_')&&key!=='barbell_before_database_v4')localBefore[key]=localStorage.getItem(key);}localStorage.setItem('barbell_before_database_v4',JSON.stringify({created:new Date().toISOString(),data:localBefore}));
+  await rpc('barbell_claim_history');
+  if(!selected()&&settings.sheetsUrl){const url=new URL(settings.sheetsUrl);url.searchParams.set('action','getAll');url.searchParams.set('_migration',Date.now());const response=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('Cannot read the current spreadsheet. The app is still connected to Sheets.');const data=await response.json();if(data.error||!Array.isArray(data.entries))throw Error(data.error||'Invalid sheet response');await rpc('barbell_import_legacy',{p_data:normalizeLegacy(data)});}
+  else if(!selected()){const cached=JSON.parse(localStorage.getItem('barbell_last_entries_v1')||'[]');if(cached.length||settings.meets?.length||settings.bwLog?.length>1)await rpc('barbell_import_legacy',{p_data:normalizeLegacy({entries:cached,meets:settings.meets||[],bw:settings.bwLog||[]})});}
+  for(const record of localAccessories)await rpc('barbell_apply_change',{p_token:crypto.randomUUID(),p_action:'saveAccessory',p_payload:cleanRecord(record),p_expected_revision:record.revision||null});
+  // Read actual revisions before rebinding outstanding phone edits to this owner.
+  const remote=await read();
+  const localState=window.CloudBackup?.snapshot()?.data||{};
+  const hasPlans=localState.barbell_workout_v3||localState.barbell_accessory_workout_v1||['barbell_templates_v3','barbell_workout_history_v3','barbell_accessory_templates_v1','barbell_accessory_history_v1'].some(k=>localState[k]?.length);
+  if(!hasPlans&&window.CloudBackup){const saved=Object.values(remote.appState||{}).filter(r=>r.value?.data).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));if(saved.length)CloudBackup.restore(saved[0]);}
+  const snapshot=window.CloudBackup?.snapshot();if(snapshot)await saveSnapshot({id:crypto.randomUUID(),key:'device/'+localStorage.getItem('barbell_device_id_v3'),value:snapshot});
+  const beforeOwner=localStorage.getItem(OWNER),beforeBackend=localStorage.getItem(BACKEND),beforeQueue=localStorage.getItem('barbell_pending_lifts_v1');
+  const target=`supabase://${new URL(cfg.url).hostname.split('.')[0]}/${session.user.id}`;
+  const pending=PendingLifts.list().map(i=>!i.endpoint||i.endpoint===oldEndpoint?{...i,endpoint:target,expectedRevision:i.expectedRevision===undefined?revision(i.action,i.id):i.expectedRevision}:i);
+  try{localStorage.setItem('barbell_pending_lifts_v1',JSON.stringify(pending));localStorage.setItem(OWNER,session.user.id);localStorage.setItem(BACKEND,'supabase');localStorage.setItem('barbell_cloud_bootstrap_v3:'+target,'true');}catch(error){for(const [k,v]of [[OWNER,beforeOwner],[BACKEND,beforeBackend],['barbell_pending_lifts_v1',beforeQueue]])try{v===null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch{}throw error;}
+  window.dispatchEvent(new Event('databaseactivated'));window.dispatchEvent(new Event('cloudrestored'));emit();await PendingLifts.drain(endpoint());await fetchAndRender();window.CloudBackup?.connect();return true;
+ }finally{activating=false;emit();}}
+ function status(){return{configured:!!client,selected:selected(),signedIn:!!session,owner:session?.user?.id||'',email:session?.user?.email||'',activating,recovering,authReturn,lastError,endpoint:endpoint()};}
+ window.AppData={ready,endpoint,isEndpoint,usesDatabase:selected,read,write,saveSnapshot,revision,signIn,signUp,signOut,resetPassword,updatePassword,activate,status,rpc};
+})();

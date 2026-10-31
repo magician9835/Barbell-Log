@@ -5,6 +5,8 @@
 
 ---
 
+**Current database setup:** see [DATABASE.md](DATABASE.md). The Apps Script steps below apply only to the retained legacy Sheets connection.
+
 ## Files in this package
 
 | File | What it is |

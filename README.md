@@ -1,6 +1,6 @@
 # Barbell Log
 
-**Current workflow:** [Training v3](V3.md) — blank class builder, arbitrary complexes, photo transcription drafts, opener rehearsal, actual gym plate loading and confirmed plan backups after connector activation.
+**Current workflow:** [Database and accessory sessions](DATABASE.md) — private Supabase sync with safe cutover, offline writes and version conflict review; Overhead + Biceps with row/prep, exact dumbbell loads, left/right reps and supersets. [Training v3](V3.md) covers the shared Olympic-lift builder.
 
 
 Olympic lifting tracker. Single HTML file, iPhone Safari optimised, Google Sheets sync.
