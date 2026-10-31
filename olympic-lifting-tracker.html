@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.7">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.7">
+<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.8">
+<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.8">
 <meta name="theme-color" content="#0c0d0f">
-<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.7">
+<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.8">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -293,9 +293,9 @@
   .warmup-progress { position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
   .warmup-progress.done { background:var(--accent); }
 </style>
-<link rel="stylesheet" href="training.css?v=2026-10-31.7">
-<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.7">
-<link rel="stylesheet" href="studio.css?v=2026-10-31.7">
+<link rel="stylesheet" href="training.css?v=2026-10-31.8">
+<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.8">
+<link rel="stylesheet" href="studio.css?v=2026-10-31.8">
 </head>
 <body>
 <div id="app">
@@ -947,15 +947,15 @@
   </div>
 </div>
 
-<script src="training-core.js?v=2026-10-31.7"></script>
-<script src="workout-model.js?v=2026-10-31.7"></script>
-<script src="programme-view.js?v=2026-10-31.7"></script>
-<script src="data-migrations.js?v=2026-10-31.7"></script>
+<script src="training-core.js?v=2026-10-31.8"></script>
+<script src="workout-model.js?v=2026-10-31.8"></script>
+<script src="programme-view.js?v=2026-10-31.8"></script>
+<script src="data-migrations.js?v=2026-10-31.8"></script>
 <script src="vendor/supabase-2.118.0.js"></script>
-<script src="database-config.js?v=2026-10-31.7"></script>
-<script src="database.js?v=2026-10-31.7"></script>
-<script src="pending-lifts.js?v=2026-10-31.7"></script>
-<script src="app-updates.js?v=2026-10-31.7" data-version="2026-10-31.7"></script>
+<script src="database-config.js?v=2026-10-31.8"></script>
+<script src="database.js?v=2026-10-31.8"></script>
+<script src="pending-lifts.js?v=2026-10-31.8"></script>
+<script src="app-updates.js?v=2026-10-31.8" data-version="2026-10-31.8"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -3948,144 +3948,7 @@ function importWithingsCSV(input){
 // ============================================================
 // AI INSIGHTS
 // ============================================================
-function generateInsights(){
-  const btn=document.getElementById('insights-btn');
-  const out=document.getElementById('insights-output');
-  btn.textContent='Analysing...';
-  btn.disabled=true;
-
-  const s=loadSettings();
-  const meets=getMeets();
-  const meetPBs=getMeetPBs();
-  const {getPB}=getAllPBs();
-  const entries=getCachedEntries();
-
-  const bw=s.athleteBW||(s.bwLog&&s.bwLog[0]&&s.bwLog[0].weight)||null;
-  const wc=bw?getWeightClass(bw):null;
-  const snatchPB=getPB('Snatch');
-  const cjPB=getPB('Clean and Jerk');
-  const compSnatch=meetPBs.snatch;
-  const compCJ=meetPBs.cj;
-  const comp=s.comp||{};
-
-  const snatchW=snatchPB?snatchPB.weight:null;
-  const cjW=cjPB?cjPB.weight:null;
-  const ratio=snatchW&&cjW?Math.round(snatchW/cjW*100):null;
-
-  const now=new Date();
-  const cutoff8w=new Date(now);cutoff8w.setDate(cutoff8w.getDate()-56);
-  const cutoff4w=new Date(now);cutoff4w.setDate(cutoff4w.getDate()-28);
-  const cutoff8wStr=cutoff8w.toISOString().split('T')[0];
-  const cutoff4wStr=cutoff4w.toISOString().split('T')[0];
-
-  const recent8w=entries.filter(e=>e.date>=cutoff8wStr);
-  const recent4w=entries.filter(e=>e.date>=cutoff4wStr);
-  const prev4w=entries.filter(e=>e.date>=cutoff8wStr&&e.date<cutoff4wStr);
-
-  const sessionDates8w=new Set(recent8w.map(e=>e.date));
-  const sessionDates4w=new Set(recent4w.map(e=>e.date));
-  const sessionsPerWeek=Math.round(sessionDates8w.size/8*10)/10;
-  const sessionsLast4w=sessionDates4w.size;
-  const sessionsPrev4w=new Set(prev4w.map(e=>e.date)).size;
-
-  const withQuality=recent8w.filter(e=>e.quality);
-  const avgQuality=withQuality.length?Math.round(withQuality.reduce((s,e)=>s+e.quality,0)/withQuality.length*10)/10:null;
-  const recentQuality=recent4w.filter(e=>e.quality);
-  const avgQualityRecent=recentQuality.length?Math.round(recentQuality.reduce((s,e)=>s+e.quality,0)/recentQuality.length*10)/10:null;
-
-  const liftCounts={};
-  recent8w.forEach(e=>{liftCounts[e.base]=(liftCounts[e.base]||0)+1;});
-  const topLifts=Object.entries(liftCounts).sort((a,b)=>b[1]-a[1]).slice(0,4);
-
-  const snatchEntries=entries.filter(e=>e.base==='Snatch'&&e.weight&&(!e.position||e.position.length===0)&&(!e.technique||e.technique.length===0));
-  const cjEntries=entries.filter(e=>e.base==='Clean and Jerk'&&e.weight&&(!e.position||e.position.length===0)&&(!e.technique||e.technique.length===0));
-
-  let daysToComp=null;
-  if(comp.date){
-    const today=new Date();today.setHours(0,0,0,0);
-    daysToComp=Math.round((new Date(comp.date+'T00:00:00')-today)/(1000*60*60*24));
-  }
-
-  // ── Build insights ────────────────────────────────────────────────────────
-  const insights=[];
-
-  // 1. Snatch:C&J ratio
-  if(ratio!==null){
-    if(ratio<75){
-      insights.push('Your Snatch:C&J ratio is '+ratio+'%, which is below the typical 78-82% range. Your Snatch is lagging behind your Clean & Jerk. Prioritise snatch volume and technical work -- more singles at heavy percentages and positional work off the hang.');
-    } else if(ratio>85){
-      insights.push('Your Snatch:C&J ratio is '+ratio+'%, sitting above the typical range. Your Clean & Jerk has room to grow relative to your Snatch. Focus on C&J frequency and heavier jerk work from the rack.');
-    } else {
-      insights.push('Your Snatch:C&J ratio is '+ratio+'% -- right in the ideal 78-82% window. Your two lifts are well balanced. Keep the current ratio as you push both PBs upward.');
-    }
-  }
-
-  // 2. Training frequency
-  if(sessionsPerWeek>0){
-    if(sessionsPerWeek<2){
-      insights.push('You\'re averaging '+sessionsPerWeek+' sessions per week over the last 8 weeks. For meaningful progress in Olympic lifting, aim for at least 3 sessions per week. Even short technical sessions add up.');
-    } else if(sessionsPerWeek>=4){
-      insights.push('Good training volume -- '+sessionsPerWeek+' sessions per week over the last 8 weeks. Make sure recovery is keeping pace. If quality scores are dropping, that\'s your signal to dial back.');
-    } else {
-      insights.push('You\'re training '+sessionsPerWeek+' sessions per week on average. Solid consistency. If progress feels slow, adding one more session focused purely on snatch or positional work can make a difference.');
-    }
-    // Frequency trend
-    if(sessionsLast4w<sessionsPrev4w-1){
-      insights.push('Your session frequency has dropped in the last 4 weeks ('+sessionsLast4w+' sessions vs '+sessionsPrev4w+' the 4 weeks before). If this is intentional deload, great. If not, try to protect at least your coached sessions -- consistency is everything in this sport.');
-    } else if(sessionsLast4w>sessionsPrev4w+1){
-      insights.push('You\'ve ramped up training in the last 4 weeks ('+sessionsLast4w+' sessions vs '+sessionsPrev4w+' previously). Good momentum -- just watch for fatigue accumulating.');
-    }
-  }
-
-  // 3. Quality trend
-  if(avgQuality!==null&&avgQualityRecent!==null){
-    if(avgQualityRecent<avgQuality-0.5){
-      insights.push('Your average session quality has dropped recently ('+avgQualityRecent+'/5 last 4 weeks vs '+avgQuality+'/5 over 8 weeks). This often signals accumulated fatigue. Consider a lighter week before pushing intensity again.');
-    } else if(avgQualityRecent>=4.0){
-      insights.push('Strong session quality recently -- averaging '+avgQualityRecent+'/5. You\'re moving and feeling well. This is a good window to attempt heavier singles or test near-max lifts.');
-    }
-  }
-
-  // 4. Competition prep
-  if(daysToComp!==null&&daysToComp>0){
-    if(daysToComp<=14){
-      insights.push('You\'re '+daysToComp+' days out from '+( comp.name||'your competition')+'. At this stage: reduce volume, maintain intensity. Hit your openers confidently in the last week. Sleep, eat, and trust the training you\'ve done.');
-    } else if(daysToComp<=42){
-      insights.push(daysToComp+' days to '+( comp.name||'competition')+'. This is your peak block. Sharpen technical precision, work on your opening attempts, and make sure you\'re comfortable with your planned attempt selection.');
-    } else {
-      insights.push(daysToComp+' days to '+( comp.name||'competition')+'. Plenty of time to build. Focus on volume and technical consistency now -- save the heavy singles for the final 6 weeks.');
-    }
-  }
-
-  // 5. Lift diversity / gaps
-  const hasSquat=liftCounts['Squat']>0;
-  const hasPull=liftCounts['Pull']>0||liftCounts['Deadlift']>0;
-  if(!hasSquat&&recent8w.length>3){
-    insights.push('No squats logged in the last 8 weeks. Squat strength underpins both the snatch and clean & jerk. Even 2 sets of heavy front squats per session will pay dividends.');
-  } else if(!hasPull&&recent8w.length>3){
-    insights.push('No pulls logged recently. Snatch and clean pulls are one of the most effective ways to build positional strength and bar speed without the fatigue cost of full lifts.');
-  }
-
-  // 6. Competition gap
-  if(snatchW&&compSnatch&&snatchW>compSnatch.weight){
-    const gap=Math.round((snatchW-compSnatch.weight)*10)/10;
-    insights.push('Your training Snatch ('+snatchW+'kg) is '+gap+'kg ahead of your competition best ('+compSnatch.weight+'kg). That gap suggests you have more to give on the platform. Work on replicating training conditions -- same warm-up sequence, same timing.');
-  }
-  if(cjW&&compCJ&&cjW>compCJ.weight){
-    const gap=Math.round((cjW-compCJ.weight)*10)/10;
-    insights.push('Your training C&J ('+cjW+'kg) is '+gap+'kg above your competition best ('+compCJ.weight+'kg). Competition nerves or pacing strategy may be a factor. Simulate meet conditions in training more often.');
-  }
-
-  // Fallback
-  if(insights.length===0){
-    insights.push('Not enough data yet to generate meaningful insights. Log a few weeks of training and come back.');
-  }
-
-  // Render
-  out.innerHTML=insights.map(i=>'<p style="margin:0 0 12px;">'+i+'</p>').join('');
-  btn.textContent='Regenerate';
-  btn.disabled=false;
-}
+function generateInsights(){ renderAnalytics(); }
 
 // Auto-fetch when Safari returns to foreground
 document.addEventListener('visibilitychange', function(){
@@ -4098,16 +3961,17 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="cloud-backup.js?v=2026-10-31.7"></script>
-<script src="studio.js?v=2026-10-31.7"></script>
-<script src="database-ui.js?v=2026-10-31.7"></script>
-<script src="accessory-model.js?v=2026-10-31.7"></script>
-<script src="accessory.js?v=2026-10-31.7"></script>
-<script src="sync-status.js?v=2026-10-31.7"></script>
-<script src="home.js?v=2026-10-31.7"></script>
-<script src="analytics-chart.js?v=2026-10-31.7"></script>
-<script src="analytics.js?v=2026-10-31.7"></script>
-<script src="phone-layout.js?v=2026-10-31.7"></script>
-<script src="app-interactions.js?v=2026-10-31.7"></script>
+<script src="cloud-backup.js?v=2026-10-31.8"></script>
+<script src="studio.js?v=2026-10-31.8"></script>
+<script src="database-ui.js?v=2026-10-31.8"></script>
+<script src="accessory-model.js?v=2026-10-31.8"></script>
+<script src="accessory.js?v=2026-10-31.8"></script>
+<script src="sync-status.js?v=2026-10-31.8"></script>
+<script src="home.js?v=2026-10-31.8"></script>
+<script src="coaching.js?v=2026-10-31.8"></script>
+<script src="analytics-chart.js?v=2026-10-31.8"></script>
+<script src="analytics.js?v=2026-10-31.8"></script>
+<script src="phone-layout.js?v=2026-10-31.8"></script>
+<script src="app-interactions.js?v=2026-10-31.8"></script>
 </body>
 </html>

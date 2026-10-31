@@ -163,6 +163,21 @@ with sync_playwright() as p:
  page.locator('.analytics-chart').scroll_into_view_if_needed()
  page.screenshot(path=str(out/'analytics-smooth-trend.png'))
  page.evaluate('setCachedEntries(window.chartOriginal);renderAnalytics()')
+ # Coaching cards update automatically, explain their evidence and open the
+ # existing rehearsal planner without starting or recording a workout.
+ assert page.locator('.coaching-notes').count()==1
+ page.evaluate("""()=>{window.originalCoachingComp=loadSettings().comp;const d=new Date();d.setDate(d.getDate()+7);const date=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');saveSettingsData({...loadSettings(),comp:{name:'Browser meet',date}});renderAnalytics();}""")
+ card=page.locator('[data-coaching=meet]')
+ assert '7 days to Browser meet' in card.inner_text()
+ card.locator('summary').click()
+ assert 'within 14 days' in card.inner_text()
+ assert card.locator('a').get_attribute('href')=='https://pubmed.ncbi.nlm.nih.gov/35976755/'
+ card.scroll_into_view_if_needed();page.screenshot(path=str(out/'coaching-notes.png'))
+ card.locator('[data-coaching-action=openers]').click()
+ assert page.locator('#build-openers').is_visible()
+ page.locator('dialog [aria-label=Close]').click()
+ page.evaluate('saveSettingsData({...loadSettings(),comp:window.originalCoachingComp})')
+ page.locator('#tabs .tab').first.click();page.locator('#log-sub-analytics').click()
  page.locator('.analytics-record').click();page.locator('[data-act=editor-delete]').click();page.locator('#confirm-delete-set').click()
  page.wait_for_function('document.querySelector("#studio-log-dialog")===null');assert len(rows)==0
  for width in [320,375,402,430]:

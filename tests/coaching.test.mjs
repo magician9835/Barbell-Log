@@ -1,0 +1,16 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {readFileSync} from 'node:fs';
+const c=vm.createContext({});vm.runInContext(readFileSync('coaching.js','utf8'),c);const C=c.CoachingInsights;
+const entry=(date,weight=60,extra={})=>({id:date,date,base:'Snatch',position:[],receiving:'',grip:[],technique:[],reps:1,sets:1,session:'Coached Class',weight,...extra});
+const earlier=['2026-09-10','2026-09-15','2026-09-20'],recent=['2026-10-10','2026-10-15','2026-10-20'];
+const sample=(older={},newer={})=>[...earlier.map(d=>entry(d,60,older)),...recent.map(d=>entry(d,65,newer))];
+const run=(entries,extra={})=>C.analyse({entries,today:'2026-10-31',...extra}).cards;
+test('tips compare matched modifiers and reps without confusing hang or complex lifts',()=>{assert.ok(run(sample()).some(c=>c.id==='progress'));assert.ok(!run(sample({}, {position:['Hang Above Knee']})).some(c=>c.id==='progress'));assert.ok(!run(sample({}, {reps:2})).some(c=>c.id==='progress'));assert.notEqual(C.signature(entry('2026-10-01',60,{technique:['Complex']})),C.signature(entry('2026-10-01')));});
+test('rating change needs three independent days per period, not many rows on one day',()=>{const rows=sample({quality:5},{quality:3});const tip=run(rows).find(c=>c.id==='quality');assert.ok(tip);assert.match(tip.evidence,/5\/5.*3\/5/);assert.ok(!run([...earlier.map(d=>entry(d,60,{quality:5})),...Array.from({length:20},()=>entry('2026-10-20',60,{quality:1}))]).some(c=>c.id==='quality'));});
+test('future, old, zero-weight and competition entries cannot manufacture training comparisons',()=>{const rows=[...sample().filter(e=>e.date<'2026-10-01'),...recent.map(d=>entry(d,80,{session:'Competition'})),...recent.map(d=>entry('2027'+d.slice(4),90)),entry('2024-01-01',90),entry('2026-10-01',0)];assert.ok(!run(rows).some(c=>c.id==='progress'));});
+test('complex pull and squat components count for coverage',()=>{const rows=sample().map(e=>({...e,structure:[{base:'Pull',reps:1},{base:'Squat',reps:1}]}));assert.ok(!run(rows).some(c=>c.id==='coverage'));});
+test('meet reminders choose the nearest upcoming date, including meet day',()=>{const tip=run([],{comp:{name:'Later',date:'2026-11-20'},meets:[{name:'Past',date:'2026-09-01'},{name:'Liftoff',date:'2026-11-08'}]}).find(c=>c.id==='meet');assert.match(tip.title,/8 days.*Liftoff/);assert.equal(tip.actionId,'openers');assert.match(run([],{comp:{date:'2026-10-31'}}).find(c=>c.id==='meet').title,/today/);});
+test('sparse or unrated logs offer data-building steps instead of asserting fatigue or max readiness',()=>{const tips=run([entry('2026-10-29')]);assert.ok(tips.some(c=>c.id==='ratings'));assert.ok(tips.some(c=>c.id==='baseline'));assert.ok(!tips.some(c=>['quality','progress','rhythm'].includes(c.id)));});
+test('selected lift filters cannot hide whole-log meet context and untrusted names are escaped',()=>{const html=C.render({entries:sample(),selected:[],today:'2026-10-31',comp:{date:'2026-11-08',name:'<img src=x onerror=alert(1)>'}});assert.ok(html.includes('data-coaching="meet"'));assert.ok(html.includes('Why this tip?'));assert.ok(html.includes('https://pubmed.ncbi.nlm.nih.gov/35976755/'));assert.ok(!html.includes('<img'));assert.ok(html.includes('&lt;img'));});
