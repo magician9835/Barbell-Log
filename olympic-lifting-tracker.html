@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-30.16">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-30.16">
+<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.1">
+<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.1">
 <meta name="theme-color" content="#0c0d0f">
-<link rel="manifest" href="manifest.webmanifest?v=2026-10-30.16">
+<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.1">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -293,9 +293,9 @@
   .warmup-progress { position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
   .warmup-progress.done { background:var(--accent); }
 </style>
-<link rel="stylesheet" href="training.css?v=2026-10-30.8">
-<link rel="stylesheet" href="phone-layout.css?v=2026-10-30.16">
-<link rel="stylesheet" href="studio.css?v=2026-10-30.16">
+<link rel="stylesheet" href="training.css?v=2026-10-31.1">
+<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.1">
+<link rel="stylesheet" href="studio.css?v=2026-10-31.1">
 </head>
 <body>
 <div id="app">
@@ -948,11 +948,14 @@
   </div>
 </div>
 
-<script src="training-core.js?v=2026-10-30.16"></script>
-<script src="workout-model.js?v=2026-10-30.16"></script>
-<script src="data-migrations.js?v=2026-10-30.16"></script>
-<script src="pending-lifts.js?v=2026-10-30.16"></script>
-<script src="app-updates.js?v=2026-10-30.16" data-version="2026-10-30.16"></script>
+<script src="training-core.js?v=2026-10-31.1"></script>
+<script src="workout-model.js?v=2026-10-31.1"></script>
+<script src="data-migrations.js?v=2026-10-31.1"></script>
+<script src="vendor/supabase-2.118.0.js"></script>
+<script src="database-config.js?v=2026-10-31.1"></script>
+<script src="database.js?v=2026-10-31.1"></script>
+<script src="pending-lifts.js?v=2026-10-31.1"></script>
+<script src="app-updates.js?v=2026-10-31.1" data-version="2026-10-31.1"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -1197,7 +1200,7 @@ function renderLog(){
     });
   }
   if(entries.length===0){
-    container.innerHTML='<div class="empty"><div class="empty-icon">🏋️</div><p>No entries yet.<br>Tap + Log a Set to start.</p></div>';
+    container.innerHTML='<div class="empty"><div class="empty-icon">🏋️</div><p>No entries yet.<br>Tap + Log a Set, or connect your database in Settings.</p></div>';
     return;
   }
   const groups={};
@@ -1444,9 +1447,9 @@ function saveAthleteSettings(){
 }
 
 function queueBodyweight(entry){
-  try{PendingLifts.queue('logBW',{...entry,id:'bw-'+crypto.randomUUID()},loadSettings().sheetsUrl);}
+  try{PendingLifts.queue('logBW',{...entry,id:'bw-'+crypto.randomUUID()},AppData.endpoint());}
   catch(error){showToast('Could not save on this phone. Please try again.','error');return false;}
-  PendingLifts.drain(loadSettings().sheetsUrl).then(()=>renderPendingLifts()).catch(()=>{});return true;
+  PendingLifts.drain(AppData.endpoint()).then(()=>renderPendingLifts()).catch(()=>{});return true;
 }
 function logBWFromField(){
   const bw=parseFloat(document.getElementById('setting-bw').value)||null;
@@ -2127,11 +2130,11 @@ async function confirmFinishSession(){
     };
     saved++;allEntries.push(entry);
   });
-  try{PendingLifts.queueMany(allEntries.map(entry=>({action:'updateEntry',entry})),loadSettings().sheetsUrl);}
+  try{PendingLifts.queueMany(allEntries.map(entry=>({action:'updateEntry',entry})),AppData.endpoint());}
   catch(error){showToast('Phone storage unavailable. Keep the planner open and try again.','error');return;}
   allEntries.forEach(updatePBs);
   renderPendingLifts();
-  PendingLifts.drain(loadSettings().sheetsUrl).then(()=>fetchAndRender()).catch(()=>showToast('Pending lifts remain on this phone','error'));
+  PendingLifts.drain(AppData.endpoint()).then(()=>fetchAndRender()).catch(()=>showToast('Pending lifts remain on this phone','error'));
   closeFinishModal();
 
   // Build session summary
@@ -2610,7 +2613,7 @@ function saveMeet(){
   }));
   const location=document.getElementById('mm-location').value.trim();
   const meet={id:uid(),name,date,location,bw,snatch,cj,notes:document.getElementById('mm-notes').value.trim()};
-  try{PendingLifts.queue('saveMeet',meet,loadSettings().sheetsUrl);}catch(error){showToast('Could not save on this phone. Keep this form open.','error');return;}
+  try{PendingLifts.queue('saveMeet',meet,AppData.endpoint());}catch(error){showToast('Could not save on this phone. Keep this form open.','error');return;}
   const s=loadSettings();
   if(!s.meets)s.meets=[];
   s.meets.push(meet);
@@ -2621,7 +2624,7 @@ function saveMeet(){
   renderPBs();
   // Push meet to sheet
   const s2=loadSettings();
-  PendingLifts.drain(s2.sheetsUrl).then(()=>renderPendingLifts()).catch(()=>{});
+  PendingLifts.drain(AppData.endpoint()).then(()=>renderPendingLifts()).catch(()=>{});
   showToast('Meet recorded on phone — syncing','');
 }
 
@@ -2639,9 +2642,7 @@ function toggleMeetEditMode(){
 
 
 
-function deleteMeet(id){
-  showToast('Meet deletion is not available yet. Your meet has been kept.','');
-}
+function deleteMeet(id){showConfirm('Delete this meet?','Its attempts and total will be removed.','Delete',()=>{try{PendingLifts.queue('deleteMeet',id,AppData.endpoint());const s=loadSettings();s.meets=(s.meets||[]).filter(m=>m.id!==id);saveSettingsData(s);renderMeetList();renderPBs();PendingLifts.drain(AppData.endpoint()).then(()=>fetchAndRender());}catch(e){showToast(e.message,'error');}});}
 
 function getMeetPBs(){
   // Extract competition PBs from meet log
@@ -2892,13 +2893,13 @@ try{_entriesCache=JSON.parse(localStorage.getItem('barbell_last_entries_v1')||'[
 let _fetchInProgress = false;
 let _lastFetchError=false;
 
-function getCachedEntries(){ return PendingLifts.overlay(_entriesCache,loadSettings().sheetsUrl); }
+function getCachedEntries(){ return PendingLifts.overlay(_entriesCache,AppData.endpoint()); }
 function setCachedEntries(e){ _entriesCache = e||[];try{localStorage.setItem('barbell_last_entries_v1',JSON.stringify(_entriesCache));}catch(error){console.warn('Offline cache unavailable');} }
 function clearEntryCache(){ _entriesCache = []; }
 
 async function fetchEntries(){
-  const s=loadSettings();
-  if(!s.sheetsUrl){
+  const s=loadSettings(),endpoint=AppData.endpoint();
+  if(!endpoint){
     const container=document.getElementById('logList');
     if(container&&container.innerHTML.includes('Loading'))
       container.innerHTML='<div class="empty"><div class="empty-icon">⚙️</div><p>Add your Apps Script URL in Settings to load your log.</p></div>';
@@ -2908,9 +2909,11 @@ async function fetchEntries(){
   _fetchInProgress=true;
   _lastFetchError=false;
   try{
-    const r=await fetch(s.sheetsUrl+'?action=getAll&_check='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(12000)});
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const data=await r.json();
+    let data;
+    if(AppData.usesDatabase())data=PendingLifts.overlayRecords(await AppData.read(),endpoint);
+    else {const r=await fetch(endpoint+'?action=getAll&_check='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('HTTP '+r.status);data=await r.json();}
+    if(endpoint!==AppData.endpoint())return getCachedEntries();
+    if(AppData.usesDatabase()){const settings=loadSettings();settings.meets=data.meets||[];settings.bwLog=data.bw||[];saveSettingsData(settings);localStorage.setItem('barbell_accessory_records_v1',JSON.stringify(data.accessories||[]));}
     if(data.error||!Array.isArray(data.entries))throw new Error(data.error||'Invalid sheet response');
     const cached=new Map(getCachedEntries().map(e=>[e.id,e]));
     let details={};try{details=JSON.parse(localStorage.getItem('barbell_lift_details_v3')||'{}');}catch{}
@@ -2944,7 +2947,7 @@ async function fetchEntries(){
     console.error('Fetch failed:',e);
     const container=document.getElementById('logList');
     if(container&&container.innerHTML.includes('Loading'))
-      container.innerHTML='<div class="empty"><div class="empty-icon">📡</div><p>Could not load entries.<br><span style="font-size:12px;color:var(--text3);">Check your Sheets URL in Settings, then tap ⇅ SYNC.</span></p></div>';
+      container.innerHTML='<div class="empty"><div class="empty-icon">📡</div><p>Could not load entries.<br><span style="font-size:12px;color:var(--text3);">Open Settings to check your connection, then retry sync.</span></p></div>';
     return getCachedEntries();
   }finally{
     _fetchInProgress=false;
@@ -2981,10 +2984,10 @@ async function fetchAndRender(){
 // ⇅ SYNC = pull only, refresh display
 async function syncBoth(){
   const s=loadSettings();
-  if(!s.sheetsUrl){showToast('Add Sheets URL in Settings first','error');return;}
+  if(!AppData.endpoint()){showToast('Connect your database or sheet in Settings','error');return;}
   const btn=document.getElementById('syncBtn');
   btn.textContent='↻';btn.classList.add('syncing');
-  await PendingLifts.drain(s.sheetsUrl);
+  await PendingLifts.drain(AppData.endpoint());
   await fetchEntries();
   renderLog();
   if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
@@ -3020,7 +3023,7 @@ function renderPendingLifts(){
 window.addEventListener('pendingliftschange',()=>{renderPendingLifts();renderLog();});
 
 async function saveLiftChange(action,entry){
-  const endpoint=loadSettings().sheetsUrl;
+  const endpoint=AppData.endpoint();
   let token;
   try{token=PendingLifts.queue(action,entry,endpoint);}
   catch(error){showToast('Phone storage unavailable. Keep this form open and try again.','error');return{queued:false,saved:false};}
@@ -4097,11 +4100,14 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="cloud-backup.js?v=2026-10-30.16"></script>
-<script src="studio.js?v=2026-10-30.16"></script>
-<script src="home.js?v=2026-10-30.16"></script>
-<script src="analytics.js?v=2026-10-30.16"></script>
-<script src="phone-layout.js?v=2026-10-30.16"></script>
-<script src="app-interactions.js?v=2026-10-30.16"></script>
+<script src="cloud-backup.js?v=2026-10-31.1"></script>
+<script src="studio.js?v=2026-10-31.1"></script>
+<script src="database-ui.js?v=2026-10-31.1"></script>
+<script src="accessory-model.js?v=2026-10-31.1"></script>
+<script src="accessory.js?v=2026-10-31.1"></script>
+<script src="home.js?v=2026-10-31.1"></script>
+<script src="analytics.js?v=2026-10-31.1"></script>
+<script src="phone-layout.js?v=2026-10-31.1"></script>
+<script src="app-interactions.js?v=2026-10-31.1"></script>
 </body>
 </html>

@@ -1,11 +1,12 @@
+import os, shutil
 """Exercise real mobile UI against a fake Sheets API; never writes to Google."""
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json, mimetypes
 root=Path(__file__).resolve().parents[1]
-out=Path('/workspace/barbell-review/v3');out.mkdir(parents=True,exist_ok=True)
+out=Path(os.environ.get('BARBELL_ARTIFACTS',str(root/'.artifacts')))/'v3';out.mkdir(parents=True,exist_ok=True)
 with sync_playwright() as p:
- b=p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])
+ b=p.chromium.launch(executable_path=os.environ.get('BARBELL_BROWSER_PATH') or shutil.which('chromium') or None,args=['--no-sandbox'])
  page=b.new_page(viewport={'width':402,'height':812},is_mobile=True,has_touch=True)
  page.set_default_timeout(6000)
  errors=[];page.on('pageerror',lambda e:errors.append(str(e)))

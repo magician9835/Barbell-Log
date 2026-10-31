@@ -1,10 +1,11 @@
+import os, shutil
 """Check phone shell geometry with simulated iPhone safe areas."""
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
 root=Path(__file__).resolve().parents[1]
 with sync_playwright() as p:
- b=p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'],timeout=8000)
+ b=p.chromium.launch(executable_path=os.environ.get('BARBELL_BROWSER_PATH') or shutil.which('chromium') or None,args=['--no-sandbox'],timeout=8000)
  page=b.new_page(viewport={'width':402,'height':874},is_mobile=True,device_scale_factor=1)
  page.set_default_timeout(5000)
  page.add_init_script("Object.defineProperty(navigator,'standalone',{value:true})")
@@ -27,7 +28,7 @@ with sync_playwright() as p:
  content=page.locator('#content').bounding_box();assert content['y']+content['height']<=tabs['y']+1
  assert page.evaluate('document.documentElement.scrollWidth')<=402
  for tab in page.locator('#tabs .tab').all():assert tab.bounding_box()['height']>=44
- out=Path('/workspace/barbell-review/iphone16pro-layout.png');out.parent.mkdir(exist_ok=True)
+ out=Path(os.environ.get('BARBELL_ARTIFACTS',str(root/'.artifacts')))/'iphone16pro-layout.png';out.parent.mkdir(parents=True,exist_ok=True)
  page.screenshot(path=str(out))
  # Simulate keyboard viewport changes while a form has focus.
  page.evaluate('TrainingApp.recap()')
