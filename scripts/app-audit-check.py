@@ -63,6 +63,9 @@ with sync_playwright() as p:
  tab('settings');check('settings')
  assert page.evaluate("document.querySelector('#pane-settings').children[0].id")=='display-settings'
  assert page.locator('#backup-settings').get_attribute('open') is None
+ rows=page.locator('#pane-settings>details').evaluate_all('(els)=>els.map(e=>({x:e.getBoundingClientRect().x,width:e.getBoundingClientRect().width,height:e.querySelector("summary").getBoundingClientRect().height,font:getComputedStyle(e.querySelector("summary")).font}))')
+ assert len(rows)==3 and len({json.dumps(r) for r in rows})==1,rows
+ page.locator('#settings-footer').scroll_into_view_if_needed();page.screenshot(path=str(out/(engine+'-settings-maintenance.png')))
  page.locator('#unit-lbs').click();assert page.evaluate('getUnit()')=='lbs';tab('log');page.locator('#log-sub-analytics').click();assert 'lbs' in page.locator('.analytics-stats').inner_text();assert 'lbs' in page.locator('.analytics-chart').text_content()
  tab('settings');page.locator('#unit-kg').click();page.locator('.settings-weight-class>summary').click();assert 'IWF' in page.locator('#weight-class-detail').inner_text();page.locator('.settings-weight-class>summary').click();page.locator('#setting-bw').fill('81');page.locator('[onclick="logBWFromField()"] ').click();assert page.evaluate('loadSettings().athleteBW')==81
  weigh_in_id=page.evaluate('loadSettings().bwLog[0].id');page.locator('#setting-bw').fill('81.1');page.locator('[onclick="logBWFromField()"]').click();assert page.evaluate('loadSettings().bwLog[0].id')==weigh_in_id
