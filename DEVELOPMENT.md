@@ -202,3 +202,7 @@ AccessoryModel.loadBasis/loadLabel/loadShort retain equipment and per-plate
 metadata in actuals, summaries and editing. Keep plate count unknown when
 it was not reported; never reinterpret a 5 kg plate as a 5 kg dumbbell or infer
 total load from an unknown number of plates.
+
+## Phone editor spacing (2026-10-31.4)
+
+Date and session now stack at phone widths in both the session builder and log editor. Native date fields use an explicit 48px height and constrained appearance, matching the session selector. Movement actions wrap rather than compress their labels. The training browser workflow checks control bounds, vertical separation, and equal heights at 320, 375, 402 and 430px, with an edit-complex screenshot. Physical iPhone Safari remains the final native-control check.

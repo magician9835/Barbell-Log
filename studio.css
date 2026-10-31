@@ -37,3 +37,13 @@
 /* Normal header has no sync control. Exceptional states replace the small
    countdown chip, keeping the same header height while the user types. */
 #header-row1 .header-actions{flex:0 1 auto;min-width:0;max-width:48%}.sync-status-wrap{min-width:0;max-width:100%}.sync-status-wrap[hidden]{display:none}#header.has-sync-status #header-comp-badge{display:none!important}#sync-status{display:block;max-width:100%;min-width:0;min-height:44px;padding:5px 8px;border:1px solid #65533b;border-radius:9px;background:#241e15;color:#f3d9a4;font:500 10.5px/1.35 'DM Mono',monospace;text-align:center;white-space:normal;overflow-wrap:normal;cursor:pointer}#sync-status[data-tone=attention]{background:#301b20;color:#ffc1cb;border-color:#934351}#sync-status[data-tone=offline]{background:#202228;color:#d2d5dd;border-color:#50545e}.connection-status-settings{margin:16px 0 0;padding-top:12px;border-top:1px solid var(--border)}.connection-status-settings h4{font-size:15px}.connection-status-settings p{font-size:12px;line-height:1.5;color:var(--text2)}
+
+/* Native iOS date controls need more room than half a phone-width. Keep
+   session metadata on separate rows, with consistent control heights. */
+.studio-field input:not([type=checkbox]):not([type=radio]),.studio-field select{height:48px;flex-shrink:0}
+.studio-field input[type=date]{appearance:none;-webkit-appearance:none;overflow:hidden;text-align:left;color-scheme:dark}
+.studio-field input[type=date]::-webkit-date-and-time-value{min-width:0;text-align:left}
+.studio-field input[type=date]::-webkit-datetime-edit{padding:0}
+.studio-component-top{flex-wrap:wrap;row-gap:4px}
+.studio-component-top>span{flex-shrink:0}
+@media(max-width:480px){.studio-session-fields{grid-template-columns:minmax(0,1fr);gap:0}}
