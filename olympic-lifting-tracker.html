@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.24">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.24">
+<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.25">
+<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.25">
 <meta name="theme-color" content="#0c0d0f">
-<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.24">
+<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.25">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -293,9 +293,9 @@
   .warmup-progress { position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
   .warmup-progress.done { background:var(--accent); }
 </style>
-<link rel="stylesheet" href="training.css?v=2026-10-31.24">
-<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.24">
-<link rel="stylesheet" href="studio.css?v=2026-10-31.24">
+<link rel="stylesheet" href="training.css?v=2026-10-31.25">
+<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.25">
+<link rel="stylesheet" href="studio.css?v=2026-10-31.25">
 </head>
 <body>
 <div id="app">
@@ -895,15 +895,16 @@
   </div>
 </div>
 
-<script src="training-core.js?v=2026-10-31.24"></script>
-<script src="workout-model.js?v=2026-10-31.24"></script>
-<script src="programme-view.js?v=2026-10-31.24"></script>
-<script src="data-migrations.js?v=2026-10-31.24"></script>
+<script src="training-core.js?v=2026-10-31.25"></script>
+<script src="workout-model.js?v=2026-10-31.25"></script>
+<script src="record-bests.js?v=2026-10-31.25"></script>
+<script src="programme-view.js?v=2026-10-31.25"></script>
+<script src="data-migrations.js?v=2026-10-31.25"></script>
 <script src="vendor/supabase-2.118.0.js"></script>
-<script src="database-config.js?v=2026-10-31.24"></script>
-<script src="database.js?v=2026-10-31.24"></script>
-<script src="pending-lifts.js?v=2026-10-31.24"></script>
-<script src="app-updates.js?v=2026-10-31.24" data-version="2026-10-31.24"></script>
+<script src="database-config.js?v=2026-10-31.25"></script>
+<script src="database.js?v=2026-10-31.25"></script>
+<script src="pending-lifts.js?v=2026-10-31.25"></script>
+<script src="app-updates.js?v=2026-10-31.25" data-version="2026-10-31.25"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -1155,13 +1156,7 @@ function renderLog(){
   }
   const groups={};
   entries.forEach(e=>{if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e);});
-  // Build PB map: base|position[0]|receiving -> max weight across all entries
-  const pbMap={};
-  entries.forEach(e=>{
-    if(!e.weight)return;
-    const key=liftIdentity(e);
-    if(!pbMap[key]||e.weight>pbMap[key])pbMap[key]=e.weight;
-  });
+  const recordIds=RecordBests.badges(getCachedEntries(),getMeets(),loadSettings().pbs||[]);
 
   let html='';
   Object.keys(groups).sort((a,b)=>b.localeCompare(a)).forEach(date=>{
@@ -1178,9 +1173,8 @@ function renderLog(){
         (!e.technique||e.technique.length===0)&&
         (!e.receiving||e.receiving==='Squat (Full)'||e.receiving==='Split'||e.receiving==='');
       const compLiftBadge=isCompLift?'<span style="font-size:9px;font-weight:700;font-family:DM Mono,monospace;letter-spacing:0.5px;background:rgba(255,215,0,0.15);color:#ffd700;border:1px solid rgba(255,215,0,0.3);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:middle;">COMP LIFT</span>':'';
-      const pbKey=liftIdentity(e);
-      const isPBEntry=e.weight&&pbMap[pbKey]&&e.weight>=pbMap[pbKey];
-      const pbBadge=isPBEntry?'<span style="font-size:11px;margin-left:5px;vertical-align:middle;" title="PB for this lift">🏆</span>':'';
+      const isPBEntry=recordIds.has(e.id);
+      const pbBadge=isPBEntry?'<span style="font-size:11px;margin-left:5px;vertical-align:middle;" data-record-badge="true" role="img" aria-label="All-time best for this lift variation across all sessions" title="All-time best · all sessions">🏆</span>':'';
       html+=`<div class="log-entry ${borderClass}" data-entry-id="${escapeText(e.id)}"${i>0?' style="border-top:1px solid var(--border)"':''}>
         <div class="log-entry-header" role="button" tabindex="0" aria-label="Edit logged set">
           <div class="log-entry-lift">${ln}${compLiftBadge}${pbBadge}</div>
@@ -2109,17 +2103,14 @@ function showSessionSummary(entries){
     return sum;
   },0);
   const heaviest=entries.reduce((mx,e)=>e.weight>mx.weight?e:mx,entries[0]);
-  const newPBs=[];
-  entries.forEach(e=>{
-    const s=loadSettings();const pbs=s.pbs||[];
-    const prev=pbs.find(p=>p.lift===e.base&&p.date!==e.date);
-    if(prev&&e.weight>prev.weight)newPBs.push({lift:e.base,weight:e.weight,prev:prev.weight});
-  });
+  const known=[...new Map([...getCachedEntries(),...entries].map(e=>[e.id,e])).values()];
+  const recordIds=RecordBests.badges(known,getMeets(),loadSettings().pbs||[]);
+  const newPBs=entries.filter(e=>recordIds.has(e.id)).map(e=>({lift:buildLiftName(e),weight:e.weight}));
   const u=unitLabel();
   let html='';
   if(newPBs.length){
     newPBs.forEach(pb=>{
-      html+=`<div class="summary-pb-badge">🏆 New PB: ${pb.lift} ${dispW(pb.weight)}${u} (was ${dispW(pb.prev)}${u})</div>`;
+      html+=`<div class="summary-pb-badge">🏆 All-time best: ${escapeText(pb.lift)} ${dispW(pb.weight)}${u}</div>`;
     });
   }
   html+=`<div class="summary-grid">
@@ -3837,19 +3828,19 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="cloud-backup.js?v=2026-10-31.24"></script>
-<script src="studio.js?v=2026-10-31.24"></script>
-<script src="database-ui.js?v=2026-10-31.24"></script>
-<script src="accessory-model.js?v=2026-10-31.24"></script>
-<script src="accessory.js?v=2026-10-31.24"></script>
-<script src="sync-status.js?v=2026-10-31.24"></script>
-<script src="competition-warmup-model.js?v=2026-10-31.24"></script>
-<script src="competition-warmup.js?v=2026-10-31.24"></script>
-<script src="home.js?v=2026-10-31.24"></script>
-<script src="coaching.js?v=2026-10-31.24"></script>
-<script src="analytics-chart.js?v=2026-10-31.24"></script>
-<script src="analytics.js?v=2026-10-31.24"></script>
-<script src="phone-layout.js?v=2026-10-31.24"></script>
-<script src="app-interactions.js?v=2026-10-31.24"></script>
+<script src="cloud-backup.js?v=2026-10-31.25"></script>
+<script src="studio.js?v=2026-10-31.25"></script>
+<script src="database-ui.js?v=2026-10-31.25"></script>
+<script src="accessory-model.js?v=2026-10-31.25"></script>
+<script src="accessory.js?v=2026-10-31.25"></script>
+<script src="sync-status.js?v=2026-10-31.25"></script>
+<script src="competition-warmup-model.js?v=2026-10-31.25"></script>
+<script src="competition-warmup.js?v=2026-10-31.25"></script>
+<script src="home.js?v=2026-10-31.25"></script>
+<script src="coaching.js?v=2026-10-31.25"></script>
+<script src="analytics-chart.js?v=2026-10-31.25"></script>
+<script src="analytics.js?v=2026-10-31.25"></script>
+<script src="phone-layout.js?v=2026-10-31.25"></script>
+<script src="app-interactions.js?v=2026-10-31.25"></script>
 </body>
 </html>

@@ -11,12 +11,12 @@ function render(entry, meets) {
     document: { getElementById: () => container }, activeFilter: 'all',
     getCachedEntries: () => [entry], getMeets: () => meets,
     buildLiftName: e => e.base, formatDate: d => d,
-    dispW: w => w, unitLabel: () => 'kg',
+    dispW: w => w, unitLabel: () => 'kg',loadSettings:()=>({pbs:[]}),
   });
   const labelSource=html.match(/function sessionLabel\(session\)\{[\s\S]*?\n\}/)[0];
   const identitySource=html.match(/function liftIdentity\(e\)\{[^\n]+/)[0];
   const escapeSource=html.match(/function escapeText\(value\)\{[^\n]+/)[0];
-  vm.runInContext(readFileSync('programme-view.js','utf8'),context);
+  vm.runInContext(readFileSync('programme-view.js','utf8'),context);vm.runInContext(readFileSync('record-bests.js','utf8'),context);
   vm.runInContext(identitySource+'\n'+escapeSource+'\n'+labelSource + '\n' + renderSource + '\nrenderLog();', context);
   return container.innerHTML;
 }
