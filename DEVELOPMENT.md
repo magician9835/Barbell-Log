@@ -188,3 +188,17 @@ Header syncBtn/pending-lifts-button were removed; do not recreate them in featur
 modules. renderPendingLifts delegates to SyncStatus. fetchEntries emits
 datasyncchange on completion, and cloud backup errors are exposed to the status
 view. Background refresh does not replace active workout form fields.
+
+
+## Confirmed cutover and plate accessories (2026-10-31.3)
+
+The owner completed phone sign-in. Live verification on 31 October 2026 confirmed
+60 historical lifts, 2 meets, 156 bodyweights and backups from two installations.
+The protected import archive is now linked to that verified account. Earlier
+notes about waiting for an app account describe the initial setup and are no
+longer the current owner status. Read live records for current counts.
+
+AccessoryModel.loadBasis/loadLabel/loadShort retain equipment and per-plate
+metadata in actuals, summaries and editing. Keep plate count unknown when
+it was not reported; never reinterpret a 5 kg plate as a 5 kg dumbbell or infer
+total load from an unknown number of plates.

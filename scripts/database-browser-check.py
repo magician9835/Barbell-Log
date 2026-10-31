@@ -100,6 +100,14 @@ with sync_playwright() as p:
   page.set_viewport_size({'width':width,'height':812});page.locator('#tabs .tab').nth(4).click();assert page.evaluate('document.documentElement.scrollWidth')<=width
   page.evaluate("localStorage.setItem('__test_offline','1');window.dispatchEvent(new Event('offline'))");assert page.locator('#sync-status').is_visible();assert page.evaluate('document.documentElement.scrollWidth')<=width;assert page.locator('#header').bounding_box()['height']==header_height
   page.evaluate("localStorage.removeItem('__test_offline');window.dispatchEvent(new Event('online'))")
+ # Plate-loaded accessories retain their weight basis in summaries and editing.
+ plate={'id':'plate-label-fixture','date':'2026-10-29','session':'Coached Class','name':'Lateral raise','weight':5,'round':1,'exercises':[{'name':'Lateral raise','weight':5,'unit':'kg','equipment':'plate','weightBasis':'per plate','plateCount':None,'dumbbells':0,'eachSide':False,'reps':10}],'notes':'Photo programme'}
+ rows[('accessory',plate['id'])]={'data':plate,'revision':1,'deleted':False}
+ page.evaluate('async()=>{await fetchAndRender();}')
+ page.locator('#tabs .tab').nth(1).click();page.locator('[data-act=accessory]').click()
+ plate_card=page.locator('[data-ac=edit-record][data-id=plate-label-fixture]')
+ assert '5 kg/plate' in plate_card.inner_text() and '/DB' not in plate_card.inner_text()
+ plate_card.click();assert page.get_by_text('kg per plate',exact=True).is_visible();page.locator('dialog [aria-label=Close]').click()
  # A second phone recovers the saved program before it writes its first snapshot.
  page.wait_for_timeout(800);page.evaluate('async()=>{await CloudBackup.sync();}')
  second=browser.new_page(viewport={'width':402,'height':812},is_mobile=True,has_touch=True);second.route('**/*',serve)
