@@ -76,6 +76,20 @@ with sync_playwright() as p:
  page.evaluate("openEditModal("+json.dumps(entry['id'])+")")
  assert page.locator('[data-editor=session]').input_value()=='Coached Class'
  assert page.locator('dialog .studio-component').count()==2
+ # Date/session fields must fit the editor at phone widths, including iOS's
+ # wider native date value. Exercise the real two-movement editing dialog.
+ for width in [320,375,402,430]:
+  page.set_viewport_size({'width':width,'height':812})
+  date=page.locator('[data-editor=date]').bounding_box()
+  session=page.locator('[data-editor=session]').bounding_box()
+  dialog=page.locator('#studio-log-dialog').bounding_box()
+  assert date['y']+date['height']<session['y'],(width,date,session)
+  assert abs(date['height']-session['height'])<=1
+  for control in page.locator('#studio-log-dialog input,#studio-log-dialog select').all():
+   box=control.bounding_box()
+   assert box['x']>=dialog['x'] and box['x']+box['width']<=dialog['x']+dialog['width'],(width,box,dialog)
+ page.set_viewport_size({'width':402,'height':812})
+ page.screenshot(path=str(out/'edit-complex.png'))
  page.locator('[data-editor=weight]').fill('45')
  page.locator('[data-act=editor-save]').click();page.wait_for_function('document.querySelector("#studio-log-dialog")===null')
  assert next(iter(rows.values()))['weight']==45
