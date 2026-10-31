@@ -53,8 +53,8 @@ no unsolicited email was sent from tools. The default Supabase mail sender can
 restrict recipients; using the project owner's email avoids adding SMTP setup
 for this private app. Never disable confirmation to work around a redirect.
 
-In the phone app: Settings → Your database → Create app account, confirm the email,
-then return to the original phone icon → Sign in & connect. The app password is
+In the phone app: Settings → Account & sync → Create app account, confirm the email,
+then return to the original phone icon → Sign in. The app password is
 entered only in the app and not sent in chat. Forgot-password and recovery controls
 are included. Confirmation links can open Safari's separate storage; the UI tells
 the owner to return to the original icon for the final migration.
@@ -144,7 +144,7 @@ immediately; pending indicators appear only after 1.5 seconds, avoiding flashes
 for fast successful saves. A status chip temporarily replaces the competition
 countdown chip without increasing header height. The countdown remains available
 in the Log banner. The status chip opens pending-change review or connection
-settings. Manual Refresh data lives under Settings → Your database → Data sync
+settings. Manual Refresh data lives under Settings → Account & sync → Data sync
 and refreshes pending records, history and plan backups. Automatic startup,
 resume and online refresh remains enabled, including legacy pending writes.
 The browser integration verifies auto-reconnect and fixed header geometry at

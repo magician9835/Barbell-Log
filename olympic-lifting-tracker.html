@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.10">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.10">
+<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.11">
+<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.11">
 <meta name="theme-color" content="#0c0d0f">
-<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.10">
+<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.11">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -293,9 +293,9 @@
   .warmup-progress { position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
   .warmup-progress.done { background:var(--accent); }
 </style>
-<link rel="stylesheet" href="training.css?v=2026-10-31.10">
-<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.10">
-<link rel="stylesheet" href="studio.css?v=2026-10-31.10">
+<link rel="stylesheet" href="training.css?v=2026-10-31.11">
+<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.11">
+<link rel="stylesheet" href="studio.css?v=2026-10-31.11">
 </head>
 <body>
 <div id="app">
@@ -630,33 +630,18 @@
           <div style="margin-top:6px;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">Supports Withings and most CSV exports with Date, Weight columns.</div>
         </div>
       </div>
-      <div class="section">
-        <div class="section-label">Google Sheets Sync</div>
-        <div class="card">
-          <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
-            <div><div class="settings-label">Apps Script URL</div><div class="settings-sub">Paste your deployment URL here</div></div>
-            <input type="text" id="sheetsUrl" placeholder="https://script.google.com/macros/s/..."
-              style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:12px;font-family:DM Mono,monospace;padding:8px 10px;border-radius:8px;outline:none;"
-              oninput="saveSheetsUrl()">
-          </div>
-
-          <div class="settings-row" style="gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-secondary btn-sm" onclick="exportCSV()">Export CSV</button>
-          </div>
-        </div>
-      </div>
-      <div class="section">
-        <div class="section-label">Coefficients</div>
+      <details class="section settings-advanced">
+        <summary>Advanced lift estimates</summary>
         <div style="font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:10px;">
-          These multipliers estimate your implied 1RM on the competition lift when you log a variation. Each modifier makes the lift harder or easier relative to the floor squat standard. Position coefficients reflect bar height and pull length. Receiving coefficients reflect catch depth and demand. Technique coefficients reflect constraints like pauses. They stack multiplicatively. Defaults are population averages from Oly coaching literature -- your own logged data overrides them automatically once you have direct variation matches.
+          Optional multipliers for saved lift estimates. In Train, choose the reference max for each block directly. These defaults are estimates, not measured personal lift relationships.
         </div>
         <div class="card" id="coeffList"></div>
         <div style="margin-top:8px;display:flex;gap:8px;">
           <button class="btn btn-secondary btn-sm" onclick="saveCoefficients()">Save</button>
           <button class="btn btn-ghost btn-sm" onclick="resetCoefficients()">Reset to Defaults</button>
         </div>
-      </div>
-      <div style="padding:16px;text-align:center;color:var(--text3);font-size:10px;font-family:DM Mono,monospace;">BARBELL LOG v1.3 · Built for Brian</div>
+      </details>
+      <div style="padding:16px;text-align:center;color:var(--text3);font-size:10px;font-family:DM Mono,monospace;">BARBELL LOG · Built for Brian</div>
     </div>
   </div>
 
@@ -948,15 +933,15 @@
   </div>
 </div>
 
-<script src="training-core.js?v=2026-10-31.10"></script>
-<script src="workout-model.js?v=2026-10-31.10"></script>
-<script src="programme-view.js?v=2026-10-31.10"></script>
-<script src="data-migrations.js?v=2026-10-31.10"></script>
+<script src="training-core.js?v=2026-10-31.11"></script>
+<script src="workout-model.js?v=2026-10-31.11"></script>
+<script src="programme-view.js?v=2026-10-31.11"></script>
+<script src="data-migrations.js?v=2026-10-31.11"></script>
 <script src="vendor/supabase-2.118.0.js"></script>
-<script src="database-config.js?v=2026-10-31.10"></script>
-<script src="database.js?v=2026-10-31.10"></script>
-<script src="pending-lifts.js?v=2026-10-31.10"></script>
-<script src="app-updates.js?v=2026-10-31.10" data-version="2026-10-31.10"></script>
+<script src="database-config.js?v=2026-10-31.11"></script>
+<script src="database.js?v=2026-10-31.11"></script>
+<script src="pending-lifts.js?v=2026-10-31.11"></script>
+<script src="app-updates.js?v=2026-10-31.11" data-version="2026-10-31.11"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -1123,7 +1108,7 @@ function initDB(){
     settings.bwLog=[{date:'2025-11-01',weight:79.8,note:'Competition weigh-in'}];
   }
   saveSettingsData(settings);
-  if(settings.sheetsUrl)document.getElementById('sheetsUrl').value=settings.sheetsUrl;
+
   if(settings.comp){
     if(settings.comp.name)document.getElementById('comp-name').value=settings.comp.name;
     if(settings.comp.date)document.getElementById('comp-date').value=settings.comp.date;
@@ -2892,7 +2877,7 @@ function saveCoefficients(){
   saveSettingsData(s);showToast('Coefficients saved','success');
 }
 function resetCoefficients(){const s=loadSettings();s.coefficients=JSON.parse(JSON.stringify(DEFAULT_COEFFICIENTS));saveSettingsData(s);renderCoeffSettings();showToast('Reset to defaults','success');}
-function saveSheetsUrl(){const s=loadSettings();s.sheetsUrl=document.getElementById('sheetsUrl').value.trim();saveSettingsData(s);}
+
 function saveSettings(){const s=loadSettings();saveSettingsData(s);}
 function exportCSV(){
   
@@ -3985,17 +3970,17 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="cloud-backup.js?v=2026-10-31.10"></script>
-<script src="studio.js?v=2026-10-31.10"></script>
-<script src="database-ui.js?v=2026-10-31.10"></script>
-<script src="accessory-model.js?v=2026-10-31.10"></script>
-<script src="accessory.js?v=2026-10-31.10"></script>
-<script src="sync-status.js?v=2026-10-31.10"></script>
-<script src="home.js?v=2026-10-31.10"></script>
-<script src="coaching.js?v=2026-10-31.10"></script>
-<script src="analytics-chart.js?v=2026-10-31.10"></script>
-<script src="analytics.js?v=2026-10-31.10"></script>
-<script src="phone-layout.js?v=2026-10-31.10"></script>
-<script src="app-interactions.js?v=2026-10-31.10"></script>
+<script src="cloud-backup.js?v=2026-10-31.11"></script>
+<script src="studio.js?v=2026-10-31.11"></script>
+<script src="database-ui.js?v=2026-10-31.11"></script>
+<script src="accessory-model.js?v=2026-10-31.11"></script>
+<script src="accessory.js?v=2026-10-31.11"></script>
+<script src="sync-status.js?v=2026-10-31.11"></script>
+<script src="home.js?v=2026-10-31.11"></script>
+<script src="coaching.js?v=2026-10-31.11"></script>
+<script src="analytics-chart.js?v=2026-10-31.11"></script>
+<script src="analytics.js?v=2026-10-31.11"></script>
+<script src="phone-layout.js?v=2026-10-31.11"></script>
+<script src="app-interactions.js?v=2026-10-31.11"></script>
 </body>
 </html>
