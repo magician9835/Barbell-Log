@@ -58,3 +58,7 @@
 .record-programme .programme-row small{grid-column:1/-1;font-size:11px}
 .record-notes p,.record-note{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.6 -apple-system,BlinkMacSystemFont,sans-serif;color:var(--text2);margin:6px 0 10px}
 .log-entry-header[role=button]:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+
+.analytics-chart-legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin:16px 0 8px;font:12px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;color:var(--text2)}
+.analytics-chart-legend span{display:flex;align-items:center;gap:7px}.analytics-chart-legend i{display:inline-block;width:22px;border-top:2px solid var(--accent)}.analytics-chart-legend .chart-trend-key{border-top:3px solid var(--text)}
+.analytics-chart{width:100%;height:auto;color:var(--text2);overflow:visible}.analytics-chart a:focus-visible circle:last-of-type{stroke:var(--text);stroke-width:3}

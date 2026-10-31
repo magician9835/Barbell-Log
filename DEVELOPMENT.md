@@ -214,3 +214,7 @@ Train previews and saved-record programme details share ProgrammeView stage rows
 ## Restore logged-set rating (2026-10-31.6)
 
 The shared manual log/edit dialog now exposes the existing optional 1–5 quality field. Existing ratings are selected when reopening; changing notes preserves the rating; choosing Not rated clears it to null. Training browser checks exercise set, change, preserve, clear and a blank new record.
+
+## Analytics smooth trend and calendar labels (2026-10-31.7)
+
+Recorded daily heaviest weights remain the red line and tappable points. A contrasting 30-day exponential average appears after three training days, using elapsed calendar days for the smoothing factor. Monotone cubic interpolation smooths its shape without introducing extrema between averaged values. The chart adds weight grid labels and spaced month/year ticks, including year transitions. Existing lift/variation/session/period filters apply before charting. Node checks cover constant loads, spikes, irregular gaps, sparse records and date labels; mobile browser checks cover the overlay, actual-point editing and non-overlapping ticks at 320–430px.

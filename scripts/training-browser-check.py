@@ -145,6 +145,24 @@ with sync_playwright() as p:
  page.locator('#tabs .tab').first.click();page.locator('#log-sub-analytics').click()
  assert page.locator('[data-analytics=variant]').is_visible()
  assert page.locator('.analytics-record').count()==1
+ # The smooth overlay retains editable actual points and month/year labels.
+ page.evaluate("""()=>{window.chartOriginal=getCachedEntries();const base=chartOriginal[0];setCachedEntries([...chartOriginal,...[['2024-12-15',40],['2025-06-01',60],['2026-10-01',50]].map(([date,weight],i)=>({...base,id:'chart-only-'+i,date,weight}))]);renderAnalytics();}""")
+ assert page.locator('.analytics-smooth-line').count()==1
+ assert page.locator('.analytics-chart [data-record]').count()==4
+ assert all(__import__('re').fullmatch(r'[A-Z][a-z]{2} \d{4}',label) for label in page.locator('.analytics-date-tick').all_text_contents())
+ page.locator('.analytics-chart [data-record]').first.click()
+ assert page.locator('[data-editor=date]').input_value()=='2024-12-15'
+ page.locator('#studio-log-dialog [aria-label=Close]').click()
+ for width in [320,402,430]:
+  page.set_viewport_size({'width':width,'height':812})
+  assert page.evaluate('document.documentElement.scrollWidth')<=width
+  boxes=[x.bounding_box() for x in page.locator('.analytics-date-tick').all()]
+  assert all(b['x']>=0 and b['x']+b['width']<=width for b in boxes)
+  assert all(a['x']+a['width']<b['x'] for a,b in zip(boxes,boxes[1:]))
+ page.set_viewport_size({'width':402,'height':812})
+ page.locator('.analytics-chart').scroll_into_view_if_needed()
+ page.screenshot(path=str(out/'analytics-smooth-trend.png'))
+ page.evaluate('setCachedEntries(window.chartOriginal);renderAnalytics()')
  page.locator('.analytics-record').click();page.locator('[data-act=editor-delete]').click();page.locator('#confirm-delete-set').click()
  page.wait_for_function('document.querySelector("#studio-log-dialog")===null');assert len(rows)==0
  for width in [320,375,402,430]:
