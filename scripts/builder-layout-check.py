@@ -73,6 +73,46 @@ with sync_playwright() as p:
  page.locator('#tabs .tab').first.click()
  assert page.locator('.filter-bar').first.evaluate('(e)=>{e.scrollLeft=100;return e.scrollLeft>0}')
  assert page.evaluate('window.scrollX')==0
+ # Recording keeps the current build-up visible with one clear next action.
+ page.evaluate('TrainingApp.open();TrainingApp.opener()')
+ for selector,value in [('[data-opener="0-0"]','65'),('[data-opener="0-1"]','68'),('[data-opener="0-2"]','70'),('[data-opener="1-0"]','90')]:page.locator(selector).fill(value)
+ page.locator('#build-openers').click();page.locator('[data-act=start]').click()
+ assert page.locator('.session-plan-grid').first.locator('li').count()==8
+ assert page.locator('.session-plan-grid [aria-current=step]').count()==1
+ assert page.locator('[data-actual=quality]').count()==0
+ assert page.locator('[data-clock]').count()==1
+ assert page.locator('.session-set-note').get_attribute('open') is None
+ for width in [320,375,402,430]:
+  page.set_viewport_size({'width':width,'height':812});bounds()
+  assert page.locator('.session-plan-grid').first.is_visible()
+  assert page.locator('.session-plan').first.bounding_box()['y']<page.locator('.session-record-card').bounding_box()['y']
+ page.set_viewport_size({'width':402,'height':812})
+ page.locator('#pane-planner').evaluate('(e)=>e.scrollTop=0')
+ assert page.locator('[data-act=complete]').bounding_box()['y']+page.locator('[data-act=complete]').bounding_box()['height']<=page.locator('#tabs').bounding_box()['y']
+ field=page.locator('[data-actual-rep]');field.evaluate('(e)=>window.recordingRepInput=e');field.fill('3')
+ assert field.evaluate('(e)=>e===window.recordingRepInput')
+ page.locator('#pane-planner').evaluate('(e)=>e.scrollTop=0')
+ page.screenshot(path=str(out/(engine+'-recording-plan.png')))
+ # Keep the primary action reachable with the measured iPhone safe areas.
+ page.evaluate("document.documentElement.style.setProperty('--phone-safe-top','62px');document.documentElement.style.setProperty('--phone-safe-bottom','34px')")
+ page.locator('#pane-planner').evaluate('(e)=>e.scrollTop=0')
+ assert page.locator('[data-act=complete]').bounding_box()['y']+page.locator('[data-act=complete]').bounding_box()['height']<=page.locator('#tabs').bounding_box()['y']
+ # Editing/deleting a completed tile must not leave a ghost Done marker.
+ page.locator('[data-act=complete]').click()
+ assert page.locator('.session-plan-grid [data-plan-status=done]').count()==1
+ page.locator('[data-act=edit-completed]').first.click()
+ assert page.locator('#studio-log-dialog').is_visible()
+ page.locator('[data-act=editor-delete]').click();page.locator('#confirm-delete-set').click()
+ page.wait_for_function('document.querySelector("#studio-log-dialog")===null')
+ assert page.locator('.session-plan-grid [data-plan-status=done]').count()==0
+ assert page.locator('.session-plan-grid [data-plan-status=skipped]').count()==1
+ assert page.locator('.session-plan-grid [aria-current=step]').count()==1
+ while page.locator('.studio-current .eyebrow').inner_text().startswith('WARM-UP'):
+  page.locator('[data-act=skip]').click()
+ assert page.locator('[data-actual=quality]').is_visible()
+ page.locator('#pane-planner').evaluate('(e)=>e.scrollTop=0')
+ assert page.locator('[data-act=complete]').bounding_box()['y']+page.locator('[data-act=complete]').bounding_box()['height']<=page.locator('#tabs').bounding_box()['y']
+ page.screenshot(path=str(out/(engine+'-recording-attempt.png')))
  assert not errors,errors
  print('PASS:',engine,'native date/select bounds, equal heights, stacked metadata, blank-plan actions, complex fields separate competition loading, vertical-only dialogs and horizontal filter scrolling at 320–430px.')
  browser.close()

@@ -250,3 +250,9 @@ Competition rehearsal now starts at 20kg with no plates/collars, rather than tre
 ## Working-set ratings only (2026-10-31.14)
 
 Hide technique rating controls during warm-ups and when editing newly recorded warm-ups. Store an explicit work/warmup phase and force warm-up quality to null, including stale draft values. Recognise older generated warm-ups by their saved workout ID and exact generated phase line, without inferring phase from free-form mentions of warming up. Weight, reps and notes still log normally. Working sets/attempts retain the optional rating and editor control. Coaching comparisons and rating reminders exclude marked warm-ups. Existing historical data is preserved. Tests cover saved warm-up phase/quality, notes retention, working ratings, editor visibility and the transition from build-up to attempts.
+
+## Visible session plan and simpler recording (2026-10-31.15)
+
+The active lift's full warm-up/working-set sequence stays above its recording card, with actual completed weights/reps and distinct done/current/skipped/planned markers. Rehearsal attempts are labelled Opener/2nd/3rd. Completed tiles open the existing log editor, and edits update the local workout summary as well as the record. Deleting a completed record marks its tile skipped instead of leaving a ghost Done state. Other lifts remain available in the session overview.
+
+Recording uses editable weight/reps directly, one contextual Log action and a single rest timer shown while running. Plate diagrams and optional set notes expand on demand; working-set ratings remain visible and warm-ups remain unrated. Finish/Leave remain accessible. Native builder checks cover visible plan, phone bounds, reachable primary action, one timer and stable rep input; the training workflow covers completed-tile editing and plan status updates.

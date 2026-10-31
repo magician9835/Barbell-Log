@@ -45,6 +45,9 @@ with sync_playwright() as p:
  page.locator('[data-act=template-save]').click()
  page.locator('[data-act=start]').click()
  assert page.locator('[data-actual-rep]').count()==2
+ assert page.locator('.session-plan-grid [data-plan-status=current]').count()==1
+ assert page.locator('.session-plan-grid li').count()==2
+ assert page.locator('.session-plan-grid').first.is_visible()
  # Editing actual reps must not replace the input node or shrink the shell.
  field=page.locator('[data-actual-rep="1"]');field.evaluate('(x)=>window.originalReps=x');field.fill('3')
  assert field.evaluate('(x)=>x===window.originalReps')
@@ -53,12 +56,20 @@ with sync_playwright() as p:
  assert page.locator('#app').bounding_box()['height']==height
  assert field.is_visible() and field.evaluate('(x)=>x===window.originalReps')
  page.set_viewport_size({'width':402,'height':812});field.blur();page.wait_for_timeout(150)
+ page.locator('.session-set-note summary').click()
  page.locator('[data-actual=note]').fill('Coach said: good extension')
  page.locator('[data-act=complete]').click()
  assert len(json.loads(page.evaluate("localStorage.getItem('barbell_pending_lifts_v1')")))==1
  plan=json.loads(page.evaluate("localStorage.getItem('barbell_workout_v3')"));entry=next(iter(plan['done'].values()))
  assert entry['session']=='Coached Class' and entry['structure'][1]['reps']==3
  assert entry['structure'][1]['position']==['Hang Above Knee']
+ assert page.locator('.session-plan-grid [data-plan-status=done]').count()==1
+ page.locator('[data-act=edit-completed]').first.click()
+ assert page.locator('#studio-log-dialog').is_visible()
+ page.locator('[data-editor=quality]').select_option('4')
+ page.locator('[data-act=editor-save]').click()
+ page.wait_for_function('document.querySelector("#studio-log-dialog")===null')
+ assert json.loads(page.evaluate("localStorage.getItem('barbell_workout_v3')"))['done'][next(iter(plan['done']))]['quality']==4
  # Connect and verify both lift and entire-plan readback confirmation.
  page.evaluate("async()=>{saveSettingsData({...loadSettings(),sheetsUrl:'http://localhost:8000/api'});await syncBoth();await CloudBackup.connect();}")
  page.wait_for_function("PendingLifts.list().length===0")
@@ -132,6 +143,12 @@ with sync_playwright() as p:
  page.locator('[data-act=opener]').click()
  for selector,value in [('[data-opener="0-0"]','65'),('[data-opener="0-1"]','68'),('[data-opener="0-2"]','70'),('[data-opener="1-0"]','90')]:page.locator(selector).fill(value)
  page.locator('#build-openers').click();page.locator('[data-act=start]').click()
+ assert page.locator('.session-plan-grid').first.locator('li').count()==8
+ assert '65' in page.locator('.session-plan-grid').first.inner_text()
+ assert '70' in page.locator('.session-plan-grid').first.inner_text()
+ assert page.locator('.session-plan-grid [aria-current=step]').count()==1
+ assert page.locator('.session-plan-grid').first.is_visible()
+ page.locator('.session-loading summary').click()
  assert page.locator('.studio-collar').count()==0
  assert page.locator('[data-actual=weight]').input_value()=='20'
  assert page.locator('[data-actual=quality]').count()==0
@@ -148,6 +165,7 @@ with sync_playwright() as p:
  page.locator('#studio-log-dialog [aria-label=Close]').click()
  # Remove this fixture record so later history assertions keep their one-row setup.
  rows.pop(warm_id);page.evaluate('async()=>await fetchAndRender()')
+ page.locator('.session-loading summary').click()
  assert page.locator('.studio-collar').inner_text()=='2.5'
  assert page.locator('.studio-plate').count()>0
  page.locator('[data-actual=weight]').fill('20');page.locator('[data-actual=weight]').blur()
@@ -160,6 +178,8 @@ with sync_playwright() as p:
   assert page.locator('[data-actual=quality]').count()==0
   page.locator('[data-act=skip]').click()
  assert page.locator('[data-actual=quality]').count()==1
+ assert page.locator('.session-plan-grid [data-plan-status=skipped]').count()>0
+ assert page.locator('[data-clock]').count()==1
  opener=json.loads(page.evaluate("localStorage.getItem('barbell_workout_v3')"));assert opener['loading']=='competition' and opener['session']=='Solo'
  page.screenshot(path=str(out/'opener.png'))
  page.locator('[data-act=exit]').click();page.locator('#keep-draft').click()
