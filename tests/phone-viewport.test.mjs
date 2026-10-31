@@ -17,9 +17,10 @@ test('Safari tab, unrelated gaps, landscape and page scaling are not compensated
     assert.equal(measure({...phone,...change}).statusBarCompensated,false);
   }
 });
-test('keyboard uses visible height and restores the full screen afterwards',()=>{
-  assert.equal(measure({...phone,focused:true,visibleHeight:500}).height,500);
-  assert.equal(measure({...phone,focused:true,viewportHeight:500,visibleHeight:500}).height,500);
+test('keyboard keeps the shell stable and reports covered space for field scrolling',()=>{
+  const result=measure({...phone,baselineHeight:812,focused:true,visibleHeight:500});
+  assert.equal(result.height,812);assert.equal(result.keyboardCover,312);assert.equal(result.keyboard,true);
+  assert.equal(measure({...phone,baselineHeight:812,focused:true,viewportHeight:500,visibleHeight:500}).height,812);
   assert.equal(measure({...phone,focused:false}).height,812);
 });
 test('focused input with no visible keyboard does not shrink the app',()=>{

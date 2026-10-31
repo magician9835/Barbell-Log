@@ -21,7 +21,7 @@
       button.title = 'A new version is ready. Finish any edits before updating.';
       button.style.cssText = 'display:block;margin:4px 0 8px;padding:10px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);font:700 12px sans-serif;';
       button.onclick = () => {
-        if (document.querySelector('.modal-overlay.open') && !confirm('Updating closes any unfinished edits. Update now?')) return;
+        if (document.querySelector('.modal-overlay.open,dialog[open]') && !confirm('Updating closes any unfinished edits. Update now?')) return;
         const url = new URL(location.href);
         url.searchParams.set('appVersion', version);
         location.replace(url.href);

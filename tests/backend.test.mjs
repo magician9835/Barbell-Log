@@ -91,3 +91,15 @@ test('ID-based upserts preserve distinct same-weight sets on the existing backen
   assert.equal(api.getAllLogEntries(ss).length, 2);
   assert.deepEqual(plain(api.getAllLogEntries(ss)).map(e => e.id), [lift.id, 'second-set']);
 });
+
+test('structured complexes survive spreadsheet roundtrip without column shifts',()=>{
+ const api=backend(),headers=plain(vm.runInContext('HEADERS.LOG',api)),log=sheet([headers]),ss={getSheetByName:()=>log};
+ const complex={...lift,structure:[{base:'Pull',reps:1},{base:'Snatch',position:['Hang Above Knee'],reps:2}],workoutId:'workout-abc'};
+ api.updateEntry(ss,complex);assert.deepEqual(plain(api.getAllLogEntries(ss)),[complex]);assert.equal(log.rows[1][12],lift.id);
+});
+test('plan backups split under cell limits, retry by ID, and keep previous versions',()=>{
+ const api=backend(),state=sheet([['ID','Key','Updated At','Part','Parts','JSON']]),ss={getSheetByName:()=>state};
+ const record={id:'version-a',key:'device/test',value:{plan:'a'.repeat(100000)}};api.saveAppState(ss,record);assert.equal(state.rows.length,4);assert.ok(state.rows.slice(1).every(r=>r[5].length<=40000));api.saveAppState(ss,record);assert.equal(state.rows.length,4);assert.deepEqual(plain(api.getAppState(ss)['device/test'].value),record.value);
+ api.saveAppState(ss,{...record,id:'version-b',value:{plan:'new'}});assert.equal(state.rows.length,5);assert.equal(api.getAppState(ss)['device/test'].id,'version-b');
+ state.rows.push(['incomplete','device/test','now',1,2,'{"plan":']);assert.equal(api.getAppState(ss)['device/test'].id,'version-b');
+});

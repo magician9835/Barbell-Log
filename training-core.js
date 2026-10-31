@@ -36,9 +36,10 @@
     const isFront=lift==='Front squat';const isBack=lift==='Back squat';
     const base=isFront||isBack?'Squat':lift;
     const matching=entries.filter(e=>e.base===base&&e.weight>0&&
+      (!e.structure?.length||e.structure.every(c=>!(c.position||[]).some(p=>p!=='Floor')&&!['Power','Muscle'].includes(c.receiving)&&(c.base==='Squat'&&(isFront||isBack)?(c.technique||[]).every(t=>t===(isFront?'Front':'Back')):!(c.technique||[]).length)))&&
       !(e.position||[]).some(p=>p!=='Floor')&&
       !['Power','Muscle'].includes(e.receiving)&&
-      (isFront||isBack?(e.technique||[]).includes(isFront?'Front':'Back'):!(e.technique||[]).length));
+      (isFront||isBack?(e.technique||[]).includes(isFront?'Front':'Back')&&(e.technique||[]).every(t=>t===(isFront?'Front':'Back')):!(e.technique||[]).length));
     if(matching.length)return {weight:Math.max(...matching.map(e=>Number(e.weight))),source:'Best logged full movement'};
     const fallback=!isFront&&!isBack&&saved.find(p=>p.lift===lift&&p.weight>0);
     return fallback?{weight:Number(fallback.weight),source:'Saved reference — check before starting'}:{weight:null,source:'Enter your reference max'};

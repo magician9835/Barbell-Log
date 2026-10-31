@@ -15,7 +15,7 @@
   const fields = ['id','date','session','base','receiving','notes'];
   const numbers = ['weight','sets','reps','quality'];
   function matches(actual, expected) {
-    return actual && fields.every(k => String(actual[k] || '') === String(expected[k] || '')) &&
+    return actual && (!actual.structure||!expected.structure||JSON.stringify(actual.structure)===JSON.stringify(expected.structure)) && fields.every(k => String(actual[k] || '') === String(expected[k] || '')) &&
       numbers.every(k => (Number(actual[k]) || null) === (Number(expected[k]) || null)) &&
       ['position','grip','technique'].every(k => JSON.stringify(actual[k] || []) === JSON.stringify(expected[k] || []));
   }

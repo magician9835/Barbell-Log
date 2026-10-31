@@ -31,10 +31,11 @@ with sync_playwright() as p:
  page.screenshot(path=str(out))
  # Simulate keyboard viewport changes while a form has focus.
  page.evaluate('TrainingApp.recap()')
- page.locator('#m-weight').focus()
+ page.locator('[data-editor=weight]').focus()
  page.set_viewport_size({'width':402,'height':540});page.wait_for_timeout(50)
- assert page.locator('#app').bounding_box()['height']<=540
- page.set_viewport_size({'width':402,'height':874});page.evaluate('closeLogModal()');page.wait_for_timeout(150)
  assert abs(page.locator('#app').bounding_box()['height']-874)<1
- print('PASS: 402x874, 62px top / 34px bottom safe areas, footer touches viewport bottom, 52px button row, keyboard resize recovery.')
+ assert page.locator('[data-editor=weight]').is_visible()
+ page.set_viewport_size({'width':402,'height':874});page.evaluate('document.querySelector("#studio-log-dialog").remove()');page.wait_for_timeout(150)
+ assert abs(page.locator('#app').bounding_box()['height']-874)<1
+ print('PASS: 402x874, 62px top / 34px bottom safe areas, footer touches viewport bottom, 52px button row, stable shell during keyboard input and recovery.')
  b.close()

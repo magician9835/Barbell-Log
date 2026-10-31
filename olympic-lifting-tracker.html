@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-30.15">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-30.15">
+<link rel="apple-touch-icon" href="icon.png?v=2026-10-30.16">
+<link rel="icon" type="image/png" href="icon.png?v=2026-10-30.16">
 <meta name="theme-color" content="#0c0d0f">
-<link rel="manifest" href="manifest.webmanifest?v=2026-10-30.15">
+<link rel="manifest" href="manifest.webmanifest?v=2026-10-30.16">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -294,13 +294,14 @@
   .warmup-progress.done { background:var(--accent); }
 </style>
 <link rel="stylesheet" href="training.css?v=2026-10-30.8">
-<link rel="stylesheet" href="phone-layout.css?v=2026-10-30.15">
+<link rel="stylesheet" href="phone-layout.css?v=2026-10-30.16">
+<link rel="stylesheet" href="studio.css?v=2026-10-30.16">
 </head>
 <body>
 <div id="app">
   <div id="header">
     <div id="header-row1">
-      <h1>BARBELL LOG</h1>
+      <div class="brand-lockup"><img src="icon.png" alt=""><h1>BARBELL LOG</h1></div>
       <div style="display:flex;align-items:center;gap:8px;">
         <div id="header-comp-badge" onclick="switchTab('comp',document.querySelector('.tab:nth-child(4)'))">
           <span class="days" id="header-badge-days"></span>
@@ -947,22 +948,24 @@
   </div>
 </div>
 
-<script src="training-core.js?v=2026-10-30.8"></script>
-<script src="pending-lifts.js?v=2026-10-30.8"></script>
-<script src="app-updates.js?v=2026-10-30.15" data-version="2026-10-30.15"></script>
+<script src="training-core.js?v=2026-10-30.16"></script>
+<script src="workout-model.js?v=2026-10-30.16"></script>
+<script src="data-migrations.js?v=2026-10-30.16"></script>
+<script src="pending-lifts.js?v=2026-10-30.16"></script>
+<script src="app-updates.js?v=2026-10-30.16" data-version="2026-10-30.16"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
 // ============================================================
 const LIFT_CONFIG = {
   'Snatch': {
-    positions: ['Floor','Hang (unspecified)','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
+    positions: ['Floor','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
     receiving: ['Squat (Full)','Power','Muscle'],
     grip: [],
     technique: ['Pause','Balance','Complex'],
   },
   'Clean': {
-    positions: ['Floor','Hang (unspecified)','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
+    positions: ['Floor','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
     receiving: ['Squat (Full)','Power','Muscle'],
     grip: [],
     technique: ['Pause','Complex'],
@@ -987,7 +990,7 @@ const LIFT_CONFIG = {
     squat_types: ['Back','Front','Overhead','Zercher'],
   },
   'Pull': {
-    positions: ['Floor','Hang (unspecified)','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
+    positions: ['Floor','Hang Below Knee','Hang Above Knee','Hang Mid-Thigh','Deficit','Blocks'],
     receiving: [],
     grip: ['Snatch Grip','Clean Grip','Overhand','Underhand'],
     technique: ['High Pull','Pause','Complex'],
@@ -1025,11 +1028,11 @@ const LIFT_CONFIG = {
 };
 
 const SEP = ' · ';
-function liftIdentity(e){return JSON.stringify([e.base,...['position','grip','technique'].map(k=>[...(e[k]||[])].sort()),e.receiving||'']);}
+function liftIdentity(e){if(e.structure?.length)return JSON.stringify(e.structure.map(c=>[c.base,c.name||'',c.reps||1,...['position','grip','technique'].map(k=>[...(c[k]||[])].sort()),c.receiving||'']));return JSON.stringify([e.base,...['position','grip','technique'].map(k=>[...(e[k]||[])].sort()),e.receiving||'']);}
 function escapeText(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 function sessionLabel(session){
-  return {'Coached Class':'Class','1:1 Session':'1:1',Solo:'Solo',Competition:'Competition'}[session]||session||'Solo';
+  return {'Coached Class':'Class',Class:'Class','1:1 Session':'1:1','1:1':'1:1',Solo:'Solo',Competition:'Competition'}[session]||session||'Not recorded';
 }
 
 // Build a competition display title from its components
@@ -1048,7 +1051,7 @@ const DB_KEY='barbell_log_v1', SETTINGS_KEY='barbell_settings_v1';
 function loadDB(){try{return JSON.parse(localStorage.getItem(DB_KEY))||{entries:[]};}catch{return{entries:[]};}}
 function saveDB(db){localStorage.setItem(DB_KEY,JSON.stringify(db));}
 function loadSettings(){try{return JSON.parse(localStorage.getItem(SETTINGS_KEY))||{};}catch{return{};}}
-function saveSettingsData(s){localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));}
+function saveSettingsData(s){localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));window.dispatchEvent(new Event('settingschange'));}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
 
 const DEFAULT_COEFFICIENTS={
@@ -1147,6 +1150,7 @@ function initDB(){
 // LIFT NAME BUILDER
 // ============================================================
 function buildLiftName(e){
+  if(e.structure?.length)return e.structure.map(c=>`${c.reps||1} × ${WorkoutModel.name(c)}`).join(' + ');
   const parts=[];
   parts.push(e.base);
   if(e.receiving&&e.receiving!=='Squat (Full)'&&e.receiving!=='Split'&&e.receiving!=='')parts.push(e.receiving);
@@ -1167,6 +1171,7 @@ function switchTab(name,el){
   if(name==='log')renderLog();
   if(name==='pbs'){renderPBs();renderGoals();}
   if(name==='comp'){renderComp();renderMeetList();renderCountdown();}
+  if(name==='planner')window.TrainingApp?.render();
   if(name==='settings'){renderCoeffSettings();renderBWLog();const s=loadSettings();renderWeightClass(s.athleteBW||(s.bwLog&&s.bwLog[0]&&s.bwLog[0].weight)||null);}
 }
 
@@ -2894,7 +2899,6 @@ function clearEntryCache(){ _entriesCache = []; }
 async function fetchEntries(){
   const s=loadSettings();
   if(!s.sheetsUrl){
-    setCachedEntries([]);
     const container=document.getElementById('logList');
     if(container&&container.innerHTML.includes('Loading'))
       container.innerHTML='<div class="empty"><div class="empty-icon">⚙️</div><p>Add your Apps Script URL in Settings to load your log.</p></div>';
@@ -2908,7 +2912,10 @@ async function fetchEntries(){
     if(!r.ok) throw new Error('HTTP '+r.status);
     const data=await r.json();
     if(data.error||!Array.isArray(data.entries))throw new Error(data.error||'Invalid sheet response');
-    const entries=data.entries.sort((a,b)=>b.date.localeCompare(a.date));
+    const cached=new Map(getCachedEntries().map(e=>[e.id,e]));
+    let details={};try{details=JSON.parse(localStorage.getItem('barbell_lift_details_v3')||'{}');}catch{}
+    for(const [id,detail]of Object.entries(details))if(data.entries.some(e=>e.id===id&&e.notes===detail.notes)&&!cached.get(id)?.structure)cached.set(id,detail);
+    const entries=data.entries.map(e=>({...e,session:WorkoutModel.session(e.session)||e.session||'',...(e.structure?.length?{}:cached.get(e.id)?.structure?{structure:cached.get(e.id).structure}:{} )})).sort((a,b)=>b.date.localeCompare(a.date));
     setCachedEntries(entries);
     rebuildPBsFromEntries(entries);
     // Merge meets and BW into settings
@@ -2976,14 +2983,14 @@ async function syncBoth(){
   const s=loadSettings();
   if(!s.sheetsUrl){showToast('Add Sheets URL in Settings first','error');return;}
   const btn=document.getElementById('syncBtn');
-  btn.textContent='⇅ Pulling...';btn.classList.add('syncing');
+  btn.textContent='↻';btn.classList.add('syncing');
   await PendingLifts.drain(s.sheetsUrl);
   await fetchEntries();
   renderLog();
   if(document.getElementById('pane-pbs').classList.contains('active'))renderPBs();
   if(document.getElementById('log-pane-analytics')?.classList.contains('active'))renderAnalytics();
   if(document.getElementById('pane-comp').classList.contains('active'))renderMeetList();
-  btn.textContent='⇅ Pull from Sheet';btn.classList.remove('syncing');
+  btn.textContent='⇅';btn.classList.remove('syncing');
   renderPendingLifts();
   showToast(_lastFetchError?'Could not refresh — your pending changes are kept on this phone':PendingLifts.list().length?'Some changes are still waiting for confirmation':'Refreshed',_lastFetchError?'error':'success');
 }
@@ -4090,8 +4097,11 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="training.js?v=2026-10-30.15"></script>
-<script src="phone-layout.js?v=2026-10-30.15"></script>
-<script src="app-interactions.js?v=2026-10-30.15"></script>
+<script src="cloud-backup.js?v=2026-10-30.16"></script>
+<script src="studio.js?v=2026-10-30.16"></script>
+<script src="home.js?v=2026-10-30.16"></script>
+<script src="analytics.js?v=2026-10-30.16"></script>
+<script src="phone-layout.js?v=2026-10-30.16"></script>
+<script src="app-interactions.js?v=2026-10-30.16"></script>
 </body>
 </html>
