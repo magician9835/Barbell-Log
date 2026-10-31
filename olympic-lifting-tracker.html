@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.20">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.20">
+<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.21">
+<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.21">
 <meta name="theme-color" content="#0c0d0f">
-<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.20">
+<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.21">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -293,9 +293,9 @@
   .warmup-progress { position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
   .warmup-progress.done { background:var(--accent); }
 </style>
-<link rel="stylesheet" href="training.css?v=2026-10-31.20">
-<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.20">
-<link rel="stylesheet" href="studio.css?v=2026-10-31.20">
+<link rel="stylesheet" href="training.css?v=2026-10-31.21">
+<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.21">
+<link rel="stylesheet" href="studio.css?v=2026-10-31.21">
 </head>
 <body>
 <div id="app">
@@ -523,44 +523,7 @@
 
 
       <!-- WARMUP SUB-PANE -->
-      <div class="sub-pane" id="comp-pane-warmup">
-        <div class="section">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-            <div class="section-label" style="margin:0;">Openers</div>
-            <button onclick="syncOpenersFromPlan()" style="background:none;border:1px solid var(--border);color:var(--text3);font-size:11px;font-family:DM Mono,monospace;padding:4px 12px;border-radius:20px;cursor:pointer;">↺ From Plan</button>
-          </div>
-          <div class="card">
-            <div class="field"><label>Snatch Opener (kg)</label><input type="number" id="wu-sn-opener" placeholder="e.g. 72" step="1" min="1" inputmode="numeric" oninput="saveWarmupSettings()" onchange="this.value=roundCompetitionWeight(this.value)??'';saveWarmupSettings()"></div>
-            <div class="field"><label>C&amp;J Opener (kg)</label><input type="number" id="wu-cj-opener" placeholder="e.g. 90" step="1" min="1" inputmode="numeric" oninput="saveWarmupSettings()" onchange="this.value=roundCompetitionWeight(this.value)??'';saveWarmupSettings()"></div>
-          </div>
-        </div>
-        <div class="section">
-          <div class="section-label">Timing</div>
-          <div class="card">
-            <div class="field"><label>Session start time</label><input type="time" id="wu-start-time" oninput="saveWarmupSettings()"></div>
-            <div class="field"><label>Total lifters in session</label><input type="number" id="wu-total-lifters" placeholder="e.g. 10" min="1" max="40" oninput="saveWarmupSettings()"></div>
-            <div class="field"><label>Break after Snatch (min)</label><input type="number" id="wu-break" value="10" min="5" max="30" step="1" oninput="saveWarmupSettings()"></div>
-            <div class="field"><label>Your position on Snatch</label><input type="number" id="wu-lifters-sn" placeholder="e.g. 4" min="0" max="30" oninput="saveWarmupSettings()"></div>
-            <div class="field"><label>Your position on C&amp;J</label><input type="number" id="wu-lifters-cj" placeholder="e.g. 4" min="0" max="30" oninput="saveWarmupSettings()"></div>
-            <div class="field"><label>Avg time per attempt (min)</label><input type="number" id="wu-pace" value="1.5" step="0.5" min="1" max="3" oninput="saveWarmupSettings()"></div>
-          </div>
-        </div>
-        <div class="section">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-            <div class="section-label" style="margin:0;">C&amp;J Start Override</div>
-            <button onclick="clearCJOverride()" style="background:none;border:1px solid var(--border);color:var(--text3);font-size:11px;font-family:DM Mono,monospace;padding:4px 12px;border-radius:20px;cursor:pointer;">Clear</button>
-          </div>
-          <div class="card">
-            <div class="field">
-              <label>Actual C&amp;J start time</label>
-              <input type="time" id="wu-cj-start-override" oninput="saveWarmupSettings()"
-                style="font-size:22px;font-family:DM Mono,monospace;font-weight:700;color:var(--accent);">
-              <div style="font-size:11px;color:var(--text3);margin-top:4px;">When announced, enter the actual time here. Overrides the estimate.</div>
-            </div>
-          </div>
-        </div>
-        <div id="warmup-output"></div>
-      </div>
+      <div class="sub-pane" id="comp-pane-warmup"><div id="competition-warmup-root"></div></div>
 
       <!-- HISTORY SUB-PANE -->
       <div class="sub-pane active" id="comp-pane-history">
@@ -932,15 +895,15 @@
   </div>
 </div>
 
-<script src="training-core.js?v=2026-10-31.20"></script>
-<script src="workout-model.js?v=2026-10-31.20"></script>
-<script src="programme-view.js?v=2026-10-31.20"></script>
-<script src="data-migrations.js?v=2026-10-31.20"></script>
+<script src="training-core.js?v=2026-10-31.21"></script>
+<script src="workout-model.js?v=2026-10-31.21"></script>
+<script src="programme-view.js?v=2026-10-31.21"></script>
+<script src="data-migrations.js?v=2026-10-31.21"></script>
 <script src="vendor/supabase-2.118.0.js"></script>
-<script src="database-config.js?v=2026-10-31.20"></script>
-<script src="database.js?v=2026-10-31.20"></script>
-<script src="pending-lifts.js?v=2026-10-31.20"></script>
-<script src="app-updates.js?v=2026-10-31.20" data-version="2026-10-31.20"></script>
+<script src="database-config.js?v=2026-10-31.21"></script>
+<script src="database.js?v=2026-10-31.21"></script>
+<script src="pending-lifts.js?v=2026-10-31.21"></script>
+<script src="app-updates.js?v=2026-10-31.21" data-version="2026-10-31.21"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -3290,14 +3253,11 @@ function syncOpenersFromPlan(){
 
 function saveWarmupSettings(){
   const s=loadSettings();s.compWarmup={};
-  for(const input of document.querySelectorAll('#comp-pane-warmup input'))s.compWarmup[input.id]={value:input.value,planVal:input.dataset.planVal||''};
+  for(const input of document.querySelectorAll('#comp-pane-warmup input[id^=wu-]'))s.compWarmup[input.id]={value:input.value,planVal:input.dataset.planVal||''};
   saveSettingsData(s);renderWarmup();
 }
 
-function buildWarmupLadder(opener){
-  const pcts=[0,0.50,0.65,0.75,0.83,0.90,0.95];
-  return pcts.map((p,i)=>({attempt:i+1,kg:i===0?20:Math.max(20,roundCompetitionWeight(opener*p)),pct:i===0?null:Math.round(p*100)})).filter((step,i,steps)=>step.kg<opener&&!steps.slice(0,i).some(prev=>prev.kg===step.kg));
-}
+function buildWarmupLadder(opener){return CompetitionWarmupModel.suggest(opener).map((step,i)=>({attempt:i+1,kg:step.weight,reps:step.reps,pct:step.weight===20?null:Math.round(step.weight/opener*100)}));}
 
 function addMinutes(timeStr,mins){
   if(!timeStr)return null;
@@ -3307,121 +3267,7 @@ function addMinutes(timeStr,mins){
   return String(nh).padStart(2,'0')+':'+String(nm).padStart(2,'0');
 }
 
-function renderWarmup(){
-  const out=document.getElementById('warmup-output');if(!out)return;
-  const snOpener=roundCompetitionWeight(document.getElementById('wu-sn-opener').value);
-  const cjOpener=roundCompetitionWeight(document.getElementById('wu-cj-opener').value);
-  const startTime=document.getElementById('wu-start-time').value||null;
-  const totalLiftersEl=document.getElementById('wu-total-lifters');
-  const totalLifters=totalLiftersEl&&totalLiftersEl.value!==''?parseInt(totalLiftersEl.value):null;
-  const breakEl=document.getElementById('wu-break');
-  const breakMins=breakEl?parseFloat(breakEl.value)||10:10;
-  const liftersSn=document.getElementById('wu-lifters-sn').value!==''?parseInt(document.getElementById('wu-lifters-sn').value):null;
-  const liftersCj=document.getElementById('wu-lifters-cj').value!==''?parseInt(document.getElementById('wu-lifters-cj').value):null;
-  const pace=parseFloat(document.getElementById('wu-pace').value)||1.5;
-  if(!snOpener&&!cjOpener){out.innerHTML='<div class="empty" style="padding:24px 16px;"><p style="color:var(--text3);font-size:13px;text-align:center;">Enter your openers above to generate your warmup plan.</p></div>';return;}
-
-  // C&J start: use manual override if set, otherwise calculate from Snatch duration + break
-  const cjOverrideEl=document.getElementById('wu-cj-start-override');
-  const cjOverride=cjOverrideEl&&cjOverrideEl.value?cjOverrideEl.value:null;
-  const snatchDuration=totalLifters!==null?totalLifters*3*pace:null;
-  const cjStartOffset=snatchDuration!==null?snatchDuration+breakMins:null;
-  const cjStartCalculated=cjStartOffset!==null&&startTime?addMinutes(startTime,cjStartOffset):null;
-  const cjStartTime=cjOverride||cjStartCalculated;
-  const usingOverride=!!cjOverride;
-
-  const REST_BEFORE_LIFT=2.5,BETWEEN_ATTEMPTS=2.0,PHYSICAL_PREP=35;
-
-  // For Snatch: mins from snatch start. For C&J: mins from C&J start (which we offset)
-  function timings(minsTillLift,ladder){
-    if(minsTillLift===null)return ladder.map(()=>null);
-    const lastAt=minsTillLift-REST_BEFORE_LIFT;
-    return ladder.map((_,i)=>lastAt-((ladder.length-1-i)*BETWEEN_ATTEMPTS));
-  }
-
-  function fmtTime(mins, refTime){
-    if(mins===null)return'';
-    // Only use clock if refTime explicitly provided -- never fall back to startTime
-    // (avoids C&J times using Snatch start as wrong reference)
-    const clock=refTime?addMinutes(refTime,mins):null;
-    const absMins=Math.round(Math.abs(mins));
-    const rel=mins<0?(absMins+'min before start'):(mins===0?'At start':'T+'+absMins+'min');
-    return clock?clock+' ('+rel+')':rel;
-  }
-
-  // Display C&J start info note
-  let cjStartNote='';
-  if(cjStartTime){
-    if(usingOverride){
-      cjStartNote='<div style="background:rgba(230,45,66,0.1);border:1px solid rgba(230,45,66,0.35);border-radius:10px;padding:10px 14px;margin:0 16px 8px;font-size:12px;color:var(--text2);line-height:1.7;">'+
-        '<strong style="color:var(--accent);">C&J start overridden: '+cjStartTime+'</strong>'+
-        '<br>All C&J warmup times are based on this start time.'+
-        '</div>';
-    } else if(cjStartOffset!==null){
-      cjStartNote='<div style="background:rgba(230,45,66,0.06);border:1px solid rgba(230,45,66,0.15);border-radius:10px;padding:10px 14px;margin:0 16px 8px;font-size:12px;color:var(--text2);line-height:1.7;">'+
-        '<strong style="color:var(--accent);">Est. C&J start: '+cjStartTime+'</strong>'+
-        ' (~'+Math.round(cjStartOffset)+'min after Snatch)'+
-        '<br>Enter actual start time in C&J Start Override above when announced.'+
-        '</div>';
-    }
-  }
-
-  function section(label,opener,ladder,tArr,refTime){
-    const rows=ladder.map((a,i)=>{
-      const isLast=i===ladder.length-1;
-      return '<tr style="border-top:1px solid var(--border);">'+
-        '<td style="padding:9px 12px;font-size:13px;font-family:DM Mono,monospace;color:var(--text3);">'+a.attempt+'</td>'+
-        '<td style="padding:9px 12px;font-size:16px;font-weight:700;font-family:DM Mono,monospace;color:'+(isLast?'var(--accent)':'var(--text)')+';">'+a.kg+'<span style="font-size:11px;color:var(--text3);font-weight:400;">kg</span></td>'+
-        '<td style="padding:9px 12px;font-size:11px;color:var(--text3);font-family:DM Mono,monospace;">'+( a.pct?a.pct+'%':'Bar')+'</td>'+
-        '<td style="padding:9px 12px;font-size:11px;color:var(--text2);font-family:DM Mono,monospace;">'+fmtTime(tArr[i],refTime)+'</td>'+
-        '</tr>';
-    }).join('');
-    let callouts='';
-    if(tArr[0]!==null){
-      const liftAt=tArr[tArr.length-1]+REST_BEFORE_LIFT;
-      const physPrepAt=liftAt-PHYSICAL_PREP;
-      callouts='<div style="display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--border);">'+
-        '<div style="flex:1;min-width:120px;background:var(--surface);border-radius:8px;padding:10px 12px;">'+
-        '<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Physical prep</div>'+
-        '<div style="font-size:14px;font-weight:700;color:var(--text2);font-family:DM Mono,monospace;">'+fmtTime(physPrepAt,refTime)+'</div>'+
-        '<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px;">Mobility · DROM · empty bar</div></div>'+
-        '<div style="flex:1;min-width:120px;background:var(--surface);border-radius:8px;padding:10px 12px;">'+
-        '<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Start barbell warmup</div>'+
-        '<div style="font-size:14px;font-weight:700;color:var(--accent);font-family:DM Mono,monospace;">'+fmtTime(tArr[0],refTime)+'</div></div>'+
-        '<div style="flex:1;min-width:120px;background:var(--surface);border-radius:8px;padding:10px 12px;">'+
-        '<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Last warmup done</div>'+
-        '<div style="font-size:14px;font-weight:700;color:#ffd700;font-family:DM Mono,monospace;">'+fmtTime(liftAt-REST_BEFORE_LIFT,refTime)+'</div></div>'+
-        '<div style="flex:1;min-width:120px;background:var(--surface);border-radius:8px;padding:10px 12px;">'+
-        '<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">You lift ~</div>'+
-        '<div style="font-size:14px;font-weight:700;color:#ff9a3c;font-family:DM Mono,monospace;">'+fmtTime(liftAt,refTime)+'</div></div>'+
-        '</div>';
-    }
-    return '<div class="section">'+
-      '<div class="section-label">'+label+' — Opener '+opener+'kg</div>'+
-      '<div class="card" style="padding:0;overflow:hidden;">'+
-      '<table style="width:100%;border-collapse:collapse;">'+
-      '<thead><tr style="background:var(--surface2);">'+
-      '<th style="padding:8px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">#</th>'+
-      '<th style="padding:8px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">WEIGHT</th>'+
-      '<th style="padding:8px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">%</th>'+
-      '<th style="padding:8px 12px;font-size:9px;color:var(--text3);font-family:DM Mono,monospace;letter-spacing:1px;text-align:left;">TIME</th>'+
-      '</thead><tbody>'+rows+'</tbody></table>'+callouts+'<div style="padding:10px 14px;font-size:11px;color:var(--text3);border-top:1px solid var(--border);line-height:1.6;">Barbell warmup only · Physical prep (mobility + DROM) should begin ~35min before your lift · Based on Takano/Catalyst Athletics competition protocols</div>'+'</div></div>';
-  }
-
-  let html='';
-  if(snOpener){
-    const l=buildWarmupLadder(snOpener);
-    html+=section('Snatch',snOpener,l,timings(liftersSn!==null?Math.round(liftersSn*pace*10)/10:null,l),startTime);
-  }
-  if(cjOpener){
-    // C&J timing is relative to cjStartTime (calculated from Snatch end + break)
-    const cjMins=liftersCj!==null?Math.round(liftersCj*pace*10)/10:null;
-    html+=cjStartNote;
-    html+=section('Clean & Jerk',cjOpener,buildWarmupLadder(cjOpener),timings(cjMins,buildWarmupLadder(cjOpener)),cjStartTime);
-  }
-  out.innerHTML=html;
-}
-
+function renderWarmup(){window.CompetitionWarmup?.render();}
 
 // ============================================================
 // SESSION PLANNER -- SUB-TABS + REORDER + WARMUP GENERATOR
@@ -3986,17 +3832,19 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="cloud-backup.js?v=2026-10-31.20"></script>
-<script src="studio.js?v=2026-10-31.20"></script>
-<script src="database-ui.js?v=2026-10-31.20"></script>
-<script src="accessory-model.js?v=2026-10-31.20"></script>
-<script src="accessory.js?v=2026-10-31.20"></script>
-<script src="sync-status.js?v=2026-10-31.20"></script>
-<script src="home.js?v=2026-10-31.20"></script>
-<script src="coaching.js?v=2026-10-31.20"></script>
-<script src="analytics-chart.js?v=2026-10-31.20"></script>
-<script src="analytics.js?v=2026-10-31.20"></script>
-<script src="phone-layout.js?v=2026-10-31.20"></script>
-<script src="app-interactions.js?v=2026-10-31.20"></script>
+<script src="cloud-backup.js?v=2026-10-31.21"></script>
+<script src="studio.js?v=2026-10-31.21"></script>
+<script src="database-ui.js?v=2026-10-31.21"></script>
+<script src="accessory-model.js?v=2026-10-31.21"></script>
+<script src="accessory.js?v=2026-10-31.21"></script>
+<script src="sync-status.js?v=2026-10-31.21"></script>
+<script src="competition-warmup-model.js?v=2026-10-31.21"></script>
+<script src="competition-warmup.js?v=2026-10-31.21"></script>
+<script src="home.js?v=2026-10-31.21"></script>
+<script src="coaching.js?v=2026-10-31.21"></script>
+<script src="analytics-chart.js?v=2026-10-31.21"></script>
+<script src="analytics.js?v=2026-10-31.21"></script>
+<script src="phone-layout.js?v=2026-10-31.21"></script>
+<script src="app-interactions.js?v=2026-10-31.21"></script>
 </body>
 </html>
