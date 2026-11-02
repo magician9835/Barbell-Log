@@ -119,9 +119,8 @@ with sync_playwright() as p:
  page.locator('[data-act=switch]').click();page.locator('[data-act=new-class]').click();page.locator('[data-act=switch]').click();page.locator('[data-act=resume-draft][data-id='+json.dumps(old_id)+']').click();assert page.evaluate("JSON.parse(localStorage.getItem('barbell_workout_v3')).id")==old_id
  check('resumed-train-draft')
  page.locator('[data-act=switch]').click();page.locator('[data-act=lesson]').click();page.locator('#lesson-log').click();assert page.locator('[data-editor=session]').input_value()=='1:1 Session';page.locator('#studio-log-dialog [aria-label=Close]').click()
- page.locator('[data-act=import]').click();assert page.locator('#read-photo').is_disabled()
- with page.expect_file_chooser():page.locator('#choose-program-photo').click()
- page.locator('#program-text').fill('unrecognised programme');page.locator('#build-transcription').click();assert page.locator('#ocr-status').inner_text()
+ page.locator('[data-act=import]').click();assert page.locator('#read-photo,#program-photo,#choose-program-photo').count()==0
+ page.locator('#program-text').fill('unrecognised programme');page.locator('#build-transcription').click();assert page.locator('#program-error').inner_text()
  page.locator('#program-text').fill('A) Snatch (20 min)\n3 x 2 @ 75');page.locator('#build-transcription').click();assert page.locator('.studio-component').count()==1
  check('imported-programme')
  page.evaluate('TrainingApp.opener()');check('opener-dialog');page.locator('dialog [aria-label=Close]').click()

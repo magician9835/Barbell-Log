@@ -192,7 +192,7 @@ with sync_playwright() as p:
  opener=json.loads(page.evaluate("localStorage.getItem('barbell_workout_v3')"));assert opener['loading']=='competition' and opener['session']=='Solo'
  page.screenshot(path=str(out/'opener.png'))
  page.locator('[data-act=exit]').click();page.locator('#keep-draft').click()
- # Paste/photo review path builds an editable draft, not an automatic saved record.
+ # Pasted program review path builds an editable draft, not an automatic saved record.
  page.locator('[data-act=import]').click()
  page.locator('#program-text').fill('A) Snatch pull + hang snatch (20 min)\n1 x 1+2 @ 70%\n3 x 1+1 @ 85%')
  page.locator('#build-transcription').click();assert page.locator('.studio-component').count()==2
