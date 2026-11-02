@@ -118,7 +118,7 @@
     // Appending must never recalculate or re-key warm-ups already in progress.
     if(!fresh&&!Array.isArray(b.savedWarmups))b.savedWarmups=copy(expand(b,mode).filter(s=>s.phase==='warmup'));
     if(fresh)b.stages=added;else b.extraSets=[...(b.extraSets||[]),...added];
-    w.phase='active';w.restEnd=0;validate(w);return w;
+    if(original.phase==='finished')w.restEnd=0;w.phase='active';validate(w);return w;
   }
   function opener(spec){const w=blank('solo');w.type='opener';w.loading='competition';w.date=spec.date||date();w.blocks=['Snatch','Clean and Jerk'].map(base=>{const opener=Number(spec[base]?.[0]);if(!(opener>=26))throw new Error('Enter both opener weights, at least 26 kg with plates and collars.');const attempts=spec[base].filter(Boolean).map(Number);if(attempts.some((n,i)=>!Number.isInteger(n)||i>0&&n<attempts[i-1]))throw new Error('Use whole kilos with attempts staying the same or increasing.');const b=block();b.components=base==='Snatch'?[component('Snatch')]:[component('Clean'),{...component('Jerk'),receiving:'Split'}];b.referenceLift=base;b.reference=opener;b.rehearsal=true;b.rehearsalLift=base;b.restSeconds=180;b.minutes=spec.minutes||20;b.stages=spec[base].map((n,i)=>({n,attempt:i+1})).filter(x=>x.n).map(({n,attempt})=>({...stage(b.components,1,100),mode:'kg',value:Number(n),attempt}));return b;});return w;}
   root.WorkoutModel={id,copy,date,session,sessionLabel,bases,component,name,sequence,reference,stage,block,blank,title,load,loads,warmupWeights,rest,working,expand,validate,pending,isWarmup,entry,migrate,parseText,opener,syncOpenerPlan,appendSets,stagesFor};

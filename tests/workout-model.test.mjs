@@ -78,8 +78,8 @@ test('finished rehearsal accepts four front-squat singles without reopening skip
  for(const s of M.expand(added,next.loading)){assert.equal(s.loading.collars,0);assert.ok(s.rest<=120);const e=M.entry(next,added,s,s.weight,s.reps);assert.equal(e.workoutId,w.id);assert.equal(e.date,w.date);assert.equal(e.phase,'work');assert.deepEqual(plain(e.technique),['Front']);}
 });
 test('extra rehearsal sets survive linked plan changes without becoming fourth competition attempts',()=>{
- const w=M.opener({Snatch:[60,63,65],'Clean and Jerk':[90,95,100]});w.phase='active';const b=w.blocks[0],before=plain(M.expand(b,w.loading).filter(s=>s.phase==='warmup'));
- const next=M.appendSets(w,b,[{weight:67,reps:[1]},{weight:70,reps:[1]}]);assert.equal(next.blocks[0].stages.length,3);assert.equal(next.blocks[0].extraSets.length,2);
+ const w=M.opener({Snatch:[60,63,65],'Clean and Jerk':[90,95,100]});w.phase='active';w.restEnd=123456;const b=w.blocks[0],before=plain(M.expand(b,w.loading).filter(s=>s.phase==='warmup'));
+ const next=M.appendSets(w,b,[{weight:67,reps:[1]},{weight:70,reps:[1]}]);assert.equal(next.restEnd,123456);assert.equal(next.blocks[0].stages.length,3);assert.equal(next.blocks[0].extraSets.length,2);
  const linked=M.syncOpenerPlan(next,{Snatch:[61,64,66],'Clean and Jerk':[91,96,101]});
  assert.deepEqual(plain(linked.blocks[0].extraSets),plain(next.blocks[0].extraSets));assert.deepEqual(plain(M.expand(linked.blocks[0],linked.loading).filter(s=>s.phase==='warmup')),before);
  assert.deepEqual(plain(M.expand(linked.blocks[0],linked.loading).filter(s=>s.phase==='work').map(s=>s.weight)),[61,64,66,67,70]);
