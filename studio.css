@@ -165,3 +165,9 @@
 
 /* Checkbox rows use the whole label as their touch target. */
 .studio-check{min-height:44px}.studio-check input{flex:0 0 22px}
+
+/* Longer sessions keep the current action above the phone navigation. */
+.session-plan-grid{max-height:164px;overflow-y:auto;overscroll-behavior-y:contain;scrollbar-width:thin;align-content:start}
+.add-set-row{display:grid;grid-template-columns:20px minmax(0,1fr) minmax(0,1fr) 44px;gap:8px;align-items:center;min-width:0}.add-set-row .studio-field{margin:6px 0}.add-set-number{font-size:12px;color:var(--text2)}.add-sets-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:12px 0}.record-sets{margin-top:8px}.record-sets>summary{min-height:44px;align-content:center;cursor:pointer;font-size:12px;color:var(--text2)}.record-set-row{display:grid;grid-template-columns:minmax(56px,.8fr) minmax(0,1fr) minmax(0,1fr) 16px;gap:8px;align-items:center;width:100%;min-height:48px;padding:10px 0;border:0;border-top:1px solid var(--border);border-radius:0;background:transparent;color:var(--text);text-align:left;font:12px/1.4 -apple-system,BlinkMacSystemFont,sans-serif}.record-set-row>span{color:var(--text2)}.record-set-row strong{font-size:14px}.record-set-row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.session-heading-actions{display:flex;gap:6px;flex:0 0 auto!important}.session-heading-actions button{white-space:nowrap;padding-left:10px;padding-right:10px}

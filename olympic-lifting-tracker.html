@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Barbell Log">
-<link rel="apple-touch-icon" href="icon.png?v=2026-10-31.26">
-<link rel="icon" type="image/png" href="icon.png?v=2026-10-31.26">
+<link rel="apple-touch-icon" href="icon.png?v=2026-11-02.1">
+<link rel="icon" type="image/png" href="icon.png?v=2026-11-02.1">
 <meta name="theme-color" content="#0c0d0f">
-<link rel="manifest" href="manifest.webmanifest?v=2026-10-31.26">
+<link rel="manifest" href="manifest.webmanifest?v=2026-11-02.1">
 <title>Barbell Log</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -293,9 +293,9 @@
   .warmup-progress { position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
   .warmup-progress.done { background:var(--accent); }
 </style>
-<link rel="stylesheet" href="training.css?v=2026-10-31.26">
-<link rel="stylesheet" href="phone-layout.css?v=2026-10-31.26">
-<link rel="stylesheet" href="studio.css?v=2026-10-31.26">
+<link rel="stylesheet" href="training.css?v=2026-11-02.1">
+<link rel="stylesheet" href="phone-layout.css?v=2026-11-02.1">
+<link rel="stylesheet" href="studio.css?v=2026-11-02.1">
 </head>
 <body>
 <div id="app">
@@ -895,16 +895,17 @@
   </div>
 </div>
 
-<script src="training-core.js?v=2026-10-31.26"></script>
-<script src="workout-model.js?v=2026-10-31.26"></script>
-<script src="record-bests.js?v=2026-10-31.26"></script>
-<script src="programme-view.js?v=2026-10-31.26"></script>
-<script src="data-migrations.js?v=2026-10-31.26"></script>
+<script src="training-core.js?v=2026-11-02.1"></script>
+<script src="workout-model.js?v=2026-11-02.1"></script>
+<script src="record-bests.js?v=2026-11-02.1"></script>
+<script src="log-summary.js?v=2026-11-02.1"></script>
+<script src="programme-view.js?v=2026-11-02.1"></script>
+<script src="data-migrations.js?v=2026-11-02.1"></script>
 <script src="vendor/supabase-2.118.0.js"></script>
-<script src="database-config.js?v=2026-10-31.26"></script>
-<script src="database.js?v=2026-10-31.26"></script>
-<script src="pending-lifts.js?v=2026-10-31.26"></script>
-<script src="app-updates.js?v=2026-10-31.26" data-version="2026-10-31.26"></script>
+<script src="database-config.js?v=2026-11-02.1"></script>
+<script src="database.js?v=2026-11-02.1"></script>
+<script src="pending-lifts.js?v=2026-11-02.1"></script>
+<script src="app-updates.js?v=2026-11-02.1" data-version="2026-11-02.1"></script>
 <script>
 // ============================================================
 // LIFT CONFIGURATION
@@ -1161,10 +1162,11 @@ function renderLog(){
   let html='';
   Object.keys(groups).sort((a,b)=>b.localeCompare(a)).forEach(date=>{
     html+=`<div class="date-group-label">${formatDate(date)}</div><div class="card" style="margin:0 16px;">`;
-    groups[date].forEach((e,i)=>{
+    LogSummary.groups(groups[date]).forEach((group,i)=>{
+      const e=group.top;
       const sc=e.session==='Coached Class'?'session-coached':e.session==='Solo'?'session-solo':e.session==='Competition'?'session-comp':'session-one';
       const ss=sessionLabel(e.session);
-      const ln=escapeText(buildLiftName(e));
+      const ln=escapeText(e.structure?.length===1?WorkoutModel.name(e.structure[0]):buildLiftName(e));
       const qb=e.quality?`<div class="quality-bar">${[1,2,3,4,5].map(n=>`<div class="qb${n<=e.quality?' filled':''}"></div>`).join('')}</div>`:'';
       const borderClass=e.session==='Coached Class'?'border-coached':e.session==='Solo'?'border-solo':e.session==='Competition'?'border-comp':'border-one';
       // Lift form alone does not make a training set a competition result.
@@ -1173,14 +1175,15 @@ function renderLog(){
         (!e.technique||e.technique.length===0)&&
         (!e.receiving||e.receiving==='Squat (Full)'||e.receiving==='Split'||e.receiving==='');
       const compLiftBadge=isCompLift?'<span style="font-size:9px;font-weight:700;font-family:DM Mono,monospace;letter-spacing:0.5px;background:rgba(255,215,0,0.15);color:#ffd700;border:1px solid rgba(255,215,0,0.3);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:middle;">COMP LIFT</span>':'';
-      const isPBEntry=recordIds.has(e.id);
+      const isPBEntry=group.entries.some(row=>Number(row.weight)===Number(e.weight)&&recordIds.has(row.id));
       const pbBadge=isPBEntry?'<span style="font-size:11px;margin-left:5px;vertical-align:middle;" data-record-badge="true" role="img" aria-label="All-time best for this lift variation across all sessions" title="All-time best · all sessions">🏆</span>':'';
       html+=`<div class="log-entry ${borderClass}" data-entry-id="${escapeText(e.id)}"${i>0?' style="border-top:1px solid var(--border)"':''}>
         <div class="log-entry-header" role="button" tabindex="0" aria-label="Edit logged set">
           <div class="log-entry-lift">${ln}${compLiftBadge}${pbBadge}</div>
-          <div class="log-entry-weight">${e.weight?dispW(e.weight)+'<span style="font-size:12px;color:var(--text3)">'+unitLabel()+'</span>':'--'}</div>
+          <div class="log-entry-weight">${e.weight?escapeText(dispW(e.weight))+'<span style="font-size:12px;color:var(--text3)">'+unitLabel()+'</span>':'--'}</div>
         </div>
-        ${ProgrammeView.record(e)}
+        ${ProgrammeView.record({...e,sets:group.topSets},group.entries.length>1?group:null)}
+        ${group.entries.length>1?`<details class="record-sets"><summary>All ${group.setCount} sets${group.warmups?' · '+group.warmups+' warm-ups':''}</summary><div>${group.entries.map(set=>`<button type="button" class="record-set-row" data-set-edit="${escapeText(set.id)}" aria-label="Edit ${WorkoutModel.isWarmup(set)?'warm-up':'set'} at ${escapeText(dispW(set.weight))} ${unitLabel()}"><span>${WorkoutModel.isWarmup(set)?'Warm-up':set.made===false||set.success===false?'Missed':'Set'}</span><strong>${escapeText(dispW(set.weight))} ${unitLabel()}</strong><span>${set.sets>1?Number(set.sets)+' × ':''}${escapeText(LogSummary.repKey(set))} reps</span><span aria-hidden="true">›</span></button>`).join('')}</div></details>`:''}
         <div class="log-entry-tags"><span class="tag ${sc}">${ss}</span></div>
         ${qb}
       </div>`;
@@ -1188,7 +1191,7 @@ function renderLog(){
     html+='</div><div style="height:8px;"></div>';
   });
   container.innerHTML=html;
-  container.onclick=event=>{if(event.target.closest('details'))return;const row=event.target.closest('[data-entry-id]');if(row)openEditModal(row.dataset.entryId);};
+  container.onclick=event=>{const edit=event.target.closest('[data-set-edit]');if(edit){openEditModal(edit.dataset.setEdit);return;}if(event.target.closest('details'))return;const row=event.target.closest('[data-entry-id]');if(row)openEditModal(row.dataset.entryId);};
   container.onkeydown=event=>{if(event.target.closest('details'))return;if(event.key==='Enter'||event.key===' '){const row=event.target.closest('[data-entry-id]');if(row){event.preventDefault();openEditModal(row.dataset.entryId);}}};
 }
 
@@ -3828,19 +3831,19 @@ document.addEventListener('visibilitychange', function(){
 });
 
 </script>
-<script src="cloud-backup.js?v=2026-10-31.26"></script>
-<script src="studio.js?v=2026-10-31.26"></script>
-<script src="database-ui.js?v=2026-10-31.26"></script>
-<script src="accessory-model.js?v=2026-10-31.26"></script>
-<script src="accessory.js?v=2026-10-31.26"></script>
-<script src="sync-status.js?v=2026-10-31.26"></script>
-<script src="competition-warmup-model.js?v=2026-10-31.26"></script>
-<script src="competition-warmup.js?v=2026-10-31.26"></script>
-<script src="home.js?v=2026-10-31.26"></script>
-<script src="coaching.js?v=2026-10-31.26"></script>
-<script src="analytics-chart.js?v=2026-10-31.26"></script>
-<script src="analytics.js?v=2026-10-31.26"></script>
-<script src="phone-layout.js?v=2026-10-31.26"></script>
-<script src="app-interactions.js?v=2026-10-31.26"></script>
+<script src="cloud-backup.js?v=2026-11-02.1"></script>
+<script src="studio.js?v=2026-11-02.1"></script>
+<script src="database-ui.js?v=2026-11-02.1"></script>
+<script src="accessory-model.js?v=2026-11-02.1"></script>
+<script src="accessory.js?v=2026-11-02.1"></script>
+<script src="sync-status.js?v=2026-11-02.1"></script>
+<script src="competition-warmup-model.js?v=2026-11-02.1"></script>
+<script src="competition-warmup.js?v=2026-11-02.1"></script>
+<script src="home.js?v=2026-11-02.1"></script>
+<script src="coaching.js?v=2026-11-02.1"></script>
+<script src="analytics-chart.js?v=2026-11-02.1"></script>
+<script src="analytics.js?v=2026-11-02.1"></script>
+<script src="phone-layout.js?v=2026-11-02.1"></script>
+<script src="app-interactions.js?v=2026-11-02.1"></script>
 </body>
 </html>
