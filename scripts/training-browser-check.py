@@ -199,14 +199,17 @@ with sync_playwright() as p:
  assert page.locator('[data-stage=sets]').count()==2
  page.screenshot(path=str(out/'builder.png'))
  page.locator('#tabs .tab').first.click();page.locator('#log-sub-analytics').click()
- assert page.locator('[data-analytics=variant]').is_visible()
+ assert page.locator('[data-analytics=movement]').is_visible()
+ page.locator('[data-period=all]').click()
  assert page.locator('.analytics-record').count()==1
  # The smooth overlay retains editable actual points and month/year labels.
  page.evaluate("""()=>{window.chartOriginal=getCachedEntries();const base=chartOriginal[0];setCachedEntries([...chartOriginal,...[['2024-12-15',40],['2025-06-01',60],['2026-10-01',50]].map(([date,weight],i)=>({...base,id:'chart-only-'+i,date,weight}))]);renderAnalytics();}""")
  assert page.locator('.analytics-smooth-line').count()==1
- assert page.locator('.analytics-chart [data-record]').count()==4
+ assert page.locator('.analytics-chart [data-point]').count()==4
  assert all(__import__('re').fullmatch(r'[A-Z][a-z]{2} \d{4}',label) for label in page.locator('.analytics-date-tick').all_text_contents())
- page.locator('.analytics-chart [data-record]').first.click()
+ page.locator('.analytics-chart [data-point]').first.click()
+ assert page.locator('#studio-log-dialog').count()==0
+ page.locator('#analytics-selection [data-record]').click()
  assert page.locator('[data-editor=date]').input_value()=='2024-12-15'
  page.locator('#studio-log-dialog [aria-label=Close]').click()
  for width in [320,402,430]:
@@ -220,7 +223,7 @@ with sync_playwright() as p:
  page.screenshot(path=str(out/'analytics-smooth-trend.png'))
  page.evaluate('setCachedEntries(window.chartOriginal);renderAnalytics()')
  # Coaching cards update automatically, explain their evidence and open the
- # existing rehearsal planner without starting or recording a workout.
+ # competition plan without starting or recording a workout.
  assert page.locator('.coaching-notes').count()==1
  page.evaluate("""()=>{window.originalCoachingComp=loadSettings().comp;const d=new Date();d.setDate(d.getDate()+7);const date=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');saveSettingsData({...loadSettings(),comp:{name:'Browser meet',date}});renderAnalytics();}""")
  card=page.locator('[data-coaching=meet]')
@@ -230,8 +233,8 @@ with sync_playwright() as p:
  assert card.locator('a').get_attribute('href')=='https://pubmed.ncbi.nlm.nih.gov/35976755/'
  card.scroll_into_view_if_needed();page.screenshot(path=str(out/'coaching-notes.png'))
  card.locator('[data-coaching-action=openers]').click()
- assert page.locator('#build-openers').is_visible()
- page.locator('dialog [aria-label=Close]').click()
+ assert page.locator('#comp-pane-plan').is_visible()
+ assert page.locator('#build-openers').count()==0
  page.evaluate('saveSettingsData({...loadSettings(),comp:window.originalCoachingComp})')
  page.locator('#tabs .tab').first.click();page.locator('#log-sub-analytics').click()
  page.locator('.analytics-record').click();page.locator('[data-act=editor-delete]').click();page.locator('#confirm-delete-set').click()

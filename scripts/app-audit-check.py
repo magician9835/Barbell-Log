@@ -33,10 +33,13 @@ with sync_playwright() as p:
  assert page.locator('#logList .log-entry').count()==30
  page.locator('#logList .log-entry-header').first.click();assert page.locator('#studio-log-dialog').is_visible();page.locator('#studio-log-dialog [aria-label=Close]').click()
  page.locator('#log-sub-analytics').click();check('analytics')
- for field in ['base','variant','session','period']:
+ for field in ['movement','session','rep']:
+  if field=='session':page.locator('.progress-filters>summary').click()
   values=page.locator('[data-analytics='+field+'] option').evaluate_all('(els)=>els.map(e=>e.value)')
   for value in values:page.locator('[data-analytics='+field+']').select_option(value)
   page.locator('[data-analytics='+field+']').select_option(values[0])
+ for period in ['28','84','365','all']:page.locator('[data-period="'+period+'"]').click()
+ page.locator('[data-view=training]').click();check('training-analytics');page.locator('[data-view=lifts]').click()
  tab('pbs');check('records');page.locator('#pbs-sub-goals').click();check('goals')
  page.locator('.goal-custom-input').first.fill('0.75');page.locator('.goal-custom-input').first.blur();assert page.evaluate("loadSettings().standards.Snatch[0].multiple")==0.75
  custom=page.locator('#goalsContent input[onchange^=saveCustomGoal]').first;custom.fill('70');custom.blur();assert page.evaluate("loadSettings().customGoals.Snatch")==70
@@ -75,7 +78,7 @@ with sync_playwright() as p:
  rows=page.locator('#pane-settings>details').evaluate_all('(els)=>els.map(e=>({x:e.getBoundingClientRect().x,width:e.getBoundingClientRect().width,height:e.querySelector("summary").getBoundingClientRect().height,font:getComputedStyle(e.querySelector("summary")).font}))')
  assert len(rows)==3 and len({json.dumps(r) for r in rows})==1,rows
  page.locator('#settings-footer').scroll_into_view_if_needed();page.screenshot(path=str(out/(engine+'-settings-maintenance.png')))
- page.locator('#unit-lbs').click();assert page.evaluate('getUnit()')=='lbs';tab('log');page.locator('#log-sub-analytics').click();assert 'lbs' in page.locator('.analytics-stats').inner_text();assert 'lbs' in page.locator('.analytics-chart').text_content()
+ page.locator('#unit-lbs').click();assert page.evaluate('getUnit()')=='lbs';tab('log');page.locator('#log-sub-analytics').click();assert 'lbs' in page.locator('.progress-big-weight').inner_text();assert 'lbs' in page.locator('.analytics-chart').text_content()
  tab('settings');page.locator('#unit-kg').click();page.locator('.settings-weight-class>summary').click();assert 'IWF' in page.locator('#weight-class-detail').inner_text();page.locator('.settings-weight-class>summary').click();page.locator('#setting-bw').fill('81');page.locator('[onclick="logBWFromField()"] ').click();assert page.evaluate('loadSettings().athleteBW')==81
  weigh_in_id=page.evaluate('loadSettings().bwLog[0].id');page.locator('#setting-bw').fill('81.1');page.locator('[onclick="logBWFromField()"]').click();assert page.evaluate('loadSettings().bwLog[0].id')==weigh_in_id
  page.locator('#bw-date').fill('2026-10-28');page.locator('#bw-entry').fill('80.5');page.locator('[onclick="logBodyweight()"] ').click();assert page.evaluate("PendingLifts.list().some(x=>x.action==='logBW'&&x.entry.date==='2026-10-28')")
