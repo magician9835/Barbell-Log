@@ -78,7 +78,15 @@ with sync_playwright() as p:
  assert page.evaluate("getCachedEntries().find(e=>e.id==='latest').weight")==60
  assert page.evaluate('PendingLifts.list().length')==0
  page.evaluate('setCachedEntries([]);renderAnalytics()');assert page.locator('.progress-empty [data-go=log]').is_visible()
- page.locator('[data-go=log]').click();assert page.locator('#studio-log-dialog').is_visible()
+ page.locator('[data-go=log]').click();assert page.locator('#studio-log-dialog').is_visible();page.locator('#studio-log-dialog [aria-label=Close]').click()
+ # An empty first load must not lock in mixed variations when sync arrives.
+ page.locator('[data-period="84"]').click()
+ page.evaluate("setCachedEntries(window.analyticsFixtures.filter(e=>['older','hang'].includes(e.id)));renderAnalytics()")
+ assert 'Hang Above Knee' in page.locator('[data-analytics=movement] option:checked').inner_text()
+ assert '143.3' in page.locator('.progress-big-weight').inner_text() # 65kg in preferred lbs.
+ # An explicit historical selection remains selected, even with no recent sets.
+ page.locator('[data-analytics=movement]').select_option(label='Snatch');assert page.locator('.progress-empty').is_visible()
+ assert page.locator('[data-analytics=movement] option:checked').inner_text()=='Snatch'
  assert not errors,errors
  print('PASS:',engine,'working-only daily tops, canonical variants, read-before-edit point selection, periods/reps/session filters, empty/reset/all-time, pagination, month-year dates, whole-log rhythm/complex balance/ratings/bodyweight, evidence/competition Plan, unit conversion without mutations and iPhone safe-area bounds at 320–430px.')
  b.close()
